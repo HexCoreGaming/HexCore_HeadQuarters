@@ -247,6 +247,12 @@
             createHeadquarters
         } from "./world/headquarters.js";
 
+        // SECTION 02B // FLOATING CITY IMPORT
+
+        import {
+            createCityFoundation
+        } from "./world/cityFoundation.js";
+
         import {
             createPlayer
         } from "./characters/player.js";
@@ -263,6 +269,11 @@
 
         const animateHeadquarters =
             createHeadquarters(scene);
+       
+        // SECTION 03A // BUILD FLOATING CITY
+
+        const animateCityFoundation =
+            createCityFoundation(scene);
 
         // ==========================================
         // SECTION 04 // CREATE PLAYER
@@ -286,6 +297,9 @@
             updatePlayer();
 
             animateHeadquarters();
+
+            // Animate floating city systems
+            animateCityFoundation();
 
             updateNPCs();
 

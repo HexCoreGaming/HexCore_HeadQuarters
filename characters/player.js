@@ -1,19 +1,129 @@
+
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
 // =====================================================
 // HEXCORE GAMING // PLAYER CHARACTER SYSTEM
 // =====================================================
 
-// SECTION 01 // CHARACTER SELECTION
+// SECTION 01 // CHARACTER CONTROLS
 
-// SECTION 02 // MALE AND FEMALE ARMORED CHARACTERS
+export function createPlayer(camera, renderer) {
 
-// SECTION 03 // FIRST-PERSON CAMERA (DEFAULT)
+    const keys = {};
 
-// SECTION 04 // THIRD-PERSON CAMERA (OPTIONAL)
+    const player = {
+        speed: 8,
+        sprintSpeed: 14,
+        height: 1.8,
+        position: new THREE.Vector3(0, 0, 15),
+        yaw: 0,
+        pitch: 0
+    };
 
-// SECTION 05 // PLAYER MOVEMENT
+    // SECTION 02 // FIRST-PERSON CAMERA
 
-// SECTION 06 // COLLISION DETECTION
+    camera.rotation.order = "YXZ";
 
-// SECTION 07 // INTERACTION CONTROLS
+    camera.position.set(
+        player.position.x,
+        player.height,
+        player.position.z
+    );
 
-// SECTION 08 // MOBILE CONTROLS
+    // SECTION 03 // KEYBOARD INPUT
+
+    window.addEventListener("keydown", (event) => {
+        keys[event.code] = true;
+    });
+
+    window.addEventListener("keyup", (event) => {
+        keys[event.code] = false;
+    });
+
+    // SECTION 04 // MOUSE LOOK
+
+    renderer.domElement.addEventListener("click", () => {
+        renderer.domElement.requestPointerLock();
+    });
+
+    document.addEventListener("mousemove", (event) => {
+
+        if (document.pointerLockElement !== renderer.domElement) {
+            return;
+        }
+
+        player.yaw -= event.movementX * 0.002;
+        player.pitch -= event.movementY * 0.002;
+
+        player.pitch = THREE.MathUtils.clamp(
+            player.pitch,
+            -Math.PI / 2 + 0.1,
+            Math.PI / 2 - 0.1
+        );
+    });
+
+    // SECTION 05 // MOVEMENT AND CAMERA UPDATE
+
+    const clock = new THREE.Clock();
+
+    function updatePlayer() {
+
+        const delta = Math.min(clock.getDelta(), 0.05);
+
+        const movement = new THREE.Vector3();
+
+        if (keys["KeyW"]) movement.z -= 1;
+        if (keys["KeyS"]) movement.z += 1;
+        if (keys["KeyA"]) movement.x -= 1;
+        if (keys["KeyD"]) movement.x += 1;
+
+        if (movement.lengthSq() > 0) {
+
+            movement.normalize();
+
+            movement.applyAxisAngle(
+                new THREE.Vector3(0, 1, 0),
+                player.yaw
+            );
+
+            const speed =
+                keys["ShiftLeft"] || keys["ShiftRight"]
+                    ? player.sprintSpeed
+                    : player.speed;
+
+            player.position.addScaledVector(
+                movement,
+                speed * delta
+            );
+        }
+
+        // Temporary room boundaries
+        player.position.x = THREE.MathUtils.clamp(
+            player.position.x,
+            -28,
+            28
+        );
+
+        player.position.z = THREE.MathUtils.clamp(
+            player.position.z,
+            -28,
+            28
+        );
+
+        camera.position.set(
+            player.position.x,
+            player.height,
+            player.position.z
+        );
+
+        camera.rotation.set(
+            player.pitch,
+            player.yaw,
+            0
+        );
+    }
+
+    // SECTION 06 // PLAYER SYSTEM OUTPUT
+
+    return updatePlayer;
+}

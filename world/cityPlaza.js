@@ -8,14 +8,12 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 export function createCityPlaza(scene) {
 
     // =====================================================
-    // SECTION 01 // PLAZA GROUP AND POSITION
+    // SECTION 01 // PLAZA POSITION
     // =====================================================
 
     const plaza = new THREE.Group();
-
     plaza.name = "HEXCORE_SOCIAL_PLAZA";
     plaza.position.set(0, 0, 65);
-
     scene.add(plaza);
 
     // =====================================================
@@ -34,6 +32,12 @@ export function createCityPlaza(scene) {
         roughness: 0.3
     });
 
+    const cartMetal = new THREE.MeshStandardMaterial({
+        color: 0x25233B,
+        metalness: 0.8,
+        roughness: 0.3
+    });
+
     const purple = new THREE.MeshBasicMaterial({
         color: 0x8650E8
     });
@@ -46,27 +50,103 @@ export function createCityPlaza(scene) {
         color: 0xE34BC9
     });
 
+    const gold = new THREE.MeshBasicMaterial({
+        color: 0xE5AF69
+    });
+
+    const glass = new THREE.MeshStandardMaterial({
+        color: 0x254A70,
+        metalness: 0.25,
+        roughness: 0.18,
+        transparent: true,
+        opacity: 0.8
+    });
+
     // =====================================================
-    // SECTION 03 // CIRCULAR MARBLE PLAZA
+    // SECTION 03 // GEOMETRY HELPERS
     // =====================================================
 
-    const floor = new THREE.Mesh(
-        new THREE.CylinderGeometry(17, 17, 0.15, 48),
-        marble
+    function makeBox(
+        parent,
+        width,
+        height,
+        depth,
+        x,
+        y,
+        z,
+        material
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width,
+                height,
+                depth
+            ),
+            material
+        );
+
+        mesh.position.set(x, y, z);
+        parent.add(mesh);
+
+        return mesh;
+    }
+
+    function makeCylinder(
+        parent,
+        top,
+        bottom,
+        height,
+        x,
+        y,
+        z,
+        material,
+        sides = 12
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                top,
+                bottom,
+                height,
+                sides
+            ),
+            material
+        );
+
+        mesh.position.set(x, y, z);
+        parent.add(mesh);
+
+        return mesh;
+    }
+
+    // =====================================================
+    // SECTION 04 // CIRCULAR BLACK MARBLE PLAZA
+    // =====================================================
+
+    makeCylinder(
+        plaza,
+        17,
+        17,
+        0.15,
+        0,
+        0.04,
+        0,
+        marble,
+        48
     );
 
-    // Slightly above the existing city ground.
-
-    floor.position.y = 0.04;
-    plaza.add(floor);
-
     // =====================================================
-    // SECTION 04 // GLOWING FLOOR RINGS
+    // SECTION 05 // ILLUMINATED FLOOR RINGS
     // =====================================================
 
-    function floorRing(radius, material, thickness = 0.08) {
+    function floorRing(
+        radius,
+        material,
+        thickness = 0.08
+    ) {
 
-        const ring = new THREE.Mesh(
+        const mesh = new THREE.Mesh(
             new THREE.TorusGeometry(
                 radius,
                 thickness,
@@ -76,42 +156,65 @@ export function createCityPlaza(scene) {
             material
         );
 
-        ring.rotation.x = Math.PI / 2;
-        ring.position.y = 0.14;
+        mesh.rotation.x = Math.PI / 2;
+        mesh.position.y = 0.14;
 
-        plaza.add(ring);
+        plaza.add(mesh);
+
+        return mesh;
     }
 
     floorRing(16.5, purple, 0.13);
     floorRing(14.7, cyan, 0.055);
     floorRing(8.5, magenta, 0.07);
+    floorRing(5, cyan, 0.1);
 
     // =====================================================
-    // SECTION 05 // DECORATIVE MARBLE FLOOR LINES
+    // SECTION 06 // MARBLE FLOOR PATTERNS
     // =====================================================
 
     for (let i = 0; i < 12; i++) {
 
         const angle = i * Math.PI / 6;
 
-        const line = new THREE.Mesh(
-            new THREE.BoxGeometry(0.06, 0.025, 6),
+        const line = makeBox(
+            plaza,
+            0.06,
+            0.025,
+            6,
+            Math.sin(angle) * 11.6,
+            0.14,
+            Math.cos(angle) * 11.6,
             i % 2 === 0 ? purple : cyan
         );
 
-        line.position.set(
-            Math.sin(angle) * 11.6,
-            0.14,
-            Math.cos(angle) * 11.6
-        );
-
         line.rotation.y = angle;
-
-        plaza.add(line);
     }
 
     // =====================================================
-    // SECTION 06 // FUTURISTIC PLAZA BENCHES
+    // SECTION 07 // CENTRAL PERFORMANCE AREA
+    // =====================================================
+
+    const centerDisc = makeCylinder(
+        plaza,
+        4.7,
+        4.7,
+        0.035,
+        0,
+        0.145,
+        0,
+        new THREE.MeshStandardMaterial({
+            color: 0x241A37,
+            metalness: 0.55,
+            roughness: 0.27
+        }),
+        40
+    );
+
+    centerDisc.name = "FUTURE_FOUNTAIN_AND_DANCE_AREA";
+
+    // =====================================================
+    // SECTION 08 // FUTURISTIC BENCHES
     // =====================================================
 
     function createBench(x, z, rotation) {
@@ -121,43 +224,35 @@ export function createCityPlaza(scene) {
         bench.position.set(x, 0, z);
         bench.rotation.y = rotation;
 
-        const seat = new THREE.Mesh(
-            new THREE.BoxGeometry(4, 0.32, 1),
+        makeBox(
+            bench,
+            4, 0.32, 1,
+            0, 0.85, 0,
             darkMetal
         );
 
-        seat.position.y = 0.85;
-        bench.add(seat);
-
-        const back = new THREE.Mesh(
-            new THREE.BoxGeometry(4, 1.0, 0.2),
+        makeBox(
+            bench,
+            4, 1, 0.2,
+            0, 1.35, -0.45,
             darkMetal
         );
 
-        back.position.set(0, 1.35, -0.45);
-        bench.add(back);
-
-        // Illuminated underside.
-
-        const light = new THREE.Mesh(
-            new THREE.BoxGeometry(3.8, 0.1, 0.85),
+        makeBox(
+            bench,
+            3.8, 0.1, 0.85,
+            0, 0.62, 0,
             cyan
         );
 
-        light.position.y = 0.62;
-        bench.add(light);
-
-        // Bench supports.
-
         for (const side of [-1.5, 1.5]) {
 
-            const leg = new THREE.Mesh(
-                new THREE.BoxGeometry(0.25, 0.75, 0.75),
+            makeBox(
+                bench,
+                0.25, 0.75, 0.75,
+                side, 0.38, 0,
                 darkMetal
             );
-
-            leg.position.set(side, 0.38, 0);
-            bench.add(leg);
         }
 
         plaza.add(bench);
@@ -169,53 +264,32 @@ export function createCityPlaza(scene) {
     createBench(12.5, 6, Math.PI / 3);
 
     // =====================================================
-    // SECTION 07 // PERFORMANCE AREA
+    // SECTION 09 // ACCENT LIGHT PILLARS
     // =====================================================
 
-    // An illuminated marking, not a raised stage.
-    // The dancing couple can stand here later.
-
-    floorRing(5, cyan, 0.1);
-
-    const centerDisc = new THREE.Mesh(
-        new THREE.CylinderGeometry(4.7, 4.7, 0.035, 40),
-        new THREE.MeshStandardMaterial({
-            color: 0x241A37,
-            metalness: 0.55,
-            roughness: 0.27
-        })
-    );
-
-    centerDisc.position.y = 0.145;
-    plaza.add(centerDisc);
-
-    // =====================================================
-    // SECTION 08 // ACCENT LIGHT PILLARS
-    // =====================================================
-
-    function lightPillar(x, z, material) {
+    function createLightPillar(x, z, glow) {
 
         const group = new THREE.Group();
         group.position.set(x, 0, z);
 
-        const base = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.45, 0.6, 0.55, 8),
-            darkMetal
+        makeCylinder(
+            group,
+            0.45, 0.6, 0.55,
+            0, 0.3, 0,
+            darkMetal, 8
         );
 
-        base.position.y = 0.3;
-        group.add(base);
-
-        const light = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.13, 0.13, 3.2, 8),
-            material
+        makeCylinder(
+            group,
+            0.13, 0.13, 3.2,
+            0, 2.1, 0,
+            glow, 8
         );
-
-        light.position.y = 2.1;
-        group.add(light);
 
         const crown = new THREE.Mesh(
-            new THREE.ConeGeometry(0.45, 0.8, 6),
+            new THREE.ConeGeometry(
+                0.45, 0.8, 6
+            ),
             darkMetal
         );
 
@@ -225,17 +299,14 @@ export function createCityPlaza(scene) {
         plaza.add(group);
     }
 
-    lightPillar(-10, -10, purple);
-    lightPillar(10, -10, cyan);
-    lightPillar(-10, 10, cyan);
-    lightPillar(10, 10, purple);
+    createLightPillar(-10, -10, purple);
+    createLightPillar(10, -10, cyan);
+    createLightPillar(-10, 10, cyan);
+    createLightPillar(10, 10, purple);
 
     // =====================================================
-    // SECTION 09 // FUTURE ACTIVITY POSITIONS
+    // SECTION 10 // FUTURE PLAZA ACTIVITIES
     // =====================================================
-
-    // These positions will be used for future
-    // interactive features.
 
     window.hexcorePlazaLocations = {
 
@@ -254,6 +325,11 @@ export function createCityPlaza(scene) {
             z: 65
         },
 
+        fountain: {
+            x: 0,
+            z: 65
+        },
+
         fireworksView: {
             x: 0,
             z: 72
@@ -261,233 +337,208 @@ export function createCityPlaza(scene) {
     };
 
     // =====================================================
-    // SECTION 09A // HEXCORE COMPLIMENTARY FOOD CART
+    // SECTION 11 // HEXCORE BITES FOOD CART
     // =====================================================
 
     const foodCart = new THREE.Group();
 
-    // Left side of the plaza.
-    // Coordinates are relative to the plaza center.
-
+    foodCart.name = "HEXCORE_BITES_CART";
     foodCart.position.set(-10, 0, 0);
+
+    // Face the cart toward the plaza entrance.
     foodCart.rotation.y = Math.PI / 2;
 
     plaza.add(foodCart);
 
-    // SECTION 09B // FOOD CART MATERIALS
+    // =====================================================
+    // SECTION 11A // CART BODY AND COUNTER
+    // =====================================================
 
-    const cartMetal = new THREE.MeshStandardMaterial({
-        color: 0x25233B,
-        metalness: 0.8,
-        roughness: 0.3
-    });
-
-    const cartGlass = new THREE.MeshStandardMaterial({
-        color: 0x263E60,
-        metalness: 0.4,
-        roughness: 0.2,
-        transparent: true,
-        opacity: 0.7
-    });
-
-    function cartBox(w, h, d, x, y, z, mat) {
-
-        const mesh = new THREE.Mesh(
-            new THREE.BoxGeometry(w, h, d),
-            mat
-        );
-
-        mesh.position.set(x, y, z);
-        foodCart.add(mesh);
-
-        return mesh;
-    }
-
-    // SECTION 09C // CART COUNTER
-
-    cartBox(
+    makeBox(
+        foodCart,
         4.5, 1.35, 2.4,
         0, 0.85, 0,
         cartMetal
     );
 
-    cartBox(
+    makeBox(
+        foodCart,
         4.9, 0.18, 2.7,
         0, 1.65, 0,
         darkMetal
     );
 
-    cartBox(
+    makeBox(
+        foodCart,
         4.3, 0.12, 0.16,
         0, 1.15, 1.27,
         cyan
     );
 
-    // SECTION 09D // UPPER CANOPY
+    // =====================================================
+    // SECTION 11B // CANOPY AND SUPPORTS
+    // =====================================================
 
     for (const x of [-2, 2]) {
 
-        cartBox(
+        makeBox(
+            foodCart,
             0.15, 3.2, 0.15,
             x, 3.2, -0.85,
             darkMetal
         );
     }
 
-    cartBox(
+    makeBox(
+        foodCart,
         5.5, 0.35, 3.3,
         0, 4.75, -0.2,
         cartMetal
     );
 
-    cartBox(
+    makeBox(
+        foodCart,
         5.2, 0.12, 0.2,
         0, 4.55, 1.38,
         magenta
     );
 
-    // SECTION 09E // ILLUMINATED FOOD CART SIGN
+    // =====================================================
+    // SECTION 11C // ILLUMINATED SIGN
+    // =====================================================
 
-    const foodSignCanvas = document.createElement("canvas");
+    const signCanvas = document.createElement("canvas");
 
-    foodSignCanvas.width = 1024;
-    foodSignCanvas.height = 256;
+    signCanvas.width = 1024;
+    signCanvas.height = 256;
 
-    const foodCtx = foodSignCanvas.getContext("2d");
+    const ctx = signCanvas.getContext("2d");
 
-    foodCtx.fillStyle = "#0D0B1D";
-    foodCtx.fillRect(0, 0, 1024, 256);
+    ctx.fillStyle = "#0D0B1D";
+    ctx.fillRect(0, 0, 1024, 256);
 
-    foodCtx.strokeStyle = "#8CD6FD";
-    foodCtx.lineWidth = 12;
-    foodCtx.strokeRect(8, 8, 1008, 240);
+    ctx.strokeStyle = "#8CD6FD";
+    ctx.lineWidth = 12;
+    ctx.strokeRect(8, 8, 1008, 240);
 
-    foodCtx.textAlign = "center";
-    foodCtx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-    foodCtx.fillStyle = "#E8D9FF";
-    foodCtx.font = "bold 76px Arial";
+    ctx.fillStyle = "#E8D9FF";
+    ctx.font = "bold 76px Arial";
 
-    foodCtx.fillText(
+    ctx.fillText(
         "HEXCORE BITES",
-        512, 92
+        512,
+        92
     );
 
-    foodCtx.fillStyle = "#8CD6FD";
-    foodCtx.font = "bold 42px Arial";
+    ctx.fillStyle = "#8CD6FD";
+    ctx.font = "bold 42px Arial";
 
-    foodCtx.fillText(
+    ctx.fillText(
         "FREE FOOD + DRINKS",
-        512, 184
+        512,
+        184
     );
 
-    const foodTexture = new THREE.CanvasTexture(
-        foodSignCanvas
+    const signTexture = new THREE.CanvasTexture(
+        signCanvas
     );
 
-    foodTexture.colorSpace = THREE.SRGBColorSpace;
+    signTexture.colorSpace = THREE.SRGBColorSpace;
 
-    const foodSign = new THREE.Mesh(
+    const signMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(5.2, 1.3),
         new THREE.MeshBasicMaterial({
-            map: foodTexture,
+            map: signTexture,
             side: THREE.DoubleSide,
-            depthTest: true
+            depthTest: true,
+            depthWrite: true
         })
     );
 
-    foodSign.position.set(0, 3.85, 1.48);
+    signMesh.position.set(0, 3.85, 1.48);
 
-    foodCart.add(foodSign);
+    foodCart.add(signMesh);
 
-    // SECTION 09F // FOOD AND DRINK DISPLAY
+    // =====================================================
+    // SECTION 11D // DISPLAYED FREE MEALS
+    // =====================================================
 
     for (const x of [-1.3, 0, 1.3]) {
 
-        const meal = new THREE.Mesh(
-            new THREE.BoxGeometry(0.75, 0.24, 0.65),
+        makeBox(
+            foodCart,
+            0.75, 0.24, 0.65,
+            x, 1.88, 0.55,
             gold
         );
-
-        meal.position.set(
-            x, 1.88, 0.55
-        );
-
-        foodCart.add(meal);
-    }
-
-    for (const x of [-0.65, 0.65]) {
-
-        const drink = new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                0.22, 0.18, 0.7, 12
-            ),
-            purple
-        );
-
-        drink.position.set(
-            x, 2.08, -0.35
-        );
-
-        foodCart.add(drink);
     }
 
     // =====================================================
-    // SECTION 09G // FOOD VENDOR NPC
+    // SECTION 11E // DISPLAYED DRINKS
+    // =====================================================
+
+    for (const x of [-0.65, 0.65]) {
+
+        makeCylinder(
+            foodCart,
+            0.22, 0.18, 0.7,
+            x, 2.08, -0.35,
+            purple
+        );
+    }
+
+    // =====================================================
+    // SECTION 12 // FOOD VENDOR NPC
     // =====================================================
 
     const vendor = new THREE.Group();
 
-    // Vendor stands behind the serving counter.
-
+    vendor.name = "HEXCORE_BITES_VENDOR";
     vendor.position.set(0, 0, -2.1);
 
     foodCart.add(vendor);
 
-    const vendorClothing = new THREE.MeshStandardMaterial({
-        color: 0x38236B,
-        metalness: 0.25,
-        roughness: 0.65
-    });
+    const vendorClothing =
+        new THREE.MeshStandardMaterial({
+            color: 0x38236B,
+            roughness: 0.65
+        });
 
-    const vendorSkin = new THREE.MeshStandardMaterial({
-        color: 0xB9876D,
-        roughness: 0.85
-    });
+    const vendorSkin =
+        new THREE.MeshStandardMaterial({
+            color: 0xB9876D,
+            roughness: 0.85
+        });
 
-    const vendorHair = new THREE.MeshStandardMaterial({
-        color: 0x15111E,
-        roughness: 0.8
-    });
+    const vendorHair =
+        new THREE.MeshStandardMaterial({
+            color: 0x15111E,
+            roughness: 0.8
+        });
 
     // Legs
 
     for (const x of [-0.22, 0.22]) {
 
-        const leg = new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                0.13, 0.16, 1.0, 8
-            ),
-            darkMetal
+        makeCylinder(
+            vendor,
+            0.13, 0.16, 1,
+            x, 0.55, 0,
+            darkMetal, 8
         );
-
-        leg.position.set(x, 0.55, 0);
-
-        vendor.add(leg);
     }
 
     // Torso
 
-    const torso = new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            0.36, 0.28, 0.95, 12
-        ),
+    makeCylinder(
+        vendor,
+        0.36, 0.28, 0.95,
+        0, 1.5, 0,
         vendorClothing
     );
-
-    torso.position.y = 1.5;
-
-    vendor.add(torso);
 
     // Head
 
@@ -499,7 +550,6 @@ export function createCityPlaza(scene) {
     );
 
     head.position.y = 2.3;
-
     vendor.add(head);
 
     // Hair
@@ -520,31 +570,28 @@ export function createCityPlaza(scene) {
 
     for (const x of [-0.47, 0.47]) {
 
-        const arm = new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                0.12, 0.11, 0.8, 8
-            ),
-            vendorClothing
+        const arm = makeCylinder(
+            vendor,
+            0.12, 0.11, 0.8,
+            x, 1.52, 0.1,
+            vendorClothing, 8
         );
 
-        arm.position.set(x, 1.52, 0.1);
-
         arm.rotation.z = x < 0 ? -0.3 : 0.3;
-
-        vendor.add(arm);
     }
 
     // =====================================================
-    // SECTION 09H // FOOD CART INTERACTION
+    // SECTION 13 // FOOD CART INTERACTION UI
     // =====================================================
 
     let foodCartNearby = false;
+    let messageTimer = null;
 
-    const foodCartWorldPosition = new THREE.Vector3();
+    const cartWorldPosition = new THREE.Vector3();
 
-    const foodPrompt = document.createElement("div");
+    const foodPrompt = document.createElement("button");
 
-    foodPrompt.textContent = "E // GET FREE MEAL + DRINK";
+    foodPrompt.type = "button";
 
     Object.assign(foodPrompt.style, {
         position: "fixed",
@@ -561,7 +608,8 @@ export function createCityPlaza(scene) {
         display: "none",
         textAlign: "center",
         cursor: "pointer",
-        touchAction: "manipulation"
+        touchAction: "manipulation",
+        maxWidth: "90vw"
     });
 
     document.body.appendChild(foodPrompt);
@@ -588,11 +636,17 @@ export function createCityPlaza(scene) {
 
     document.body.appendChild(foodMessage);
 
-    let foodMessageTimer;
+    // =====================================================
+    // SECTION 14 // RECEIVE COMPLIMENTARY FOOD
+    // =====================================================
 
     function receiveComplimentaryMeal() {
 
         if (!foodCartNearby) {
+            return;
+        }
+
+        if (window.hexcoreDialogueOpen === true) {
             return;
         }
 
@@ -601,25 +655,32 @@ export function createCityPlaza(scene) {
 
         foodMessage.style.display = "block";
 
-        clearTimeout(foodMessageTimer);
+        if (messageTimer !== null) {
+            clearTimeout(messageTimer);
+        }
 
-        foodMessageTimer = setTimeout(() => {
+        messageTimer = setTimeout(() => {
             foodMessage.style.display = "none";
+            messageTimer = null;
         }, 3500);
     }
 
-    window.addEventListener("keydown", event => {
+    // Desktop keyboard interaction.
 
-        if (
-            event.code === "KeyE" &&
-            !event.repeat &&
-            window.hexcoreDialogueOpen !== true
-        ) {
-            receiveComplimentaryMeal();
+    window.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.code === "KeyE" &&
+                !event.repeat
+            ) {
+                receiveComplimentaryMeal();
+            }
         }
-    });
+    );
 
-    // Mobile players can tap the prompt.
+    // Mobile button interaction.
 
     foodPrompt.addEventListener(
         "pointerdown",
@@ -630,11 +691,15 @@ export function createCityPlaza(scene) {
 
     foodPrompt.addEventListener(
         "click",
-        receiveComplimentaryMeal
+        event => {
+
+            event.stopPropagation();
+            receiveComplimentaryMeal();
+        }
     );
 
     // =====================================================
-    // SECTION 09I // FOOD CART PROXIMITY DETECTION
+    // SECTION 15 // PLAYER PROXIMITY DETECTION
     // =====================================================
 
     window.addEventListener(
@@ -642,37 +707,51 @@ export function createCityPlaza(scene) {
         event => {
 
             foodCart.getWorldPosition(
-                foodCartWorldPosition
+                cartWorldPosition
             );
 
-            const distance = Math.hypot(
-                event.detail.x - foodCartWorldPosition.x,
-                event.detail.z - foodCartWorldPosition.z
-            );
+            const dx =
+                event.detail.x - cartWorldPosition.x;
+
+            const dz =
+                event.detail.z - cartWorldPosition.z;
+
+            const distance = Math.hypot(dx, dz);
 
             foodCartNearby = distance < 5.5;
 
-            foodPrompt.style.display =
-                foodCartNearby ? "block" : "none";
-
-            const isMobile = window.matchMedia(
+            const mobile = window.matchMedia(
                 "(pointer: coarse)"
             ).matches;
 
-            foodPrompt.textContent = isMobile
+            foodPrompt.textContent = mobile
                 ? "TAP // FREE MEAL + DRINK"
                 : "E // GET FREE MEAL + DRINK";
+
+            foodPrompt.style.display =
+                foodCartNearby &&
+                window.hexcoreDialogueOpen !== true
+                    ? "block"
+                    : "none";
         }
     );
 
     // =====================================================
-    // SECTION 10 // ANIMATION
+    // SECTION 16 // PLAZA ANIMATION
     // =====================================================
 
     function animateCityPlaza() {
 
-        // Reserved for later plaza effects.
+        // Future additions:
+        // Violinist animations
+        // Dancing couple
+        // Fountain water
+        // Fireworks
     }
+
+    // =====================================================
+    // SECTION 17 // OUTPUT
+    // =====================================================
 
     return animateCityPlaza;
 }

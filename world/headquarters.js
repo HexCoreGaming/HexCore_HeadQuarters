@@ -1863,7 +1863,7 @@ export function createHeadquarters(scene) {
     const animationClock = new THREE.Clock();
 
     
-    function animateHeadquarters() {
+        function animateHeadquarters() {
 
         const elapsedTime = animationClock.getElapsedTime();
 
@@ -1919,8 +1919,66 @@ export function createHeadquarters(scene) {
 
         receptionSign.material.opacity =
             0.85 + Math.sin(elapsedTime * 1.5) * 0.15;
-    }
 
+        // ANIMATION 08 // FLOATING EXTERIOR RINGS
+
+        floatingStructures[0].rotation.z =
+            elapsedTime * 0.12;
+
+        floatingStructures[1].rotation.z =
+            -elapsedTime * 0.18;
+
+        floatingStructures[2].rotation.z =
+            elapsedTime * 0.07;
+
+        floatingStructures[0].position.y =
+            18 + Math.sin(elapsedTime * 0.9) * 0.5;
+
+        floatingStructures[1].position.y =
+            24 + Math.sin(elapsedTime * 0.7 + 1.2) * 0.7;
+
+        floatingStructures[2].position.y =
+            31 + Math.sin(elapsedTime * 0.45 + 0.5) * 1.2;
+
+        // ANIMATION 09 // EXTERIOR SPIRE
+
+        energySpire.rotation.y =
+            elapsedTime * 0.08;
+
+        spireHalo.rotation.z =
+            elapsedTime * 0.28;
+
+        spireTop.rotation.y =
+            elapsedTime * 0.42;
+
+        spireTop.rotation.x =
+            elapsedTime * 0.12;
+
+        // ANIMATION 10 // BEAM LINE PULSE
+
+        beamLines.forEach((beam, index) => {
+            beam.scale.x =
+                1 + Math.sin(elapsedTime * 2.2 + index) * 0.08;
+        });
+
+        // ANIMATION 11 // HOLOGRAM PANELS
+
+        hologramPanels.forEach((panel, index) => {
+            panel.material.opacity =
+                0.7 + Math.sin(elapsedTime * 1.8 + index) * 0.12;
+
+            panel.position.y =
+                panel.position.y + Math.sin(elapsedTime * 0.001);
+        });
+
+        // ANIMATION 12 // EXTERIOR SHARDS
+
+        exteriorShards.rotation.y =
+            elapsedTime * 0.08;
+
+        exteriorShards.rotation.x =
+            Math.sin(elapsedTime * 0.22) * 0.08;
+    }
 
     // =====================================================
     // SECTION 36 // REGISTER ANIMATION

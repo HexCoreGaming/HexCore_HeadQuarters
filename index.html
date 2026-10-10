@@ -963,3 +963,266 @@
         );
 
     </script>
+
+    <!-- ========================================== -->
+    <!-- SECTION 10 // MOBILE GAME CONTROLS         -->
+    <!-- ========================================== -->
+
+    <div id="hexcore-mobile-controls">
+
+        <!-- SECTION 10A // MOVEMENT JOYSTICK -->
+
+        <div id="mobile-joystick">
+            <div id="mobile-joystick-knob"></div>
+        </div>
+
+        <!-- SECTION 10B // ACTION BUTTONS -->
+
+        <div id="mobile-action-buttons">
+
+            <button id="mobile-interact" type="button">
+                INTERACT
+            </button>
+
+            <button id="mobile-sprint" type="button">
+                SPRINT
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- SECTION 10C // MOBILE CONTROL APPEARANCE -->
+
+    <style>
+
+        #hexcore-mobile-controls {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 110;
+            pointer-events: none;
+            touch-action: none;
+        }
+
+        #mobile-joystick {
+            position: absolute;
+            bottom: max(34px, calc(env(safe-area-inset-bottom) + 22px));
+            left: max(28px, calc(env(safe-area-inset-left) + 16px));
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: rgba(14, 10, 33, 0.55);
+            border: 2px solid #8650E8;
+            box-shadow: 0 0 20px rgba(134, 80, 232, 0.3);
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        #mobile-joystick-knob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(140, 214, 253, 0.45);
+            border: 2px solid #8CD6FD;
+            box-shadow: 0 0 15px rgba(140, 214, 253, 0.4);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #mobile-action-buttons {
+            position: absolute;
+            right: max(24px, calc(env(safe-area-inset-right) + 12px));
+            bottom: max(34px, calc(env(safe-area-inset-bottom) + 22px));
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        #mobile-action-buttons button {
+            width: 90px;
+            min-height: 50px;
+            border: 1px solid #8650E8;
+            border-radius: 12px;
+            background: rgba(20, 12, 45, 0.82);
+            color: #8CD6FD;
+            font: bold 12px Consolas, monospace;
+            box-shadow: 0 0 14px rgba(134, 80, 232, 0.25);
+            pointer-events: auto;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #mobile-action-buttons button:active {
+            background: rgba(134, 80, 232, 0.7);
+        }
+
+        /* Only show these controls on touch devices. */
+
+        @media (pointer: coarse) {
+
+            #hexcore-mobile-controls {
+                display: block;
+            }
+
+        }
+
+    </style>
+
+    <!-- SECTION 10D // TOUCH INPUT SYSTEM -->
+
+    <script>
+
+        // Shared input state for the player movement system.
+
+        window.hexcoreMobileInput = {
+            x: 0,
+            z: 0,
+            sprint: false
+        };
+
+        const mobileJoystick =
+            document.getElementById("mobile-joystick");
+
+        const mobileJoystickKnob =
+            document.getElementById("mobile-joystick-knob");
+
+        const mobileSprint =
+            document.getElementById("mobile-sprint");
+
+        const mobileInteract =
+            document.getElementById("mobile-interact");
+
+        let activeJoystickPointer = null;
+
+        function updateMobileJoystick(event) {
+
+            const bounds = mobileJoystick.getBoundingClientRect();
+
+            const centerX = bounds.left + bounds.width / 2;
+            const centerY = bounds.top + bounds.height / 2;
+
+            const maxDistance = 35;
+
+            const dx = event.clientX - centerX;
+            const dy = event.clientY - centerY;
+
+            const distance = Math.hypot(dx, dy);
+
+            const scale =
+                distance > maxDistance
+                    ? maxDistance / distance
+                    : 1;
+
+            const x = dx * scale;
+            const y = dy * scale;
+
+            mobileJoystickKnob.style.transform =
+                `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+            window.hexcoreMobileInput.x = x / maxDistance;
+            window.hexcoreMobileInput.z = y / maxDistance;
+        }
+
+        function resetMobileJoystick() {
+
+            activeJoystickPointer = null;
+
+            window.hexcoreMobileInput.x = 0;
+            window.hexcoreMobileInput.z = 0;
+
+            mobileJoystickKnob.style.transform =
+                "translate(-50%, -50%)";
+        }
+
+        // SECTION 10E // JOYSTICK POINTER EVENTS
+
+        mobileJoystick.addEventListener("pointerdown", (event) => {
+
+            if (activeJoystickPointer !== null) {
+                return;
+            }
+
+            event.preventDefault();
+
+            activeJoystickPointer = event.pointerId;
+
+            mobileJoystick.setPointerCapture(event.pointerId);
+
+            updateMobileJoystick(event);
+        });
+
+        mobileJoystick.addEventListener("pointermove", (event) => {
+
+            if (event.pointerId !== activeJoystickPointer) {
+                return;
+            }
+
+            updateMobileJoystick(event);
+        });
+
+        function releaseMobileJoystick(event) {
+
+            if (event.pointerId === activeJoystickPointer) {
+                resetMobileJoystick();
+            }
+        }
+
+        mobileJoystick.addEventListener(
+            "pointerup",
+            releaseMobileJoystick
+        );
+
+        mobileJoystick.addEventListener(
+            "pointercancel",
+            releaseMobileJoystick
+        );
+
+        // SECTION 10F // SPRINT BUTTON
+
+        mobileSprint.addEventListener("pointerdown", (event) => {
+
+            event.preventDefault();
+
+            mobileSprint.setPointerCapture(event.pointerId);
+
+            window.hexcoreMobileInput.sprint = true;
+        });
+
+        function releaseMobileSprint() {
+            window.hexcoreMobileInput.sprint = false;
+        }
+
+        mobileSprint.addEventListener(
+            "pointerup",
+            releaseMobileSprint
+        );
+
+        mobileSprint.addEventListener(
+            "pointercancel",
+            releaseMobileSprint
+        );
+
+        // SECTION 10G // INTERACT BUTTON
+
+        mobileInteract.addEventListener("click", () => {
+
+            if (window.hexcoreDialogueOpen === true) {
+                return;
+            }
+
+            window.dispatchEvent(
+                new KeyboardEvent("keydown", {
+                    code: "KeyE",
+                    key: "e",
+                    bubbles: true
+                })
+            );
+        });
+
+    </script>

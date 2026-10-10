@@ -392,6 +392,234 @@
 
     </script>
 
+    <!-- ========================================== -->
+    <!-- SECTION 08 // RECEPTION INTERACTION        -->
+    <!-- ========================================== -->
+
+    <div id="reception-prompt">
+        [E] SPEAK TO RECEPTION REPRESENTATIVE
+    </div>
+
+    <div id="reception-dialogue">
+
+        <div class="dialogue-heading">
+            HEXCORE GAMING // RECEPTION
+        </div>
+
+        <div class="dialogue-speaker">
+            RECEPTION REPRESENTATIVE
+        </div>
+
+        <div id="reception-dialogue-text"></div>
+
+        <button id="reception-dialogue-button">
+            CONTINUE
+        </button>
+
+    </div>
+
+    <!-- SECTION 08A // INTERACTION APPEARANCE -->
+
+    <style>
+
+        #reception-prompt {
+            display: none;
+            position: fixed;
+            bottom: 115px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 7, 17, 0.92);
+            border: 1px solid #8CD6FD;
+            padding: 12px 20px;
+            color: #8CD6FD;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #reception-dialogue {
+            display: none;
+            position: fixed;
+            left: 50%;
+            bottom: 55px;
+            transform: translateX(-50%);
+            width: min(540px, 90vw);
+            box-sizing: border-box;
+            padding: 24px;
+            background: rgba(8, 7, 17, 0.97);
+            border: 1px solid #8650E8;
+            box-shadow: 0 0 35px rgba(134, 80, 232, 0.3);
+            font-family: Consolas, monospace;
+            z-index: 200;
+        }
+
+        .dialogue-heading {
+            color: #8CD6FD;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        .dialogue-speaker {
+            color: #B568FF;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        #reception-dialogue-text {
+            color: #EAE8FF;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        #reception-dialogue-button {
+            padding: 12px 20px;
+            background: #241247;
+            color: #EAE8FF;
+            border: 1px solid #8650E8;
+            font-family: Consolas, monospace;
+            cursor: pointer;
+        }
+
+        #reception-dialogue-button:hover {
+            background: #40216E;
+        }
+
+    </style>
+
+    <!-- SECTION 08B // RECEPTION DIALOGUE LOGIC -->
+
+    <script>
+
+        let receptionNearby = false;
+        let receptionDialogueOpen = false;
+        let receptionDialogueStep = 0;
+
+        window.hexcoreHasCityKey = false;
+
+        const receptionPrompt =
+            document.getElementById("reception-prompt");
+
+        const receptionDialogue =
+            document.getElementById("reception-dialogue");
+
+        const receptionDialogueText =
+            document.getElementById("reception-dialogue-text");
+
+        const receptionDialogueButton =
+            document.getElementById("reception-dialogue-button");
+
+        const receptionLines = [
+            "Welcome to HexCore Gaming. You're standing within our neutral headquarters, a domain outside the simulations.",
+
+            "Beyond these walls lies HexCore City, a floating cyber-fantasy realm where you can explore our games, technology, and creative projects.",
+
+            "Our simulations contain many different worlds. Humans and elves are central to Cyber_Arena, where their conflict becomes entertainment for observers beyond the simulation.",
+
+            "I'm granting you a digital City Access Key. You may now leave headquarters and begin exploring HexCore City."
+        ];
+
+        function closeReceptionDialogue() {
+
+            receptionDialogueOpen = false;
+            receptionDialogue.style.display = "none";
+
+            if (document.pointerLockElement) {
+                document.exitPointerLock();
+            }
+        }
+
+        function showReceptionLine() {
+
+            receptionDialogueText.textContent =
+                receptionLines[receptionDialogueStep];
+
+            receptionDialogueButton.textContent =
+                receptionDialogueStep === receptionLines.length - 1
+                    ? "RECEIVE CITY ACCESS KEY"
+                    : "CONTINUE";
+        }
+
+        function openReceptionDialogue() {
+
+            receptionDialogueStep =
+                window.hexcoreHasCityKey
+                    ? receptionLines.length - 1
+                    : 0;
+
+            receptionDialogueOpen = true;
+            receptionDialogue.style.display = "block";
+            receptionPrompt.style.display = "none";
+
+            if (document.pointerLockElement) {
+                document.exitPointerLock();
+            }
+
+            showReceptionLine();
+        }
+
+        receptionDialogueButton.addEventListener("click", () => {
+
+            if (receptionDialogueStep < receptionLines.length - 1) {
+
+                receptionDialogueStep++;
+                showReceptionLine();
+                return;
+            }
+
+            window.hexcoreHasCityKey = true;
+
+            window.hexcoreUpdateQuest(
+                "EXPLORE HEXCORE CITY",
+                "Use your City Access Key to leave headquarters.",
+                "QUEST 02 // CITY EXPLORATION",
+                "0 / 1"
+            );
+
+            closeReceptionDialogue();
+        });
+
+        // SECTION 08C // RECEPTION PROXIMITY
+
+        window.addEventListener(
+            "hexcore-player-position",
+            (event) => {
+
+                const { x, z } = event.detail;
+
+                receptionNearby =
+                    Math.abs(x) < 7 &&
+                    z < -17.5 &&
+                    z > -23.5;
+
+                receptionPrompt.style.display =
+                    receptionNearby && !receptionDialogueOpen
+                        ? "block"
+                        : "none";
+            }
+        );
+
+        // SECTION 08D // E-KEY INTERACTION
+
+        window.addEventListener("keydown", (event) => {
+
+            if (
+                event.code !== "KeyE" ||
+                event.repeat ||
+                receptionDialogueOpen ||
+                !receptionNearby
+            ) {
+                return;
+            }
+
+            openReceptionDialogue();
+        });
+
+    </script>
+
 
 </body>
 </html>

@@ -589,7 +589,7 @@ export function createHeadquarters(scene) {
 
     // SECTION 14 // WINDOW SUPPORT COLUMNS
 
-    for (let x = -30; x <= 30; x += 10) {
+       for (const x of [-30, -20, -10, 10, 20, 30]) {
         const column = new THREE.Mesh(
             new THREE.BoxGeometry(0.5, 20, 0.7),
             frameMaterial

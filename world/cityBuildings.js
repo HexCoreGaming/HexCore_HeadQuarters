@@ -2,7 +2,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 // =====================================================
-// HEXCORE GAMING // CITY DEPARTMENT BUILDINGS
+// HEXCORE GAMING // CYBER-FANTASY CITY ARCHITECTURE
 // =====================================================
 
 // =====================================================
@@ -11,166 +11,190 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 
 export function createCityBuildings(scene) {
 
-    const cityBuildings = new THREE.Group();
-    cityBuildings.name = "HEXCORE_CITY_BUILDINGS";
-
-    scene.add(cityBuildings);
+    const city = new THREE.Group();
+    city.name = "HEXCORE_CITY_BUILDINGS";
+    scene.add(city);
 
     // =====================================================
-    // SECTION 02 // ARCHITECTURAL MATERIALS
+    // SECTION 02 // SHARED MATERIALS
     // =====================================================
 
-    const metal = new THREE.MeshStandardMaterial({
-        color: 0x101321,
-        metalness: 0.7,
-        roughness: 0.3
-    });
+    const materials = {
+        obsidian: new THREE.MeshStandardMaterial({
+            color: 0x11111D,
+            metalness: 0.72,
+            roughness: 0.32
+        }),
 
-    const darkGlass = new THREE.MeshStandardMaterial({
-        color: 0x162A40,
-        metalness: 0.35,
-        roughness: 0.17
-    });
+        midnight: new THREE.MeshStandardMaterial({
+            color: 0x17182D,
+            metalness: 0.62,
+            roughness: 0.38
+        }),
 
-    const windowGlass = new THREE.MeshBasicMaterial({
-        color: 0x2B6279
-    });
+        titanium: new THREE.MeshStandardMaterial({
+            color: 0x33384C,
+            metalness: 0.82,
+            roughness: 0.25
+        }),
 
-    const cyan = new THREE.MeshBasicMaterial({
-        color: 0x8CD6FD
-    });
+        glass: new THREE.MeshStandardMaterial({
+            color: 0x254E72,
+            emissive: 0x071A32,
+            emissiveIntensity: 0.6,
+            metalness: 0.35,
+            roughness: 0.14,
+            transparent: true,
+            opacity: 0.86,
+            side: THREE.DoubleSide
+        }),
 
-    const purple = new THREE.MeshBasicMaterial({
-        color: 0x8650E8
-    });
+        violetGlass: new THREE.MeshStandardMaterial({
+            color: 0x44276C,
+            emissive: 0x251044,
+            emissiveIntensity: 0.5,
+            metalness: 0.35,
+            roughness: 0.2,
+            side: THREE.DoubleSide
+        }),
 
-    const magenta = new THREE.MeshBasicMaterial({
-        color: 0xD64FAE
-    });
+        purple: new THREE.MeshBasicMaterial({
+            color: 0x8650E8
+        }),
 
-    const gold = new THREE.MeshBasicMaterial({
-        color: 0xD8A45D
-    });
+        cyan: new THREE.MeshBasicMaterial({
+            color: 0x8CD6FD
+        }),
 
-    const glowMaterials = {
-        cyan,
-        purple,
-        magenta,
-        gold
+        magenta: new THREE.MeshBasicMaterial({
+            color: 0xE34BC9
+        }),
+
+        gold: new THREE.MeshBasicMaterial({
+            color: 0xE5AF69
+        }),
+
+        white: new THREE.MeshBasicMaterial({
+            color: 0xE4D9FF
+        })
     };
 
     // =====================================================
-    // SECTION 03 // BUILDING DIRECTORY
+    // SECTION 03 // IRREGULAR CITY PLACEMENT
     // =====================================================
 
-    // X = left/right side of the main boulevard.
-    // Z = distance from headquarters.
-    // Dimensions are in approximate world units.
+    // Positions are fixed so the city does not rearrange
+    // every time somebody opens the website.
+    //
+    // All buildings remain on the main exterior ground.
+    // Their front entrances face different directions.
+    //
+    // Rotation is measured in degrees.
 
-    const buildings = [
+    const departments = [
         {
             id: "game_gallery",
             name: "GAME GALLERY",
-            x: -46, z: 101,
-            width: 24, depth: 20, height: 19,
-            type: "gallery",
-            glow: "purple"
+            x: -47, z: 77,
+            rotation: 70,
+            size: 22,
+            type: "prism"
         },
         {
             id: "development",
             name: "DEVELOPMENT STUDIO",
-            x: 46, z: 101,
-            width: 23, depth: 21, height: 31,
-            type: "tower",
-            glow: "cyan"
+            x: 47, z: 89,
+            rotation: -65,
+            size: 23,
+            type: "spire"
         },
         {
             id: "community",
             name: "COMMUNITY CENTER",
-            x: -46, z: 131,
-            width: 23, depth: 21, height: 17,
-            type: "hall",
-            glow: "cyan"
+            x: -42, z: 116,
+            rotation: 120,
+            size: 22,
+            type: "hexhall"
         },
         {
             id: "support",
             name: "SUPPORT CENTER",
-            x: 46, z: 131,
-            width: 21, depth: 19, height: 16,
-            type: "office",
-            glow: "purple"
+            x: 42, z: 126,
+            rotation: -115,
+            size: 18,
+            type: "pod"
         },
         {
             id: "media",
             name: "MEDIA CENTER",
-            x: -46, z: 160,
-            width: 23, depth: 21, height: 24,
-            type: "tower",
-            glow: "magenta"
+            x: -68, z: 146,
+            rotation: 42,
+            size: 19,
+            type: "crystal"
         },
         {
             id: "business",
             name: "BUSINESS & INVESTMENT",
-            x: 46, z: 160,
-            width: 23, depth: 21, height: 27,
-            type: "tower",
-            glow: "gold"
+            x: 65, z: 151,
+            rotation: -135,
+            size: 20,
+            type: "obelisk"
         },
         {
             id: "administration",
             name: "ADMINISTRATION & LEGAL",
-            x: -46, z: 190,
-            width: 22, depth: 19, height: 23,
-            type: "office",
-            glow: "purple"
+            x: -37, z: 171,
+            rotation: 155,
+            size: 20,
+            type: "citadel"
         },
         {
             id: "merchandise",
             name: "MERCHANDISE STORE",
-            x: 46, z: 190,
-            width: 23, depth: 20, height: 15,
-            type: "store",
-            glow: "cyan"
+            x: 36, z: 173,
+            rotation: -150,
+            size: 19,
+            type: "market"
         },
         {
             id: "hardware",
             name: "HARDWARE DIVISION",
-            x: -46, z: 213,
-            width: 22, depth: 18, height: 29,
-            type: "laboratory",
-            glow: "cyan"
+            x: -68, z: 205,
+            rotation: 80,
+            size: 20,
+            type: "reactor"
         },
         {
             id: "future_worlds",
             name: "FUTURE WORLDS MUSEUM",
-            x: 46, z: 213,
-            width: 22, depth: 18, height: 25,
-            type: "museum",
-            glow: "purple"
+            x: 64, z: 201,
+            rotation: -70,
+            size: 23,
+            type: "sanctum"
         },
         {
             id: "arcade",
             name: "HEXCORE ARCADE",
-            x: 76, z: 116,
-            width: 27, depth: 20, height: 19,
-            type: "arcade",
-            glow: "magenta"
+            x: 76, z: 108,
+            rotation: -105,
+            size: 17,
+            type: "arcade"
         },
         {
             id: "cinema",
             name: "HEXCORE CINEMA",
-            x: 76, z: 157,
-            width: 30, depth: 22, height: 21,
-            type: "cinema",
-            glow: "purple"
+            x: 8, z: 151,
+            rotation: 18,
+            size: 23,
+            type: "cinema"
         },
         {
             id: "stadium",
             name: "PERFORMANCE STADIUM",
-            x: -76, z: 155,
-            width: 34, depth: 25, height: 23,
-            type: "stadium",
-            glow: "gold"
+            x: -8, z: 211,
+            rotation: 170,
+            size: 28,
+            type: "arena"
         }
     ];
 
@@ -178,7 +202,7 @@ export function createCityBuildings(scene) {
     // SECTION 04 // GEOMETRY HELPERS
     // =====================================================
 
-    function addBox(parent, w, h, d, x, y, z, mat) {
+    function box(parent, w, h, d, x, y, z, mat) {
 
         const mesh = new THREE.Mesh(
             new THREE.BoxGeometry(w, h, d),
@@ -191,8 +215,9 @@ export function createCityBuildings(scene) {
         return mesh;
     }
 
-    function addCylinder(
-        parent, top, bottom, height, x, y, z, mat, sides = 12
+    function cylinder(
+        parent, top, bottom, height,
+        x, y, z, mat, sides = 12
     ) {
 
         const mesh = new THREE.Mesh(
@@ -208,452 +233,1023 @@ export function createCityBuildings(scene) {
         return mesh;
     }
 
+    function cone(
+        parent, radius, height,
+        x, y, z, mat, sides = 6
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.ConeGeometry(
+                radius, height, sides
+            ),
+            mat
+        );
+
+        mesh.position.set(x, y, z);
+        parent.add(mesh);
+
+        return mesh;
+    }
+
+    function sphere(
+        parent, radius,
+        x, y, z, mat,
+        segments = 16
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(
+                radius, segments, 10
+            ),
+            mat
+        );
+
+        mesh.position.set(x, y, z);
+        parent.add(mesh);
+
+        return mesh;
+    }
+
+    function ring(
+        parent, radius, thickness,
+        x, y, z, mat,
+        vertical = false
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.TorusGeometry(
+                radius, thickness, 6, 48
+            ),
+            mat
+        );
+
+        if (!vertical) {
+            mesh.rotation.x = Math.PI / 2;
+        }
+
+        mesh.position.set(x, y, z);
+        parent.add(mesh);
+
+        return mesh;
+    }
+
+    function beamBetween(parent, start, end, width, mat) {
+
+        const a = new THREE.Vector3(...start);
+        const b = new THREE.Vector3(...end);
+
+        const direction = new THREE.Vector3()
+            .subVectors(b, a);
+
+        const mesh = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                width, width,
+                direction.length(), 6
+            ),
+            mat
+        );
+
+        mesh.position.copy(a).add(b).multiplyScalar(0.5);
+
+        mesh.quaternion.setFromUnitVectors(
+            new THREE.Vector3(0, 1, 0),
+            direction.normalize()
+        );
+
+        parent.add(mesh);
+        return mesh;
+    }
+
     // =====================================================
-    // SECTION 05 // BUILDING SIGN GENERATOR
+    // SECTION 05 // FUTURISTIC FACADES
     // =====================================================
 
-    function createSign(parent, name, width, z, color) {
+    function addGlassBands(group, radius, levels, mat) {
+
+        for (let i = 1; i <= levels; i++) {
+
+            const y = i * 4.5;
+
+            cylinder(
+                group,
+                radius, radius,
+                0.45,
+                0, y, 0,
+                mat, 12
+            );
+        }
+    }
+
+    function addVerticalFins(
+        group, radius, height,
+        count, mat
+    ) {
+
+        for (let i = 0; i < count; i++) {
+
+            const angle =
+                (i / count) * Math.PI * 2;
+
+            const x = Math.sin(angle) * radius;
+            const z = Math.cos(angle) * radius;
+
+            const fin = box(
+                group,
+                0.22, height, 0.65,
+                x, height / 2, z,
+                mat
+            );
+
+            fin.rotation.y = angle;
+        }
+    }
+
+    // =====================================================
+    // SECTION 06 // HOLOGRAPHIC BUILDING SIGNS
+    // =====================================================
+
+    function makeSign(group, name, color, front) {
 
         const canvas = document.createElement("canvas");
-
         canvas.width = 1024;
         canvas.height = 256;
 
         const ctx = canvas.getContext("2d");
 
-        ctx.fillStyle = "#070813";
+        ctx.fillStyle = "rgba(8,7,23,0.94)";
         ctx.fillRect(0, 0, 1024, 256);
 
         ctx.strokeStyle = color;
-        ctx.lineWidth = 12;
-        ctx.strokeRect(8, 8, 1008, 240);
+        ctx.lineWidth = 9;
+        ctx.strokeRect(10, 10, 1004, 236);
 
+        ctx.fillStyle = "#F0EAFF";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        ctx.fillStyle = "#FFFFFF";
         ctx.shadowColor = color;
-        ctx.shadowBlur = 16;
+        ctx.shadowBlur = 18;
 
-        let fontSize = 75;
-        ctx.font = `bold ${fontSize}px Arial`;
+        let fontSize = 72;
 
-        while (
-            ctx.measureText(name).width > 930 &&
-            fontSize > 36
-        ) {
-            fontSize -= 3;
+        do {
             ctx.font = `bold ${fontSize}px Arial`;
-        }
+            if (ctx.measureText(name).width < 930) break;
+            fontSize -= 3;
+        } while (fontSize > 30);
 
         ctx.fillText(name, 512, 128);
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
 
-        const material = new THREE.MeshBasicMaterial({
-            map: texture,
-            side: THREE.DoubleSide
-        });
-
         const sign = new THREE.Mesh(
-            new THREE.PlaneGeometry(width, 2.8),
-            material
+            new THREE.PlaneGeometry(13, 3.25),
+            new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            })
         );
 
-        sign.position.set(0, 5.8, z);
-
-        parent.add(sign);
+        sign.position.set(0, 7.1, front + 0.65);
+        group.add(sign);
     }
 
     // =====================================================
-    // SECTION 06 // STANDARD BUILDING STRUCTURE
+    // SECTION 07 // SHARED ENTRANCE STRUCTURE
     // =====================================================
 
-    function createBuilding(def) {
+    function addEntrance(group, front, accent) {
+
+        // Entrance is a visual facade for now.
+        // Functional doors/interiors come later.
+
+        box(
+            group, 8.4, 6, 1.6,
+            0, 3, front,
+            materials.obsidian
+        );
+
+        box(
+            group, 6.6, 4.8, 0.14,
+            0, 2.5, front + 0.9,
+            materials.glass
+        );
+
+        // Illuminated portal frame.
+
+        for (const x of [-3.5, 3.5]) {
+
+            box(
+                group, 0.22, 5.4, 0.24,
+                x, 2.85, front + 1.04,
+                accent
+            );
+        }
+
+        box(
+            group, 7.2, 0.2, 0.3,
+            0, 5.45, front + 1.06,
+            accent
+        );
+
+        // Double-door center line.
+
+        box(
+            group, 0.09, 4.5, 0.2,
+            0, 2.45, front + 1.05,
+            accent
+        );
+    }
+
+    // =====================================================
+    // SECTION 08 // DISTINCT BUILDING ARCHITECTURE
+    // =====================================================
+
+    function createArchitecture(def, group) {
+
+        let front = def.size * 0.48;
+        let accent = materials.purple;
+        let signColor = "#8650E8";
+
+        switch (def.type) {
+
+            // =================================================
+            // SECTION 08A // GAME GALLERY
+            // Angular exhibition prism
+            // =================================================
+
+            case "prism": {
+
+                accent = materials.purple;
+                front = 10;
+
+                const base = cylinder(
+                    group, 11, 13, 18,
+                    0, 9, 0,
+                    materials.violetGlass, 5
+                );
+
+                base.rotation.y = Math.PI / 5;
+
+                const crown = cone(
+                    group, 11, 10,
+                    0, 23, 0,
+                    materials.obsidian, 5
+                );
+
+                crown.rotation.y = Math.PI / 5;
+
+                for (let i = 0; i < 5; i++) {
+
+                    const angle = i * Math.PI * 2 / 5;
+
+                    const x = Math.sin(angle) * 12;
+                    const z = Math.cos(angle) * 12;
+
+                    beamBetween(
+                        group,
+                        [x, 2, z],
+                        [0, 28, 0],
+                        0.12,
+                        materials.cyan
+                    );
+                }
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08B // DEVELOPMENT STUDIO
+            // Split futuristic skyscraper
+            // =================================================
+
+            case "spire": {
+
+                accent = materials.cyan;
+                signColor = "#8CD6FD";
+                front = 10;
+
+                for (const x of [-5, 5]) {
+
+                    const shaft = box(
+                        group,
+                        8, x < 0 ? 35 : 43, 15,
+                        x,
+                        x < 0 ? 17.5 : 21.5,
+                        -2,
+                        materials.glass
+                    );
+
+                    shaft.rotation.z =
+                        x < 0 ? -0.055 : 0.055;
+
+                    box(
+                        group, 0.22, 35, 0.3,
+                        x < 0 ? -8.8 : 8.8,
+                        18, 5.7,
+                        accent
+                    );
+                }
+
+                box(
+                    group, 22, 4, 14,
+                    0, 5, 0,
+                    materials.obsidian
+                );
+
+                beamBetween(
+                    group,
+                    [-5, 34, -2],
+                    [5, 42, -2],
+                    0.35,
+                    accent
+                );
+
+                cone(
+                    group, 2, 11,
+                    5, 49, -2,
+                    accent, 4
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08C // COMMUNITY CENTER
+            // Wide hexagonal social hall
+            // =================================================
+
+            case "hexhall": {
+
+                accent = materials.cyan;
+                signColor = "#8CD6FD";
+                front = 9;
+
+                cylinder(
+                    group, 12, 13, 13,
+                    0, 6.5, 0,
+                    materials.midnight, 6
+                );
+
+                cylinder(
+                    group, 9, 11, 6,
+                    0, 16, 0,
+                    materials.glass, 6
+                );
+
+                cone(
+                    group, 11, 7,
+                    0, 22.5, 0,
+                    materials.titanium, 6
+                );
+
+                ring(
+                    group, 11.5, 0.25,
+                    0, 13.5, 0,
+                    accent
+                );
+
+                addVerticalFins(
+                    group, 12.2, 12,
+                    6, accent
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08D // SUPPORT CENTER
+            // Rounded high-tech service pod
+            // =================================================
+
+            case "pod": {
+
+                accent = materials.purple;
+                front = 8;
+
+                cylinder(
+                    group, 10, 11, 9,
+                    0, 4.5, 0,
+                    materials.obsidian, 16
+                );
+
+                const dome = sphere(
+                    group, 10,
+                    0, 9, 0,
+                    materials.glass, 24
+                );
+
+                dome.scale.y = 0.6;
+
+                ring(
+                    group, 10.1, 0.35,
+                    0, 9, 0,
+                    accent
+                );
+
+                ring(
+                    group, 7, 0.18,
+                    0, 12.5, 0,
+                    materials.cyan
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08E // MEDIA CENTER
+            // Twisted crystal broadcasting tower
+            // =================================================
+
+            case "crystal": {
+
+                accent = materials.magenta;
+                signColor = "#E34BC9";
+                front = 9;
+
+                cylinder(
+                    group, 10, 12, 12,
+                    0, 6, 0,
+                    materials.obsidian, 6
+                );
+
+                for (let i = 0; i < 4; i++) {
+
+                    const section = cylinder(
+                        group,
+                        8.5 - i * 1.1,
+                        9.5 - i,
+                        8,
+                        0, 16 + i * 7, 0,
+                        i % 2 === 0
+                            ? materials.glass
+                            : materials.violetGlass,
+                        5
+                    );
+
+                    section.rotation.y =
+                        i * Math.PI / 8;
+
+                    ring(
+                        group,
+                        9 - i,
+                        0.16,
+                        0,
+                        12 + i * 7,
+                        0,
+                        accent
+                    );
+                }
+
+                cone(
+                    group, 4, 11,
+                    0, 49, 0,
+                    accent, 5
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08F // BUSINESS & INVESTMENT
+            // Black-and-gold obelisk
+            // =================================================
+
+            case "obelisk": {
+
+                accent = materials.gold;
+                signColor = "#E5AF69";
+                front = 9;
+
+                cylinder(
+                    group, 11, 13, 9,
+                    0, 4.5, 0,
+                    materials.obsidian, 4
+                ).rotation.y = Math.PI / 4;
+
+                const tower = cylinder(
+                    group, 5, 9, 38,
+                    0, 28, 0,
+                    materials.titanium, 4
+                );
+
+                tower.rotation.y = Math.PI / 4;
+
+                cone(
+                    group, 6, 13,
+                    0, 53.5, 0,
+                    materials.glass, 4
+                ).rotation.y = Math.PI / 4;
+
+                for (const x of [-7, 7]) {
+
+                    beamBetween(
+                        group,
+                        [x, 9, 0],
+                        [x * 0.35, 43, 0],
+                        0.2,
+                        accent
+                    );
+                }
+
+                ring(
+                    group, 8, 0.2,
+                    0, 9, 0,
+                    accent
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08G // ADMINISTRATION & LEGAL
+            // Cyber-gothic fortress
+            // =================================================
+
+            case "citadel": {
+
+                accent = materials.purple;
+                front = 10;
+
+                box(
+                    group, 22, 15, 18,
+                    0, 7.5, 0,
+                    materials.obsidian
+                );
+
+                for (const x of [-10, 10]) {
+
+                    cylinder(
+                        group, 2.6, 3.2, 24,
+                        x, 12, 0,
+                        materials.titanium, 6
+                    );
+
+                    cone(
+                        group, 3.2, 9,
+                        x, 28.5, 0,
+                        materials.violetGlass, 6
+                    );
+                }
+
+                box(
+                    group, 10, 21, 12,
+                    0, 15.5, -2,
+                    materials.midnight
+                );
+
+                cone(
+                    group, 7, 11,
+                    0, 31.5, -2,
+                    materials.glass, 4
+                );
+
+                for (const x of [-6, 0, 6]) {
+
+                    box(
+                        group, 0.18, 12, 0.2,
+                        x, 11, 9.2,
+                        accent
+                    );
+                }
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08H // MERCHANDISE STORE
+            // Low futuristic market pavilion
+            // =================================================
+
+            case "market": {
+
+                accent = materials.cyan;
+                signColor = "#8CD6FD";
+                front = 9;
+
+                cylinder(
+                    group, 12, 14, 9,
+                    0, 4.5, 0,
+                    materials.glass, 8
+                );
+
+                cylinder(
+                    group, 15, 13, 1.3,
+                    0, 10, 0,
+                    materials.obsidian, 8
+                );
+
+                for (let i = 0; i < 8; i++) {
+
+                    const angle = i * Math.PI / 4;
+
+                    const x = Math.sin(angle) * 13;
+                    const z = Math.cos(angle) * 13;
+
+                    beamBetween(
+                        group,
+                        [x, 9.5, z],
+                        [0, 16, 0],
+                        0.16,
+                        accent
+                    );
+                }
+
+                cone(
+                    group, 13, 6,
+                    0, 13, 0,
+                    materials.titanium, 8
+                );
+
+                ring(
+                    group, 14.5, 0.25,
+                    0, 10.7, 0,
+                    accent
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08I // HARDWARE DIVISION
+            // Futuristic engineering reactor
+            // =================================================
+
+            case "reactor": {
+
+                accent = materials.cyan;
+                signColor = "#8CD6FD";
+                front = 9;
+
+                cylinder(
+                    group, 10, 12, 13,
+                    0, 6.5, 0,
+                    materials.obsidian, 8
+                );
+
+                cylinder(
+                    group, 6, 9, 19,
+                    0, 22.5, 0,
+                    materials.glass, 8
+                );
+
+                addGlassBands(
+                    group, 7.4, 5,
+                    accent
+                );
+
+                for (let i = 0; i < 4; i++) {
+
+                    const angle =
+                        i * Math.PI / 2;
+
+                    const x = Math.sin(angle) * 10;
+                    const z = Math.cos(angle) * 10;
+
+                    cylinder(
+                        group, 2, 2.6, 20,
+                        x, 10, z,
+                        materials.titanium, 8
+                    );
+
+                    cone(
+                        group, 2.2, 5,
+                        x, 22.5, z,
+                        accent, 6
+                    );
+                }
+
+                sphere(
+                    group, 3.2,
+                    0, 34, 0,
+                    materials.violetGlass
+                );
+
+                ring(
+                    group, 5.2, 0.22,
+                    0, 34, 0,
+                    accent, true
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08J // FUTURE WORLDS MUSEUM
+            // Monumental fantasy sanctum
+            // =================================================
+
+            case "sanctum": {
+
+                accent = materials.purple;
+                front = 10;
+
+                cylinder(
+                    group, 13, 15, 11,
+                    0, 5.5, 0,
+                    materials.obsidian, 8
+                );
+
+                cylinder(
+                    group, 10, 13, 12,
+                    0, 17, 0,
+                    materials.violetGlass, 8
+                );
+
+                cone(
+                    group, 11, 17,
+                    0, 31.5, 0,
+                    materials.glass, 8
+                );
+
+                for (let i = 0; i < 8; i++) {
+
+                    const angle =
+                        i * Math.PI / 4;
+
+                    const x = Math.sin(angle) * 12;
+                    const z = Math.cos(angle) * 12;
+
+                    beamBetween(
+                        group,
+                        [x, 11, z],
+                        [0, 40, 0],
+                        0.13,
+                        accent
+                    );
+                }
+
+                ring(
+                    group, 12, 0.2,
+                    0, 11.3, 0,
+                    accent
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08K // HEXCORE ARCADE
+            // Illuminated entertainment rotunda
+            // =================================================
+
+            case "arcade": {
+
+                accent = materials.magenta;
+                signColor = "#E34BC9";
+                front = 9;
+
+                cylinder(
+                    group, 12, 13, 12,
+                    0, 6, 0,
+                    materials.violetGlass, 10
+                );
+
+                addVerticalFins(
+                    group, 12.4, 12,
+                    10, accent
+                );
+
+                cylinder(
+                    group, 13.5, 12.5, 1.4,
+                    0, 12.5, 0,
+                    materials.obsidian, 10
+                );
+
+                cone(
+                    group, 11, 9,
+                    0, 17.5, 0,
+                    materials.glass, 10
+                );
+
+                ring(
+                    group, 12.6, 0.32,
+                    0, 13.5, 0,
+                    materials.cyan
+                );
+
+                ring(
+                    group, 7, 0.2,
+                    0, 18, 0,
+                    accent
+                );
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08L // HEXCORE CINEMA
+            // Cinematic geodesic theater
+            // =================================================
+
+            case "cinema": {
+
+                accent = materials.purple;
+                front = 11;
+
+                cylinder(
+                    group, 15, 16, 11,
+                    0, 5.5, 0,
+                    materials.obsidian, 16
+                );
+
+                const dome = sphere(
+                    group, 15,
+                    0, 11, 0,
+                    materials.glass, 24
+                );
+
+                dome.scale.y = 0.66;
+
+                ring(
+                    group, 15, 0.35,
+                    0, 11, 0,
+                    accent
+                );
+
+                ring(
+                    group, 13, 0.15,
+                    0, 16, 0,
+                    materials.cyan, true
+                );
+
+                const orbit = ring(
+                    group, 14.7, 0.2,
+                    0, 14, 0,
+                    materials.magenta, true
+                );
+
+                orbit.rotation.y = Math.PI / 3;
+
+                break;
+            }
+
+            // =================================================
+            // SECTION 08M // PERFORMANCE STADIUM
+            // Giant theatrical amphitheater
+            // =================================================
+
+            case "arena": {
+
+                accent = materials.gold;
+                signColor = "#E5AF69";
+                front = 17;
+
+                cylinder(
+                    group, 19, 21, 11,
+                    0, 5.5, 0,
+                    materials.obsidian, 16
+                );
+
+                cylinder(
+                    group, 21, 21, 2,
+                    0, 12, 0,
+                    materials.titanium, 16
+                );
+
+                for (const y of [4, 8, 12]) {
+
+                    ring(
+                        group, 20, 0.3,
+                        0, y, 0,
+                        accent
+                    );
+                }
+
+                const roof = sphere(
+                    group, 19,
+                    0, 13, 0,
+                    materials.violetGlass, 24
+                );
+
+                roof.scale.y = 0.5;
+
+                // Four colossal fantasy pylons.
+
+                for (const x of [-15, 15]) {
+                    for (const z of [-12, 12]) {
+
+                        cylinder(
+                            group, 1.6, 2.1, 20,
+                            x, 10, z,
+                            materials.titanium, 6
+                        );
+
+                        cone(
+                            group, 2.3, 9,
+                            x, 24.5, z,
+                            accent, 6
+                        );
+                    }
+                }
+
+                break;
+            }
+        }
+
+        // =====================================================
+        // SECTION 09 // BUILDING ACCESS FACADE
+        // =====================================================
+
+        addEntrance(group, front, accent);
+
+        makeSign(
+            group,
+            def.name,
+            signColor,
+            front
+        );
+
+        // SECTION 09A // GROUND-LEVEL LIGHTING
+
+        // Small guide lights point toward the entrance.
+
+        for (const x of [-5.5, 5.5]) {
+
+            box(
+                group,
+                0.24, 0.08, 4,
+                x, 0.08, front + 3.5,
+                accent
+            );
+        }
+
+        // SECTION 09B // ENTRANCE LANDING
+
+        box(
+            group,
+            11, 0.12, 5,
+            0, 0.04, front + 3.5,
+            materials.titanium
+        );
+
+        return {
+            front,
+            accent
+        };
+    }
+
+    // =====================================================
+    // SECTION 10 // BUILD THE CITY DEPARTMENTS
+    // =====================================================
+
+    const directory = [];
+
+    for (const def of departments) {
 
         const group = new THREE.Group();
 
         group.name = def.id;
 
-        // All entrances face the central boulevard.
-
-        group.position.set(def.x, 0, def.z);
+        group.position.set(
+            def.x, 0, def.z
+        );
 
         group.rotation.y =
-            def.x < 0 ? Math.PI / 2 : -Math.PI / 2;
-
-        const w = def.width;
-        const d = def.depth;
-        const h = def.height;
-
-        const glow = glowMaterials[def.glow];
-
-        const glowHex = {
-            cyan: "#8CD6FD",
-            purple: "#8650E8",
-            magenta: "#D64FAE",
-            gold: "#D8A45D"
-        }[def.glow];
-
-        // SECTION 06A // MAIN SHELL
-
-        addBox(
-            group, w, h, d,
-            0, h / 2, 0, metal
-        );
-
-        // SECTION 06B // FRONT GLASS FACADE
-
-        addBox(
-            group, w - 2, h - 2, 0.25,
-            0, h / 2, d / 2 + 0.14,
-            darkGlass
-        );
-
-        // SECTION 06C // VERTICAL ACCENTS
-
-        for (const x of [-w / 2 + 0.35, w / 2 - 0.35]) {
-
-            addBox(
-                group, 0.18, h, 0.3,
-                x, h / 2, d / 2 + 0.35,
-                glow
-            );
-        }
-
-        // SECTION 06D // FLOOR LEVELS
-
-        const floors = Math.max(
-            2,
-            Math.floor(h / 5)
-        );
-
-        for (let floor = 1; floor < floors; floor++) {
-
-            const y = floor * (h / floors);
-
-            addBox(
-                group, w - 1, 0.12, 0.4,
-                0, y, d / 2 + 0.4,
-                glow
+            THREE.MathUtils.degToRad(
+                def.rotation
             );
 
-            // Illuminated windows on upper floors.
-
-            for (const x of [-w * 0.24, 0, w * 0.24]) {
-
-                addBox(
-                    group,
-                    w * 0.17,
-                    2.0,
-                    0.1,
-                    x,
-                    y + 1.6,
-                    d / 2 + 0.33,
-                    windowGlass
-                );
-            }
-        }
-
-        // SECTION 06E // ROOFTOP TRIM
-
-        addBox(
-            group, w + 1.1, 0.4, d + 1,
-            0, h, 0, glow
-        );
-
-        // SECTION 06F // GRAND ENTRY PORTAL
-
-        addBox(
-            group, 7.4, 5.2, 1,
-            0, 2.6, d / 2 + 0.65,
-            metal
-        );
-
-        addBox(
-            group, 6, 4.4, 0.18,
-            0, 2.2, d / 2 + 1.23,
-            darkGlass
-        );
-
-        for (const x of [-3.1, 3.1]) {
-
-            addBox(
-                group, 0.16, 4.7, 0.2,
-                x, 2.35, d / 2 + 1.38,
-                glow
-            );
-        }
-
-        addBox(
-            group, 6.6, 0.2, 0.3,
-            0, 4.8, d / 2 + 1.4,
-            glow
-        );
-
-        // Divider between future double doors.
-
-        addBox(
-            group, 0.12, 4.3, 0.2,
-            0, 2.2, d / 2 + 1.39,
-            glow
-        );
-
-        // SECTION 06G // MAIN ENTRANCE SIGN
-
-        createSign(
-            group,
-            def.name,
-            Math.min(w - 2, 20),
-            d / 2 + 0.6,
-            glowHex
-        );
-
-        // =====================================================
-        // SECTION 07 // PURPOSE-SPECIFIC ARCHITECTURE
-        // =====================================================
-
-        if (def.type === "tower") {
-
-            // Corporate / development skyscraper style.
-
-            addBox(
-                group, w * 0.48, 7, d * 0.65,
-                0, h + 3.5, 0,
-                darkGlass
-            );
-
-            addBox(
-                group, w * 0.52, 0.25, d * 0.7,
-                0, h + 7, 0,
-                glow
-            );
-        }
-
-        if (def.type === "gallery" ||
-            def.type === "museum") {
-
-            // Monumental museum crown.
-
-            addCylinder(
-                group, 7, 8, 4,
-                0, h + 2, 0,
-                darkGlass, 12
-            );
-
-            const crown = new THREE.Mesh(
-                new THREE.TorusGeometry(
-                    7.3, 0.17, 8, 36
-                ),
-                glow
-            );
-
-            crown.rotation.x = Math.PI / 2;
-            crown.position.y = h + 4.2;
-
-            group.add(crown);
-        }
-
-        if (def.type === "laboratory") {
-
-            // Hardware laboratory cooling towers.
-
-            for (const x of [-5, 5]) {
-
-                addCylinder(
-                    group, 2.2, 2.7, 5,
-                    x, h + 2.5, 0,
-                    darkGlass
-                );
-
-                addCylinder(
-                    group, 2.4, 2.4, 0.2,
-                    x, h + 5, 0,
-                    cyan
-                );
-            }
-        }
-
-        if (def.type === "cinema") {
-
-            // Oversized cinematic roof dome.
-
-            const dome = new THREE.Mesh(
-                new THREE.SphereGeometry(
-                    11, 20, 12,
-                    0, Math.PI * 2,
-                    0, Math.PI / 2
-                ),
-                darkGlass
-            );
-
-            dome.scale.set(1.1, 0.55, 0.85);
-            dome.position.y = h;
-
-            group.add(dome);
-
-            addBox(
-                group, w + 2, 1.1, d + 1.5,
-                0, 4.9, 0,
-                purple
-            );
-        }
-
-        if (def.type === "arcade") {
-
-            // Tall illuminated arcade entrance.
-
-            const columns = [-9, -5, 5, 9];
-
-            for (const x of columns) {
-
-                addBox(
-                    group, 0.5, 10, 0.5,
-                    x, 8, d / 2 + 0.6,
-                    magenta
-                );
-            }
-
-            addBox(
-                group, 20, 0.4, 1,
-                0, 13, d / 2 + 0.6,
-                cyan
-            );
-        }
-
-        if (def.type === "stadium") {
-
-            // Exterior performance venue with
-            // broad tiered architectural crown.
-
-            for (let i = 0; i < 3; i++) {
-
-                const levelWidth = w + 2 + i * 2;
-
-                addBox(
-                    group,
-                    levelWidth,
-                    1,
-                    d + 2 + i * 2,
-                    0,
-                    h + i * 1.3,
-                    0,
-                    i % 2 === 0 ? gold : metal
-                );
-            }
-
-            // Decorative spires at stadium corners.
-
-            for (const x of [-w / 2, w / 2]) {
-                for (const z of [-d / 2, d / 2]) {
-
-                    const spire = new THREE.Mesh(
-                        new THREE.ConeGeometry(
-                            1.3, 7, 6
-                        ),
-                        gold
-                    );
-
-                    spire.position.set(
-                        x,
-                        h + 5,
-                        z
-                    );
-
-                    group.add(spire);
-                }
-            }
-        }
-
-        if (def.type === "store") {
-
-            // Wide retail canopy.
-
-            addBox(
-                group, w + 3, 0.4, 4,
-                0, 5.2, d / 2 + 1.5,
-                cyan
-            );
-        }
-
-        if (def.type === "hall") {
-
-            // Community center skylight.
-
-            addBox(
-                group, w * 0.65, 3, d * 0.65,
-                0, h + 1.5, 0,
-                darkGlass
-            );
-        }
-
-        if (def.type === "office") {
-
-            // Architectural rooftop fins.
-
-            for (const x of [-w / 3, 0, w / 3]) {
-
-                addBox(
-                    group, 0.2, 3.5, d * 0.8,
-                    x, h + 1.75, 0,
-                    glow
-                );
-            }
-        }
-
-        // =====================================================
-        // SECTION 08 // ADD BUILDING
-        // =====================================================
-
-        cityBuildings.add(group);
-
-        return group;
+        createArchitecture(def, group);
+
+        city.add(group);
+
+        directory.push({
+            id: def.id,
+            name: def.name,
+            x: def.x,
+            z: def.z,
+            rotation: def.rotation,
+            size: def.size,
+            type: def.type
+        });
     }
 
     // =====================================================
-    // SECTION 09 // CONSTRUCT ALL DEPARTMENTS
+    // SECTION 11 // DEPARTMENT DIRECTORY
     // =====================================================
 
-    const createdBuildings = [];
-
-    for (const definition of buildings) {
-
-        createdBuildings.push(
-            createBuilding(definition)
-        );
-    }
+    window.hexcoreCityBuildingDirectory = directory;
 
     // =====================================================
-    // SECTION 10 // BUILDING DIRECTORY DATA
+    // SECTION 12 // ANIMATION
     // =====================================================
 
-    // Future interactions and NPC navigation can
-    // reference these locations by their IDs.
-
-    window.hexcoreCityBuildingDirectory =
-        buildings.map(definition => ({
-            id: definition.id,
-            name: definition.name,
-            x: definition.x,
-            z: definition.z,
-            width: definition.width,
-            depth: definition.depth
-        }));
-
-    // =====================================================
-    // SECTION 11 // ANIMATION
-    // =====================================================
+    const clock = new THREE.Clock();
 
     function animateCityBuildings() {
 
-        // Reserved for future animated signs,
-        // building entrances, and lighting effects.
+        // Building animation can be added later
+        // without affecting the existing headquarters.
 
+        clock.getDelta();
     }
 
     // =====================================================
-    // SECTION 12 // OUTPUT
+    // SECTION 13 // OUTPUT
     // =====================================================
 
     return animateCityBuildings;

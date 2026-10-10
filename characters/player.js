@@ -167,31 +167,77 @@ export function createPlayer(camera, renderer) {
             const stepX = movement.x * speed * delta;
             const stepZ = movement.z * speed * delta;
 
+    // =====================================================
+    // SECTION 04D // RECEPTION DESK COLLISION
+    // =====================================================
+
+    // Reception desk center: X = 0, Z = -24
+    // Includes the wider desktop and player radius.
+
+    function collidesWithReception(x, z) {
+
+        const deskMinX = -6.25;
+        const deskMaxX = 6.25;
+
+        const deskMinZ = -25.5;
+        const deskMaxZ = -22.5;
+
+        const closestX = THREE.MathUtils.clamp(
+            x,
+            deskMinX,
+            deskMaxX
+        );
+
+        const closestZ = THREE.MathUtils.clamp(
+            z,
+            deskMinZ,
+            deskMaxZ
+        );
+
+        const dx = x - closestX;
+        const dz = z - closestZ;
+
+        return (
+            dx * dx + dz * dz <
+            playerRadius * playerRadius
+        
+    }
+
             // =====================================================
             // SECTION 05A // COLLISION-AWARE MOVEMENT
             // =====================================================
 
             // Horizontal movement
 
+            
+            // =====================================================
+            // SECTION 05A // COLLISION-AWARE MOVEMENT
+            // =====================================================
+
+            // X-axis movement
+
             const nextX = player.position.x + stepX;
 
             if (
                 !collidesWithPillar(nextX, player.position.z) &&
-                !collidesWithPlatform(nextX, player.position.z)
+                !collidesWithPlatform(nextX, player.position.z) &&
+                !collidesWithReception(nextX, player.position.z)
             ) {
                 player.position.x = nextX;
             }
 
-            // Forward / backward movement
+            // Z-axis movement
 
             const nextZ = player.position.z + stepZ;
 
             if (
                 !collidesWithPillar(player.position.x, nextZ) &&
-                !collidesWithPlatform(player.position.x, nextZ)
+                !collidesWithPlatform(player.position.x, nextZ) &&
+                !collidesWithReception(player.position.x, nextZ)
             ) {
                 player.position.z = nextZ;
             }
+
 
         }
 

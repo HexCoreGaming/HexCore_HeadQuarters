@@ -423,6 +423,110 @@ export function createHeadquarters(scene) {
         coreLight.position.y = energyCore.position.y;
     }
 
+    // =====================================================
+    // SECTION 30 // HEXCORE RECEPTION CENTER
+    // =====================================================
+
+    // Reception desk is positioned near the rear wall,
+    // away from the central energy platform.
+
+    const receptionMaterial = new THREE.MeshStandardMaterial({
+        color: 0x151124,
+        metalness: 0.8,
+        roughness: 0.2
+    });
+
+    const receptionGlow = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    // SECTION 30A // RECEPTION DESK
+
+    const receptionDesk = new THREE.Mesh(
+        new THREE.BoxGeometry(12, 1.5, 2.5),
+        receptionMaterial
+    );
+
+    receptionDesk.position.set(0, 0.75, -24);
+    scene.add(receptionDesk);
+
+    // SECTION 30B // DESK TOP
+
+    const deskTop = new THREE.Mesh(
+        new THREE.BoxGeometry(12.5, 0.2, 3),
+        receptionMaterial
+    );
+
+    deskTop.position.set(0, 1.6, -24);
+    scene.add(deskTop);
+
+    // SECTION 30C // FRONT LIGHT STRIP
+
+    const deskGlow = new THREE.Mesh(
+        new THREE.BoxGeometry(11.5, 0.12, 0.08),
+        receptionGlow
+    );
+
+    deskGlow.position.set(0, 1.1, -22.7);
+    scene.add(deskGlow);
+
+    // =====================================================
+    // SECTION 30D // HOLOGRAPHIC HEXCORE SIGN
+    // =====================================================
+
+    const signCanvas = document.createElement("canvas");
+    signCanvas.width = 1024;
+    signCanvas.height = 256;
+
+    const signContext = signCanvas.getContext("2d");
+
+    signContext.clearRect(0, 0, 1024, 256);
+
+    signContext.font = "bold 100px Consolas";
+    signContext.textAlign = "center";
+    signContext.textBaseline = "middle";
+
+    signContext.shadowColor = "#8650E8";
+    signContext.shadowBlur = 35;
+
+    signContext.fillStyle = "#B863ED";
+    signContext.fillText(
+        "HEXCORE GAMING",
+        512,
+        128
+    );
+
+    const signTexture = new THREE.CanvasTexture(signCanvas);
+
+    const signMaterial = new THREE.MeshBasicMaterial({
+        map: signTexture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false
+    });
+
+    const receptionSign = new THREE.Mesh(
+        new THREE.PlaneGeometry(12, 3),
+        signMaterial
+    );
+
+    receptionSign.position.set(0, 5, -28.8);
+    scene.add(receptionSign);
+
+    // SECTION 30E // HOLOGRAPHIC SIGN ANIMATION
+
+    const originalAnimateHeadquarters = animateHeadquarters;
+
+    animateHeadquarters = function() {
+
+        originalAnimateHeadquarters();
+
+        const time = animationClock.getElapsedTime();
+
+        receptionSign.material.opacity =
+            0.85 + Math.sin(time * 1.5) * 0.15;
+    };
+
     // SECTION 29 // REGISTER ANIMATION
 
     return animateHeadquarters;

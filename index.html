@@ -61,7 +61,7 @@
 
         // SECTION 01 // BUILD HEADQUARTERS
 
-        createHeadquarters(scene);
+        const animateHeadquarters = createHeadquarters(scene);
 
        // SECTION 02 // POSITION CAMERA
 
@@ -73,7 +73,14 @@ camera.lookAt(0, 8, 0);
         // SECTION 03 // START RENDERING
 
         renderer.setAnimationLoop(() => {
-            renderer.render(scene, camera);
+
+    // Update headquarters animations
+    animateHeadquarters();
+
+    // Render the 3D world
+    renderer.render(scene, camera);
+
+});
         });
 
     </script>

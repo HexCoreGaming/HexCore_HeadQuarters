@@ -55,14 +55,27 @@ export function createPlayer(camera, renderer) {
     // SECTION 04 // MOUSE LOOK
     // =====================================================
 
-    renderer.domElement.addEventListener("click", () => {
+   
+    renderer.domElement.addEventListener("click", (event) => {
 
         if (window.hexcoreDialogueOpen === true) {
             return;
         }
 
+        // Mouse lock is desktop-only.
+        // Touchscreen users use the look joystick.
+
+        if (event.pointerType === "touch") {
+            return;
+        }
+
+        if (window.matchMedia("(pointer: coarse)").matches) {
+            return;
+        }
+
         renderer.domElement.requestPointerLock();
     });
+
 
     document.addEventListener("mousemove", (event) => {
 

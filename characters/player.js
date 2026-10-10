@@ -418,14 +418,17 @@ export function createPlayer(camera, renderer) {
 
             const nextX = player.position.x + stepX;
 
+          
             if (
-                !collidesWithPillar(nextX, player.position.z) &&
-                !collidesWithPlatform(nextX, player.position.z) &&
-                !collidesWithReception(nextX, player.position.z) &&
-!collidesWithCityBuilding(nextX, player.position.z)
+                !collidesWithPillar(player.position.x, nextZ) &&
+                !collidesWithPlatform(player.position.x, nextZ) &&
+                !collidesWithReception(player.position.x, nextZ) &&
+                !blockedByFrontExit &&
+                !collidesWithCityBuilding(player.position.x, nextZ)
             ) {
-                player.position.x = nextX;
+                player.position.z = nextZ;
             }
+
 
             // SECTION 05C-2 // Z-AXIS MOVEMENT
 

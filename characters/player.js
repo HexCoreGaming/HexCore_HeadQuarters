@@ -234,6 +234,57 @@ export function createPlayer(camera, renderer) {
     }
 
     // =====================================================
+    // SECTION 04E // CITY BUILDING COLLISION
+    // =====================================================
+
+    const cityBuildingRadii = {
+        prism: 12,
+        spire: 11,
+        hexhall: 13,
+        pod: 11,
+        crystal: 12,
+        obelisk: 11,
+        citadel: 13,
+        market: 14,
+        reactor: 12,
+        sanctum: 15,
+        arcade: 14,
+        cinema: 16,
+        arena: 21
+    };
+
+    function collidesWithCityBuilding(x, z) {
+
+        // Do not apply department collisions inside HQ.
+
+        if (z < 30.3) {
+            return false;
+        }
+
+        const buildings =
+            window.hexcoreCityBuildingDirectory || [];
+
+        for (const building of buildings) {
+
+            const radius =
+                (cityBuildingRadii[building.type] || 12) +
+                playerRadius;
+
+            const dx = x - building.x;
+            const dz = z - building.z;
+
+            if (
+                dx * dx + dz * dz <
+                radius * radius
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // =====================================================
     // SECTION 05 // MOVEMENT AND CAMERA UPDATE
     // =====================================================
 
@@ -370,7 +421,8 @@ export function createPlayer(camera, renderer) {
             if (
                 !collidesWithPillar(nextX, player.position.z) &&
                 !collidesWithPlatform(nextX, player.position.z) &&
-                !collidesWithReception(nextX, player.position.z)
+                !collidesWithReception(nextX, player.position.z) &&
+!collidesWithCityBuilding(nextX, player.position.z)
             ) {
                 player.position.x = nextX;
             }
@@ -408,32 +460,45 @@ export function createPlayer(camera, renderer) {
                 !collidesWithPlatform(player.position.x, nextZ) &&
                 !collidesWithReception(player.position.x, nextZ) &&
                 !blockedByFrontExit
+                !collidesWithCityBuilding(player.position.x, nextZ) &&
             ) {
                 player.position.z = nextZ;
             }
         }
 
+       
         // =====================================================
         // SECTION 05D // HEADQUARTERS AND CITY BOUNDARIES
         // =====================================================
-
-        player.position.x = THREE.MathUtils.clamp(
-            player.position.x,
-            -28,
-            28
-        );
 
         const cityAccessEnabled =
             window.hexcoreDoorUnlocked === true &&
             (window.hexcoreExitOpenProgress || 0) > 0.95;
 
-        const maximumZ =
-            cityAccessEnabled ? 205 : 28;
+        // Inside headquarters, preserve the original limits.
+        // Outside headquarters, allow city exploration.
+
+        if (player.position.z < 30.3) {
+
+            player.position.x = THREE.MathUtils.clamp(
+                player.position.x,
+                -28,
+                28
+            );
+
+        } else {
+
+            player.position.x = THREE.MathUtils.clamp(
+                player.position.x,
+                -98,
+                98
+            );
+        }
 
         player.position.z = THREE.MathUtils.clamp(
             player.position.z,
             -28,
-            maximumZ
+            cityAccessEnabled ? 245 : 28
         );
 
         // =====================================================

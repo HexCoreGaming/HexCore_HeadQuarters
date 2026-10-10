@@ -238,9 +238,11 @@ export function createPlayer(camera, renderer) {
             // Check if the reception key has been granted
             // and the exit doors have finished opening.
 
+           
             const cityDoorReady =
-                window.hexcoreHasCityKey === true &&
+                window.hexcoreDoorUnlocked === true &&
                 (window.hexcoreExitOpenProgress || 0) > 0.95;
+
 
             // Stop players crossing the front wall anywhere
             // except through the central doorway.
@@ -284,9 +286,11 @@ export function createPlayer(camera, renderer) {
 
         // SECTION 05B // HEADQUARTERS AND CITY BOUNDARIES
 
+       
         const cityAccessEnabled =
-            window.hexcoreHasCityKey === true &&
+            window.hexcoreDoorUnlocked === true &&
             (window.hexcoreExitOpenProgress || 0) > 0.95;
+
 
         // Visitors without a key remain inside HQ.
         // Authorized visitors can explore the exterior.

@@ -263,6 +263,12 @@
             createNPCs
         } from "./npcs/npcs.js";
 
+        // SECTION 02A-1 // CITYWIDE NPC IMPORT
+
+        import {
+            createCityNPCs
+        } from "./npcs/cityNPCs.js";
+
         // SECTION 02C // CITY DEPARTMENT BUILDINGS IMPORT
 
         import {
@@ -319,6 +325,11 @@
 
         const updateNPCs = createNPCs(scene);
 
+        // SECTION 04B // CREATE CITYWIDE NPCS
+
+        const updateCityNPCs =
+            createCityNPCs(scene);
+
         // ==========================================
         // SECTION 05 // START GAME LOOP
         // ==========================================
@@ -345,6 +356,10 @@
             animatePlazaExtras();
 
             updateNPCs();
+
+            // SECTION 05E // ANIMATE CITYWIDE NPCS
+
+            updateCityNPCs();
 
             renderer.render(scene, camera);
 

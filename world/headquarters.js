@@ -367,7 +367,12 @@ export function createHeadquarters(scene) {
     rightWall.position.set(30, 10, 0);
     scene.add(rightWall);
 
-    // SECTION 13 // PANORAMIC FRONT WINDOW
+   
+    // =====================================================
+    // SECTION 13 // PANORAMIC WINDOW AND MAIN EXIT
+    // =====================================================
+
+    // SECTION 13A // GLASS MATERIAL
 
     const glassMaterial = new THREE.MeshPhysicalMaterial({
         color: 0x436CDB,
@@ -379,13 +384,208 @@ export function createHeadquarters(scene) {
         depthWrite: false
     });
 
-    const frontGlass = new THREE.Mesh(
-        new THREE.PlaneGeometry(58, 18),
-        glassMaterial
+    // SECTION 13B // LEFT AND RIGHT GLASS PANELS
+
+    // Leave a 9-meter opening in the center.
+
+    for (const x of [-16.75, 16.75]) {
+
+        const glassPanel = new THREE.Mesh(
+            new THREE.PlaneGeometry(24.5, 18),
+            glassMaterial
+        );
+
+        glassPanel.position.set(x, 10, 29.5);
+        scene.add(glassPanel);
+    }
+
+    // SECTION 13C // MAIN EXIT MATERIALS
+
+    const exitMetal = new THREE.MeshStandardMaterial({
+        color: 0x10101B,
+        metalness: 0.9,
+        roughness: 0.2
+    });
+
+    const exitPanelMetal = new THREE.MeshStandardMaterial({
+        color: 0x211A35,
+        metalness: 0.8,
+        roughness: 0.18
+    });
+
+    const exitPurple = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    const exitCyan = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    // SECTION 13D // EXIT DOOR FRAME
+
+    const exitFrame = new THREE.Group();
+
+    exitFrame.position.set(0, 0, 29.2);
+    scene.add(exitFrame);
+
+    for (const x of [-4.65, 4.65]) {
+
+        const verticalFrame = new THREE.Mesh(
+            new THREE.BoxGeometry(0.45, 8, 0.8),
+            exitMetal
+        );
+
+        verticalFrame.position.set(x, 4, 0);
+        exitFrame.add(verticalFrame);
+
+        const lightStrip = new THREE.Mesh(
+            new THREE.BoxGeometry(0.1, 7.6, 0.08),
+            exitPurple
+        );
+
+        lightStrip.position.set(
+            x < 0 ? x + 0.28 : x - 0.28,
+            4,
+            -0.46
+        );
+
+        exitFrame.add(lightStrip);
+    }
+
+    // SECTION 13E // UPPER DOOR FRAME
+
+    const exitHeader = new THREE.Mesh(
+        new THREE.BoxGeometry(9.75, 0.65, 0.8),
+        exitMetal
     );
 
-    frontGlass.position.set(0, 10, 29.5);
-    scene.add(frontGlass);
+    exitHeader.position.set(0, 8, 0);
+    exitFrame.add(exitHeader);
+
+    const exitHeaderGlow = new THREE.Mesh(
+        new THREE.BoxGeometry(9, 0.1, 0.1),
+        exitCyan
+    );
+
+    exitHeaderGlow.position.set(0, 7.57, -0.45);
+    exitFrame.add(exitHeaderGlow);
+
+    // SECTION 13F // DOUBLE EXIT DOORS
+
+    const exitDoors = new THREE.Group();
+
+    exitDoors.position.set(0, 0, 29.0);
+    scene.add(exitDoors);
+
+    const leftExitDoor = new THREE.Group();
+    const rightExitDoor = new THREE.Group();
+
+    function createExitDoorPanel(parent, x) {
+
+        const doorBody = new THREE.Mesh(
+            new THREE.BoxGeometry(4.4, 7.4, 0.35),
+            exitMetal
+        );
+
+        doorBody.position.set(x, 3.7, 0);
+        parent.add(doorBody);
+
+        const insetPanel = new THREE.Mesh(
+            new THREE.BoxGeometry(3.6, 5.8, 0.08),
+            exitPanelMetal
+        );
+
+        insetPanel.position.set(x, 3.9, -0.22);
+        parent.add(insetPanel);
+
+        // Illuminated geometric door details
+
+        for (const y of [1.2, 6.2]) {
+
+            const trim = new THREE.Mesh(
+                new THREE.BoxGeometry(3.5, 0.08, 0.09),
+                exitPurple
+            );
+
+            trim.position.set(x, y, -0.28);
+            parent.add(trim);
+        }
+
+        const verticalGlow = new THREE.Mesh(
+            new THREE.BoxGeometry(0.09, 5, 0.09),
+            exitCyan
+        );
+
+        verticalGlow.position.set(x, 3.7, -0.29);
+        parent.add(verticalGlow);
+    }
+
+    createExitDoorPanel(leftExitDoor, -2.25);
+    createExitDoorPanel(rightExitDoor, 2.25);
+
+    exitDoors.add(leftExitDoor);
+    exitDoors.add(rightExitDoor);
+
+    // SECTION 13G // EXIT ACCESS DISPLAY
+
+    const exitDisplayCanvas =
+        document.createElement("canvas");
+
+    exitDisplayCanvas.width = 1024;
+    exitDisplayCanvas.height = 256;
+
+    const exitDisplayContext =
+        exitDisplayCanvas.getContext("2d");
+
+    exitDisplayContext.fillStyle = "#080711";
+    exitDisplayContext.fillRect(0, 0, 1024, 256);
+
+    exitDisplayContext.textAlign = "center";
+    exitDisplayContext.textBaseline = "middle";
+
+    exitDisplayContext.fillStyle = "#B568FF";
+    exitDisplayContext.font = "bold 84px Consolas";
+
+    exitDisplayContext.fillText(
+        "HEXCORE // EXIT LOCKED",
+        512,
+        128
+    );
+
+    const exitDisplayTexture =
+        new THREE.CanvasTexture(exitDisplayCanvas);
+
+    const exitDisplay = new THREE.Mesh(
+        new THREE.PlaneGeometry(8, 2),
+        new THREE.MeshBasicMaterial({
+            map: exitDisplayTexture,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        })
+    );
+
+    exitDisplay.position.set(0, 9.5, 28.7);
+    scene.add(exitDisplay);
+
+    // SECTION 13H // ACCESS TERMINAL
+
+    const exitTerminal = new THREE.Mesh(
+        new THREE.BoxGeometry(0.75, 1.2, 0.3),
+        exitPanelMetal
+    );
+
+    exitTerminal.position.set(5.4, 1.7, 28.85);
+    scene.add(exitTerminal);
+
+    const terminalLight = new THREE.Mesh(
+        new THREE.BoxGeometry(0.4, 0.4, 0.05),
+        exitPurple
+    );
+
+    terminalLight.position.set(5.4, 1.85, 28.66);
+    scene.add(terminalLight);
+
 
     // SECTION 14 // WINDOW SUPPORT COLUMNS
 

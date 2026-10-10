@@ -235,13 +235,45 @@
                     z > 23 &&
                     z < 29;
 
+                
+                // SECTION 06C // USE CYBER KEY AT EXIT
+
                 const hasCityKey =
                     window.hexcoreHasCityKey === true;
 
+                const hasCyberKey =
+                    window.hexcoreHasCyberKey === true;
+
+                const doorUnlocked =
+                    window.hexcoreDoorUnlocked === true;
+
+                if (
+                    nearExit &&
+                    hasCyberKey &&
+                    !doorUnlocked
+                ) {
+
+                    // Unlock the doors permanently
+                    // for this visitor session.
+
+                    window.hexcoreDoorUnlocked = true;
+
+                    // Remove the Cyber Key from inventory.
+
+                    window.dispatchEvent(
+                        new CustomEvent("hexcore-cyber-key-used")
+                    );
+                }
+
+
+              
                 exitNotification.style.display =
-                    nearExit && !hasCityKey
+                    nearExit &&
+                    !hasCyberKey &&
+                    !doorUnlocked
                         ? "block"
                         : "none";
+
             }
         );
 

@@ -2051,8 +2051,10 @@ export function createHeadquarters(scene) {
             0.05
         );
 
+        
         const doorTarget =
-            window.hexcoreHasCityKey === true ? 1 : 0;
+            window.hexcoreDoorUnlocked === true ? 1 : 0;
+
 
         exitDoorProgress = THREE.MathUtils.damp(
             exitDoorProgress,

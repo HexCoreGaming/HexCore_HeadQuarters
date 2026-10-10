@@ -93,4 +93,110 @@ export function createHeadquarters(scene) {
     purpleLight.position.set(12, 6, -8);
     scene.add(purpleLight);
 
+    // =====================================================
+    // SECTION 09 // HEADQUARTERS ARCHITECTURE
+    // =====================================================
+
+    const wallMaterial = new THREE.MeshStandardMaterial({
+        color: 0x101020,
+        metalness: 0.8,
+        roughness: 0.25
+    });
+
+    const frameMaterial = new THREE.MeshStandardMaterial({
+        color: 0x241247,
+        metalness: 0.7,
+        roughness: 0.3,
+        emissive: 0x5F1DDA,
+        emissiveIntensity: 0.15
+    });
+
+    // SECTION 10 // REAR WALL
+
+    const rearWall = new THREE.Mesh(
+        new THREE.BoxGeometry(60, 20, 1),
+        wallMaterial
+    );
+
+    rearWall.position.set(0, 10, -30);
+    scene.add(rearWall);
+
+    // SECTION 11 // LEFT WALL
+
+    const leftWall = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 20, 60),
+        wallMaterial
+    );
+
+    leftWall.position.set(-30, 10, 0);
+    scene.add(leftWall);
+
+    // SECTION 12 // RIGHT WALL
+
+    const rightWall = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 20, 60),
+        wallMaterial
+    );
+
+    rightWall.position.set(30, 10, 0);
+    scene.add(rightWall);
+
+    // SECTION 13 // PANORAMIC FRONT WINDOW
+
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x436CDB,
+        metalness: 0.1,
+        roughness: 0.08,
+        transparent: true,
+        opacity: 0.14,
+        side: THREE.DoubleSide,
+        depthWrite: false
+    });
+
+    const frontGlass = new THREE.Mesh(
+        new THREE.PlaneGeometry(58, 18),
+        glassMaterial
+    );
+
+    frontGlass.position.set(0, 10, 29.5);
+    scene.add(frontGlass);
+
+    // SECTION 14 // WINDOW SUPPORT COLUMNS
+
+    for (let x = -30; x <= 30; x += 10) {
+        const column = new THREE.Mesh(
+            new THREE.BoxGeometry(0.5, 20, 0.7),
+            frameMaterial
+        );
+
+        column.position.set(x, 10, 29.5);
+        scene.add(column);
+    }
+
+    // SECTION 15 // WINDOW TOP SUPPORT
+
+    const topBeam = new THREE.Mesh(
+        new THREE.BoxGeometry(60, 0.7, 1),
+        frameMaterial
+    );
+
+    topBeam.position.set(0, 20, 29.5);
+    scene.add(topBeam);
+
+    // SECTION 16 // PURPLE ACCENT STRIPS
+
+    const accentMaterial = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    for (const x of [-29.5, 29.5]) {
+        const strip = new THREE.Mesh(
+            new THREE.BoxGeometry(0.12, 0.12, 59),
+            accentMaterial
+        );
+
+        strip.position.set(x, 0.12, 0);
+        scene.add(strip);
+    }
+
 }

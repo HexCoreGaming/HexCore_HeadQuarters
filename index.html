@@ -40,18 +40,48 @@
             pointer-events: none;
         }
 
-    </style>
+        /* ========================================== */
+        /* HEXCORE // MOVEMENT INSTRUCTIONS          */
+        /* ========================================== */
 
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            padding: 12px;
+            background: rgba(8, 7, 17, 0.8);
+            border: 1px solid #8650E8;
+            font-size: 12px;
+            line-height: 1.8;
+            pointer-events: none;
+        }
+
+    </style>
 </head>
 
 <body>
 
+    <!-- ========================================== -->
+    <!-- SECTION 01 // STATUS DISPLAY              -->
+    <!-- ========================================== -->
+
     <div id="status">
-        HEXCORE GAMING // HEADQUARTERS INITIALIZED
+        HEXCORE GAMING // HEADQUARTERS ONLINE
+    </div>
+
+    <div id="controls">
+        CLICK WORLD TO LOOK AROUND
+        <br>
+        WASD // MOVE
+        <br>
+        SHIFT // MOVE FASTER
+        <br>
+        ESC // RELEASE MOUSE
     </div>
 
     <!-- ========================================== -->
-    <!-- HEXCORE // 3D ENGINE ENTRY                 -->
+    <!-- SECTION 02 // 3D SYSTEM IMPORTS           -->
     <!-- ========================================== -->
 
     <script type="module">
@@ -66,34 +96,40 @@
             createHeadquarters
         } from "./world/headquarters.js";
 
-
-        // ==========================================
-        // SECTION 01 // BUILD HEADQUARTERS
-        // ==========================================
-
-        const animateHeadquarters = createHeadquarters(scene);
-
-
-       // ==========================================
-// SECTION 02 // POSITION CAMERA
-// ==========================================
-
-// Temporary interior inspection camera
-
-camera.position.set(14, 7, 17);
-camera.lookAt(0, 5, 0);
+        import {
+            createPlayer
+        } from "./characters/player.js";
 
 
         // ==========================================
-        // SECTION 03 // START RENDERING
+        // SECTION 03 // BUILD HEADQUARTERS
+        // ==========================================
+
+        const animateHeadquarters =
+            createHeadquarters(scene);
+
+
+        // ==========================================
+        // SECTION 04 // CREATE PLAYER
+        // ==========================================
+
+        const updatePlayer =
+            createPlayer(camera, renderer);
+
+
+        // ==========================================
+        // SECTION 05 // START GAME LOOP
         // ==========================================
 
         renderer.setAnimationLoop(() => {
 
-            // Update headquarters animations
+            // Update player movement and camera
+            updatePlayer();
+
+            // Update animated headquarters objects
             animateHeadquarters();
 
-            // Render the 3D world
+            // Render the headquarters
             renderer.render(scene, camera);
 
         });
@@ -101,6 +137,4 @@ camera.lookAt(0, 5, 0);
     </script>
 
 </body>
-
 </html>
-

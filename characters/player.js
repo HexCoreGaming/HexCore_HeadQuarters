@@ -179,6 +179,17 @@ export function createPlayer(camera, renderer) {
 
         const delta = Math.min(clock.getDelta(), 0.05);
 
+        // SECTION 05A // PAUSE MOVEMENT DURING DIALOGUE
+
+        if (window.hexcoreDialogueOpen === true) {
+
+            for (const key in keys) {
+                keys[key] = false;
+            }
+
+            return;
+        }
+
         const movement = new THREE.Vector3();
 
         if (keys["KeyW"]) movement.z -= 1;

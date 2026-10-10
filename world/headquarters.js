@@ -526,49 +526,8 @@ export function createHeadquarters(scene) {
     exitDoors.add(leftExitDoor);
     exitDoors.add(rightExitDoor);
 
-    // SECTION 13G // EXIT ACCESS DISPLAY
-
-    const exitDisplayCanvas =
-        document.createElement("canvas");
-
-    exitDisplayCanvas.width = 1024;
-    exitDisplayCanvas.height = 256;
-
-    const exitDisplayContext =
-        exitDisplayCanvas.getContext("2d");
-
-    exitDisplayContext.fillStyle = "#080711";
-    exitDisplayContext.fillRect(0, 0, 1024, 256);
-
-    exitDisplayContext.textAlign = "center";
-    exitDisplayContext.textBaseline = "middle";
-
-    exitDisplayContext.fillStyle = "#B568FF";
-    exitDisplayContext.font = "bold 84px Consolas";
-
-    exitDisplayContext.fillText(
-        "HEXCORE // EXIT LOCKED",
-        512,
-        128
-    );
-
-    const exitDisplayTexture =
-        new THREE.CanvasTexture(exitDisplayCanvas);
-
-    const exitDisplay = new THREE.Mesh(
-        new THREE.PlaneGeometry(8, 2),
-        new THREE.MeshBasicMaterial({
-            map: exitDisplayTexture,
-            transparent: true,
-            side: THREE.DoubleSide,
-            depthWrite: false
-        })
-    );
-
-    exitDisplay.position.set(0, 9.5, 28.7);
-    scene.add(exitDisplay);
-
-    // SECTION 13H // ACCESS TERMINAL
+   
+    // SECTION 13G // ACCESS TERMINAL
 
     const exitTerminal = new THREE.Mesh(
         new THREE.BoxGeometry(0.75, 1.2, 0.3),

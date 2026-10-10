@@ -9,31 +9,257 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 
 export function createHeadquarters(scene) {
 
-    // SECTION 02 // MAIN FLOOR
+   
+    // =====================================================
+    // SECTION 02 // LUXURY BLACK MARBLE FLOOR
+    // =====================================================
+
+    // SECTION 02A // CREATE MARBLE TEXTURE
+
+    const marbleCanvas = document.createElement("canvas");
+    marbleCanvas.width = 1024;
+    marbleCanvas.height = 1024;
+
+    const marbleContext = marbleCanvas.getContext("2d");
+
+    // Deep black and violet stone base
+
+    const marbleGradient = marbleContext.createLinearGradient(
+        0, 0, 1024, 1024
+    );
+
+    marbleGradient.addColorStop(0, "#07070D");
+    marbleGradient.addColorStop(0.35, "#151321");
+    marbleGradient.addColorStop(0.65, "#090A11");
+    marbleGradient.addColorStop(1, "#1A1727");
+
+    marbleContext.fillStyle = marbleGradient;
+    marbleContext.fillRect(0, 0, 1024, 1024);
+
+    // SECTION 02B // WHITE MARBLE VEINS
+
+    // Seeded random numbers ensure a consistent floor
+    // appearance whenever the website is refreshed.
+
+    let marbleSeed = 12791;
+
+    function marbleRandom() {
+        marbleSeed = (
+            marbleSeed * 1664525 + 1013904223
+        ) >>> 0;
+
+        return marbleSeed / 4294967296;
+    }
+
+    // Fine mineral streaks running through the marble
+
+    for (let i = 0; i < 44; i++) {
+
+        let x = marbleRandom() * 1250 - 100;
+        let y = marbleRandom() * 1250 - 100;
+
+        const length = 80 + marbleRandom() * 330;
+        const segments = 12;
+
+        const angle = -0.65 + marbleRandom() * 0.5;
+
+        marbleContext.beginPath();
+        marbleContext.moveTo(x, y);
+
+        for (let j = 0; j < segments; j++) {
+
+            x += Math.cos(angle) * length / segments;
+            y += Math.sin(angle) * length / segments;
+
+            x += (marbleRandom() - 0.5) * 22;
+            y += (marbleRandom() - 0.5) * 22;
+
+            marbleContext.lineTo(x, y);
+        }
+
+        marbleContext.strokeStyle =
+            i % 5 === 0
+                ? "rgba(235,235,255,0.58)"
+                : "rgba(190,190,215,0.19)";
+
+        marbleContext.lineWidth =
+            i % 5 === 0 ? 2.2 : 0.85;
+
+        marbleContext.shadowColor = "#C7C3E8";
+        marbleContext.shadowBlur =
+            i % 5 === 0 ? 5 : 0;
+
+        marbleContext.stroke();
+    }
+
+    marbleContext.shadowBlur = 0;
+
+    // SECTION 02C // SUBTLE STONE SLAB SEAMS
+
+    marbleContext.strokeStyle = "rgba(130,130,160,0.17)";
+    marbleContext.lineWidth = 2;
+
+    for (let p = 0; p <= 1024; p += 256) {
+
+        marbleContext.beginPath();
+        marbleContext.moveTo(p, 0);
+        marbleContext.lineTo(p, 1024);
+        marbleContext.stroke();
+
+        marbleContext.beginPath();
+        marbleContext.moveTo(0, p);
+        marbleContext.lineTo(1024, p);
+        marbleContext.stroke();
+    }
+
+    // SECTION 02D // CREATE THREE.JS MARBLE MATERIAL
+
+    const marbleTexture = new THREE.CanvasTexture(
+        marbleCanvas
+    );
+
+    marbleTexture.colorSpace = THREE.SRGBColorSpace;
+
+    marbleTexture.anisotropy = Math.min(
+        8,
+        16
+    );
+
+    const marbleMaterial = new THREE.MeshPhysicalMaterial({
+        map: marbleTexture,
+        color: 0xFFFFFF,
+        metalness: 0.2,
+        roughness: 0.075,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.04
+    });
+
+    // SECTION 02E // BUILD MARBLE FLOOR
 
     const floor = new THREE.Mesh(
         new THREE.BoxGeometry(60, 1, 60),
-        new THREE.MeshStandardMaterial({
-            color: 0x080711,
-            metalness: 0.8,
-            roughness: 0.25
-        })
+        marbleMaterial
     );
 
     floor.position.y = -0.5;
     scene.add(floor);
 
-    // SECTION 03 // PURPLE FLOOR GRID
+    // =====================================================
+    // SECTION 03 // HEXCORE FLOOR EMBLEM
+    // =====================================================
 
-    const grid = new THREE.GridHelper(
-        60,
-        60,
-        0x8650E8,
-        0x241247
+    // This emblem sits on top of the existing circular
+    // energy-core platform at the center of the lobby.
+
+    // SECTION 03A // EMBLEM CANVAS
+
+    const emblemCanvas = document.createElement("canvas");
+
+    emblemCanvas.width = 1024;
+    emblemCanvas.height = 1024;
+
+    const emblemContext = emblemCanvas.getContext("2d");
+
+    emblemContext.clearRect(0, 0, 1024, 1024);
+
+    // SECTION 03B // HEXAGON BORDER
+
+    function drawHexagon(radius) {
+
+        emblemContext.beginPath();
+
+        for (let i = 0; i < 6; i++) {
+
+            const angle =
+                Math.PI / 3 * i - Math.PI / 6;
+
+            const x =
+                512 + Math.cos(angle) * radius;
+
+            const y =
+                512 + Math.sin(angle) * radius;
+
+            if (i === 0) {
+                emblemContext.moveTo(x, y);
+            } else {
+                emblemContext.lineTo(x, y);
+            }
+        }
+
+        emblemContext.closePath();
+    }
+
+    emblemContext.shadowColor = "#8650E8";
+    emblemContext.shadowBlur = 35;
+    emblemContext.strokeStyle = "#B885FF";
+    emblemContext.lineWidth = 24;
+
+    drawHexagon(430);
+    emblemContext.stroke();
+
+    emblemContext.shadowBlur = 15;
+    emblemContext.strokeStyle = "#8CD6FD";
+    emblemContext.lineWidth = 5;
+
+    drawHexagon(385);
+    emblemContext.stroke();
+
+    // SECTION 03C // LARGE HEXCORE H SYMBOL
+
+    emblemContext.shadowColor = "#8650E8";
+    emblemContext.shadowBlur = 45;
+
+    emblemContext.fillStyle = "#D9C5FF";
+
+    // Left vertical bar
+
+    emblemContext.fillRect(
+        305, 325, 100, 380
     );
 
-    grid.position.y = 0.015;
-    scene.add(grid);
+    // Right vertical bar
+
+    emblemContext.fillRect(
+        619, 325, 100, 380
+    );
+
+    // Center connecting bar
+
+    emblemContext.fillRect(
+        400, 465, 225, 100
+    );
+
+    // SECTION 03D // EMBLEM MATERIAL
+
+    const emblemTexture = new THREE.CanvasTexture(
+        emblemCanvas
+    );
+
+    emblemTexture.colorSpace = THREE.SRGBColorSpace;
+
+    const emblemMaterial = new THREE.MeshBasicMaterial({
+        map: emblemTexture,
+        transparent: true,
+        opacity: 0.92,
+        depthWrite: false,
+        side: THREE.DoubleSide
+    });
+
+    // SECTION 03E // PLACE EMBLEM AT LOBBY CENTER
+
+    const floorEmblem = new THREE.Mesh(
+        new THREE.PlaneGeometry(5.4, 5.4),
+        emblemMaterial
+    );
+
+    floorEmblem.rotation.x = -Math.PI / 2;
+
+    // Platform top is Y = 0.4.
+    // Emblem sits slightly above it to avoid flickering.
+
+    floorEmblem.position.set(0, 0.415, 0);
+
+    scene.add(floorEmblem);
 
     // SECTION 04 // GLOWING CENTRAL PLATFORM
 

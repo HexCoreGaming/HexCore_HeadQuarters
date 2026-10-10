@@ -421,48 +421,98 @@ export function createCityBuildings(scene) {
     // SECTION 07 // SHARED ENTRANCE STRUCTURE
     // =====================================================
 
+    
     function addEntrance(group, front, accent) {
 
-        // Entrance is a visual facade for now.
-        // Functional doors/interiors come later.
+        // Automatic two-panel sliding entrance.
+        // The building interior will be added later.
 
-        box(
-            group, 8.4, 6, 1.6,
-            0, 3, front,
-            materials.obsidian
-        );
+        const doorFrame = new THREE.Group();
+        doorFrame.position.z = front;
 
-        box(
-            group, 6.6, 4.8, 0.14,
-            0, 2.5, front + 0.9,
-            materials.glass
-        );
+        group.add(doorFrame);
 
-        // Illuminated portal frame.
+        // SECTION 07A // DOOR FRAME
 
-        for (const x of [-3.5, 3.5]) {
+        for (const x of [-4.1, 4.1]) {
 
             box(
-                group, 0.22, 5.4, 0.24,
-                x, 2.85, front + 1.04,
+                doorFrame, 0.45, 6.1, 1.25,
+                x, 3.05, 0.8,
+                materials.titanium
+            );
+
+            box(
+                doorFrame, 0.11, 5.6, 0.15,
+                x < 0 ? x + 0.28 : x - 0.28,
+                3.05, 1.54,
                 accent
             );
         }
 
         box(
-            group, 7.2, 0.2, 0.3,
-            0, 5.45, front + 1.06,
-            accent
+            doorFrame, 8.7, 0.6, 1.4,
+            0, 6.1, 0.8,
+            materials.obsidian
         );
-
-        // Double-door center line.
 
         box(
-            group, 0.09, 4.5, 0.2,
-            0, 2.45, front + 1.05,
+            doorFrame, 8.2, 0.12, 0.2,
+            0, 5.7, 1.56,
             accent
         );
+
+        // SECTION 07B // TWO SLIDING DOOR PANELS
+
+        const leftDoor = new THREE.Group();
+        const rightDoor = new THREE.Group();
+
+        leftDoor.position.x = -1.65;
+        rightDoor.position.x = 1.65;
+
+        for (const [panel, x] of [
+            [leftDoor, -1.65],
+            [rightDoor, 1.65]
+        ]) {
+
+            box(
+                panel, 3.3, 5.2, 0.18,
+                0, 2.7, 1.57,
+                materials.glass
+            );
+
+            box(
+                panel, 0.12, 5, 0.24,
+                x < 0 ? 1.54 : -1.54,
+                2.7, 1.71,
+                accent
+            );
+
+            box(
+                panel, 2.8, 0.1, 0.25,
+                0, 0.72, 1.72,
+                accent
+            );
+        }
+
+        doorFrame.add(leftDoor);
+        doorFrame.add(rightDoor);
+
+        // SECTION 07C // FLOOR ACCESS LIGHT
+
+        box(
+            doorFrame, 8, 0.08, 1.7,
+            0, 0.055, 2,
+            accent
+        );
+
+        return {
+            leftDoor,
+            rightDoor,
+            progress: 0
+        };
     }
+
 
     // =====================================================
     // SECTION 08 // DISTINCT BUILDING ARCHITECTURE
@@ -1154,7 +1204,7 @@ export function createCityBuildings(scene) {
         // SECTION 09 // BUILDING ACCESS FACADE
         // =====================================================
 
-        addEntrance(group, front, accent);
+                const doors = addEntrance(group, front, accent);
 
         makeSign(
             group,
@@ -1186,16 +1236,17 @@ export function createCityBuildings(scene) {
             materials.titanium
         );
 
-        return {
+              return {
             front,
-            accent
+            accent,
+            doors
         };
     }
 
     // =====================================================
     // SECTION 10 // BUILD THE CITY DEPARTMENTS
     // =====================================================
-
+    const automaticDoors = [];
     const directory = [];
 
     for (const def of departments) {
@@ -1213,7 +1264,15 @@ export function createCityBuildings(scene) {
                 def.rotation
             );
 
-        createArchitecture(def, group);
+      
+        const architecture = createArchitecture(def, group);
+
+        automaticDoors.push({
+            group,
+            front: architecture.front,
+            doors: architecture.doors
+        });
+
 
         city.add(group);
 
@@ -1234,19 +1293,82 @@ export function createCityBuildings(scene) {
 
     window.hexcoreCityBuildingDirectory = directory;
 
+   
     // =====================================================
-    // SECTION 12 // ANIMATION
+    // SECTION 12 // AUTOMATIC CITY DOOR ANIMATION
     // =====================================================
 
     const clock = new THREE.Clock();
 
+    const playerPosition = new THREE.Vector3();
+    const doorPosition = new THREE.Vector3();
+
+    let playerPositionKnown = false;
+
+    // Receive player coordinates from the existing
+    // player movement system.
+
+    window.addEventListener(
+        "hexcore-player-position",
+        event => {
+
+            playerPosition.set(
+                event.detail.x,
+                0,
+                event.detail.z
+            );
+
+            playerPositionKnown = true;
+        }
+    );
+
     function animateCityBuildings() {
 
-        // Building animation can be added later
-        // without affecting the existing headquarters.
+        const delta = Math.min(clock.getDelta(), 0.05);
 
-        clock.getDelta();
+        for (const entrance of automaticDoors) {
+
+            // Find the world position of this doorway.
+
+            doorPosition.set(
+                0,
+                0,
+                entrance.front + 2
+            );
+
+            entrance.group.localToWorld(doorPosition);
+
+            const distance =
+                playerPosition.distanceTo(doorPosition);
+
+            // Doors open when visitors come within
+            // approximately 8 world units.
+
+            const shouldOpen =
+                playerPositionKnown && distance < 8;
+
+            const target = shouldOpen ? 1 : 0;
+
+            entrance.doors.progress =
+                THREE.MathUtils.damp(
+                    entrance.doors.progress,
+                    target,
+                    4,
+                    delta
+                );
+
+            const opening = entrance.doors.progress;
+
+            // Slide panels away from the middle.
+
+            entrance.doors.leftDoor.position.x =
+                -1.65 - opening * 3.4;
+
+            entrance.doors.rightDoor.position.x =
+                1.65 + opening * 3.4;
+        }
     }
+
 
     // =====================================================
     // SECTION 13 // OUTPUT

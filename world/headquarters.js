@@ -526,6 +526,17 @@ export function createHeadquarters(scene) {
     exitDoors.add(leftExitDoor);
     exitDoors.add(rightExitDoor);
 
+    // SECTION 13F-1 // EXIT DOOR ACCESS STATE
+
+    // Doors begin closed and unlock when the visitor
+    // receives the City Access Key from reception.
+
+    const exitDoorClock = new THREE.Clock();
+
+    let exitDoorProgress = 0;
+
+    window.hexcoreExitOpenProgress = 0;
+
    
     // SECTION 13G // ACCESS TERMINAL
 
@@ -2032,6 +2043,36 @@ export function createHeadquarters(scene) {
             5 + Math.sin(elapsedTime * 1.2) * 0.35;
 
         energyCore.rotation.y = elapsedTime * 0.12;
+
+        // ANIMATION 13 // AUTOMATIC CITY EXIT DOORS
+
+        const doorDelta = Math.min(
+            exitDoorClock.getDelta(),
+            0.05
+        );
+
+        const doorTarget =
+            window.hexcoreHasCityKey === true ? 1 : 0;
+
+        exitDoorProgress = THREE.MathUtils.damp(
+            exitDoorProgress,
+            doorTarget,
+            3,
+            doorDelta
+        );
+
+        // Slide each door away from the center.
+
+        leftExitDoor.position.x =
+            -4.65 * exitDoorProgress;
+
+        rightExitDoor.position.x =
+            4.65 * exitDoorProgress;
+
+        // Allow the player system to check the doors.
+
+        window.hexcoreExitOpenProgress =
+            exitDoorProgress;
 
         // ANIMATION 02 // ROTATING CRYSTAL
 

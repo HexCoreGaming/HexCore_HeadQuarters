@@ -197,5 +197,83 @@ export function createHeadquarters(scene) {
         strip.position.set(x, 0.12, 0);
         scene.add(strip);
     }
+    // =====================================================
+    // SECTION 17 // ILLUMINATED WALL ARCHITECTURE
+    // =====================================================
 
+    const purpleGlow = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    const cyanGlow = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    // SECTION 18 // REAR WALL VERTICAL LIGHT STRIPS
+
+    for (let x = -25; x <= 25; x += 10) {
+
+        const lightStrip = new THREE.Mesh(
+            new THREE.BoxGeometry(0.18, 17, 0.15),
+            purpleGlow
+        );
+
+        lightStrip.position.set(x, 10, -29.35);
+        scene.add(lightStrip);
+    }
+
+    // SECTION 19 // REAR WALL HORIZONTAL LIGHTING
+
+    for (const y of [2, 18]) {
+
+        const beam = new THREE.Mesh(
+            new THREE.BoxGeometry(55, 0.15, 0.15),
+            cyanGlow
+        );
+
+        beam.position.set(0, y, -29.3);
+        scene.add(beam);
+    }
+
+    // SECTION 20 // SIDE WALL VERTICAL LIGHT STRIPS
+
+    for (const x of [-29.35, 29.35]) {
+
+        for (let z = -20; z <= 20; z += 10) {
+
+            const strip = new THREE.Mesh(
+                new THREE.BoxGeometry(0.15, 16, 0.18),
+                purpleGlow
+            );
+
+            strip.position.set(x, 10, z);
+            scene.add(strip);
+        }
+    }
+
+    // SECTION 21 // FLOOR PERIMETER LIGHTING
+
+    for (const z of [-28.5, 28.5]) {
+
+        const floorBeam = new THREE.Mesh(
+            new THREE.BoxGeometry(57, 0.08, 0.12),
+            cyanGlow
+        );
+
+        floorBeam.position.set(0, 0.08, z);
+        scene.add(floorBeam);
+    }
+
+    // SECTION 22 // UPPER ARCHITECTURAL LIGHTING
+
+    for (const x of [-28.5, 28.5]) {
+
+        const upperBeam = new THREE.Mesh(
+            new THREE.BoxGeometry(0.15, 0.15, 57),
+            purpleGlow
+        );
+
+        upperBeam.position.set(x, 19, 0);
+        scene.add(upperBeam);
+    }
 }

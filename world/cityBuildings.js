@@ -2,207 +2,110 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 // =====================================================
-// HEXCORE GAMING // CYBER-FANTASY CITY ARCHITECTURE
-// =====================================================
-
-// =====================================================
-// SECTION 01 // CREATE CITY BUILDINGS
+// HEXCORE GAMING // WALKABLE CITY DEPARTMENTS
 // =====================================================
 
 export function createCityBuildings(scene) {
+
+    // =====================================================
+    // SECTION 01 // SHARED MATERIALS
+    // =====================================================
+
+    const material = (color, basic = false) => basic
+        ? new THREE.MeshBasicMaterial({
+            color,
+            side: THREE.DoubleSide
+        })
+        : new THREE.MeshStandardMaterial({
+            color,
+            metalness: 0.55,
+            roughness: 0.35,
+            side: THREE.DoubleSide
+        });
+
+    const dark = material(0x111322);
+    const steel = material(0x354057);
+    const glass = material(0x1A4260);
+    const violetGlass = material(0x442766);
+
+    const purple = material(0x8650E8, true);
+    const cyan = material(0x8CD6FD, true);
+    const magenta = material(0xE34BC9, true);
+    const gold = material(0xE5AF69, true);
+
+    const accent = {
+        purple, cyan, magenta, gold
+    };
+
+    const accentHex = {
+        purple: "#8650E8",
+        cyan: "#8CD6FD",
+        magenta: "#E34BC9",
+        gold: "#E5AF69"
+    };
+
+    // =====================================================
+    // SECTION 02 // CITY DIRECTORY AND VARIED PLACEMENT
+    // =====================================================
+
+    // Keep existing locations and rotations.
+
+    const buildings = [
+        ["game_gallery", "GAME GALLERY",
+            -47, 77, 70, 13, 15, "prism", "purple"],
+
+        ["development", "DEVELOPMENT STUDIO",
+            47, 89, -65, 12, 22, "spire", "cyan"],
+
+        ["community", "COMMUNITY CENTER",
+            -42, 116, 120, 14, 13, "hexhall", "cyan"],
+
+        ["support", "SUPPORT CENTER",
+            42, 126, -115, 11, 11, "pod", "purple"],
+
+        ["media", "MEDIA CENTER",
+            -68, 146, 42, 12, 18, "crystal", "magenta"],
+
+        ["business", "BUSINESS & INVESTMENT",
+            65, 151, -135, 12, 20, "obelisk", "gold"],
+
+        ["administration", "ADMINISTRATION & LEGAL",
+            -37, 171, 155, 13, 17, "citadel", "purple"],
+
+        ["merchandise", "MERCHANDISE STORE",
+            36, 173, -150, 14, 12, "market", "cyan"],
+
+        ["hardware", "HARDWARE DIVISION",
+            -68, 205, 80, 13, 18, "reactor", "cyan"],
+
+        ["future_worlds", "FUTURE WORLDS MUSEUM",
+            64, 201, -70, 15, 19, "sanctum", "purple"],
+
+        ["arcade", "HEXCORE ARCADE",
+            76, 108, -105, 13, 14, "arcade", "magenta"],
+
+        ["cinema", "HEXCORE CINEMA",
+            8, 151, 18, 17, 15, "cinema", "purple"],
+
+        ["stadium", "PERFORMANCE STADIUM",
+            -8, 211, 170, 21, 18, "arena", "gold"]
+    ];
 
     const city = new THREE.Group();
     city.name = "HEXCORE_CITY_BUILDINGS";
     scene.add(city);
 
-    // =====================================================
-    // SECTION 02 // SHARED MATERIALS
-    // =====================================================
-
-    const materials = {
-        obsidian: new THREE.MeshStandardMaterial({
-            color: 0x11111D,
-            metalness: 0.72,
-            roughness: 0.32
-        }),
-
-        midnight: new THREE.MeshStandardMaterial({
-            color: 0x17182D,
-            metalness: 0.62,
-            roughness: 0.38
-        }),
-
-        titanium: new THREE.MeshStandardMaterial({
-            color: 0x33384C,
-            metalness: 0.82,
-            roughness: 0.25
-        }),
-
-        glass: new THREE.MeshStandardMaterial({
-            color: 0x254E72,
-            emissive: 0x071A32,
-            emissiveIntensity: 0.6,
-            metalness: 0.35,
-            roughness: 0.14,
-            transparent: true,
-            opacity: 0.86,
-            side: THREE.DoubleSide
-        }),
-
-        violetGlass: new THREE.MeshStandardMaterial({
-            color: 0x44276C,
-            emissive: 0x251044,
-            emissiveIntensity: 0.5,
-            metalness: 0.35,
-            roughness: 0.2,
-            side: THREE.DoubleSide
-        }),
-
-        purple: new THREE.MeshBasicMaterial({
-            color: 0x8650E8
-        }),
-
-        cyan: new THREE.MeshBasicMaterial({
-            color: 0x8CD6FD
-        }),
-
-        magenta: new THREE.MeshBasicMaterial({
-            color: 0xE34BC9
-        }),
-
-        gold: new THREE.MeshBasicMaterial({
-            color: 0xE5AF69
-        }),
-
-        white: new THREE.MeshBasicMaterial({
-            color: 0xE4D9FF
-        })
-    };
+    const activeDoors = [];
+    const directory = [];
 
     // =====================================================
-    // SECTION 03 // IRREGULAR CITY PLACEMENT
+    // SECTION 03 // REUSABLE CONSTRUCTION HELPERS
     // =====================================================
 
-    // Positions are fixed so the city does not rearrange
-    // every time somebody opens the website.
-    //
-    // All buildings remain on the main exterior ground.
-    // Their front entrances face different directions.
-    //
-    // Rotation is measured in degrees.
-
-    const departments = [
-        {
-            id: "game_gallery",
-            name: "GAME GALLERY",
-            x: -47, z: 77,
-            rotation: 70,
-            size: 22,
-            type: "prism"
-        },
-        {
-            id: "development",
-            name: "DEVELOPMENT STUDIO",
-            x: 47, z: 89,
-            rotation: -65,
-            size: 23,
-            type: "spire"
-        },
-        {
-            id: "community",
-            name: "COMMUNITY CENTER",
-            x: -42, z: 116,
-            rotation: 120,
-            size: 22,
-            type: "hexhall"
-        },
-        {
-            id: "support",
-            name: "SUPPORT CENTER",
-            x: 42, z: 126,
-            rotation: -115,
-            size: 18,
-            type: "pod"
-        },
-        {
-            id: "media",
-            name: "MEDIA CENTER",
-            x: -68, z: 146,
-            rotation: 42,
-            size: 19,
-            type: "crystal"
-        },
-        {
-            id: "business",
-            name: "BUSINESS & INVESTMENT",
-            x: 65, z: 151,
-            rotation: -135,
-            size: 20,
-            type: "obelisk"
-        },
-        {
-            id: "administration",
-            name: "ADMINISTRATION & LEGAL",
-            x: -37, z: 171,
-            rotation: 155,
-            size: 20,
-            type: "citadel"
-        },
-        {
-            id: "merchandise",
-            name: "MERCHANDISE STORE",
-            x: 36, z: 173,
-            rotation: -150,
-            size: 19,
-            type: "market"
-        },
-        {
-            id: "hardware",
-            name: "HARDWARE DIVISION",
-            x: -68, z: 205,
-            rotation: 80,
-            size: 20,
-            type: "reactor"
-        },
-        {
-            id: "future_worlds",
-            name: "FUTURE WORLDS MUSEUM",
-            x: 64, z: 201,
-            rotation: -70,
-            size: 23,
-            type: "sanctum"
-        },
-        {
-            id: "arcade",
-            name: "HEXCORE ARCADE",
-            x: 76, z: 108,
-            rotation: -105,
-            size: 17,
-            type: "arcade"
-        },
-        {
-            id: "cinema",
-            name: "HEXCORE CINEMA",
-            x: 8, z: 151,
-            rotation: 18,
-            size: 23,
-            type: "cinema"
-        },
-        {
-            id: "stadium",
-            name: "PERFORMANCE STADIUM",
-            x: -8, z: 211,
-            rotation: 170,
-            size: 28,
-            type: "arena"
-        }
-    ];
-
-    // =====================================================
-    // SECTION 04 // GEOMETRY HELPERS
-    // =====================================================
-
-    function box(parent, w, h, d, x, y, z, mat) {
+    function box(
+        parent, w, h, d,
+        x, y, z, mat, rotation = 0
+    ) {
 
         const mesh = new THREE.Mesh(
             new THREE.BoxGeometry(w, h, d),
@@ -210,19 +113,20 @@ export function createCityBuildings(scene) {
         );
 
         mesh.position.set(x, y, z);
+        mesh.rotation.y = rotation;
         parent.add(mesh);
 
         return mesh;
     }
 
     function cylinder(
-        parent, top, bottom, height,
+        parent, top, bottom, h,
         x, y, z, mat, sides = 12
     ) {
 
         const mesh = new THREE.Mesh(
             new THREE.CylinderGeometry(
-                top, bottom, height, sides
+                top, bottom, h, sides
             ),
             mat
         );
@@ -234,33 +138,12 @@ export function createCityBuildings(scene) {
     }
 
     function cone(
-        parent, radius, height,
-        x, y, z, mat, sides = 6
+        parent, r, h,
+        x, y, z, mat, sides = 8
     ) {
 
         const mesh = new THREE.Mesh(
-            new THREE.ConeGeometry(
-                radius, height, sides
-            ),
-            mat
-        );
-
-        mesh.position.set(x, y, z);
-        parent.add(mesh);
-
-        return mesh;
-    }
-
-    function sphere(
-        parent, radius,
-        x, y, z, mat,
-        segments = 16
-    ) {
-
-        const mesh = new THREE.Mesh(
-            new THREE.SphereGeometry(
-                radius, segments, 10
-            ),
+            new THREE.ConeGeometry(r, h, sides),
             mat
         );
 
@@ -271,1107 +154,692 @@ export function createCityBuildings(scene) {
     }
 
     function ring(
-        parent, radius, thickness,
-        x, y, z, mat,
-        vertical = false
+        parent, r, y, mat, vertical = false
     ) {
 
         const mesh = new THREE.Mesh(
             new THREE.TorusGeometry(
-                radius, thickness, 6, 48
+                r, 0.16, 6, 48
             ),
             mat
         );
+
+        mesh.position.y = y;
 
         if (!vertical) {
             mesh.rotation.x = Math.PI / 2;
         }
 
-        mesh.position.set(x, y, z);
-        parent.add(mesh);
-
-        return mesh;
-    }
-
-    function beamBetween(parent, start, end, width, mat) {
-
-        const a = new THREE.Vector3(...start);
-        const b = new THREE.Vector3(...end);
-
-        const direction = new THREE.Vector3()
-            .subVectors(b, a);
-
-        const mesh = new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                width, width,
-                direction.length(), 6
-            ),
-            mat
-        );
-
-        mesh.position.copy(a).add(b).multiplyScalar(0.5);
-
-        mesh.quaternion.setFromUnitVectors(
-            new THREE.Vector3(0, 1, 0),
-            direction.normalize()
-        );
-
         parent.add(mesh);
         return mesh;
     }
 
     // =====================================================
-    // SECTION 05 // FUTURISTIC FACADES
+    // SECTION 04 // HOLLOW BUILDING WITH FRONT OPENING
     // =====================================================
 
-    function addGlassBands(group, radius, levels, mat) {
+    function createShell(group, radius, height, trim) {
 
-        for (let i = 1; i <= levels; i++) {
+        const sides = 12;
+        const step = Math.PI * 2 / sides;
 
-            const y = i * 4.5;
+        const front =
+            radius * Math.cos(step / 2);
 
-            cylinder(
-                group,
-                radius, radius,
-                0.45,
-                0, y, 0,
-                mat, 12
+        // Construct separate exterior wall panels.
+        // The front-facing panel is omitted.
+
+        for (let i = 0; i < sides; i++) {
+
+            if (i === sides - 1) {
+                continue;
+            }
+
+            const a = (i + 0.5) * step;
+            const b = (i + 1.5) * step;
+
+            const ax = Math.sin(a) * radius;
+            const az = Math.cos(a) * radius;
+
+            const bx = Math.sin(b) * radius;
+            const bz = Math.cos(b) * radius;
+
+            const length = Math.hypot(
+                bx - ax,
+                bz - az
             );
-        }
-    }
-
-    function addVerticalFins(
-        group, radius, height,
-        count, mat
-    ) {
-
-        for (let i = 0; i < count; i++) {
 
             const angle =
-                (i / count) * Math.PI * 2;
+                -Math.atan2(bz - az, bx - ax);
 
-            const x = Math.sin(angle) * radius;
-            const z = Math.cos(angle) * radius;
+            // Solid wall panel.
 
-            const fin = box(
+            box(
                 group,
-                0.22, height, 0.65,
-                x, height / 2, z,
-                mat
+                length + 0.35, height, 0.5,
+                (ax + bx) / 2,
+                height / 2,
+                (az + bz) / 2,
+                dark,
+                angle
             );
 
-            fin.rotation.y = angle;
+            // Elevated decorative window.
+
+            box(
+                group,
+                length * 0.68, 2.3, 0.14,
+                (ax + bx) / 2,
+                height * 0.64,
+                (az + bz) / 2,
+                glass,
+                angle
+            );
+
+            // Illuminated wall crown.
+
+            box(
+                group,
+                length, 0.15, 0.65,
+                (ax + bx) / 2,
+                height - 0.4,
+                (az + bz) / 2,
+                trim,
+                angle
+            );
         }
+
+        // A real floor and overhead ceiling.
+        // The space between them remains empty.
+
+        cylinder(
+            group,
+            radius - 0.35,
+            radius - 0.35,
+            0.13,
+            0, 0, 0,
+            steel, 12
+        );
+
+        cylinder(
+            group,
+            radius + 0.4,
+            radius + 0.4,
+            0.65,
+            0, height + 0.3, 0,
+            dark, 12
+        );
+
+        ring(
+            group,
+            radius + 0.15,
+            height + 0.7,
+            trim
+        );
+
+        return front;
     }
 
     // =====================================================
-    // SECTION 06 // HOLOGRAPHIC BUILDING SIGNS
+    // SECTION 05 // CLEAR, READABLE DEPARTMENT SIGNS
     // =====================================================
 
-    function makeSign(group, name, color, front) {
+    function addSign(group, title, front, color) {
 
         const canvas = document.createElement("canvas");
+
         canvas.width = 1024;
         canvas.height = 256;
 
         const ctx = canvas.getContext("2d");
 
-        ctx.fillStyle = "rgba(8,7,23,0.94)";
+        ctx.fillStyle = "#080914";
         ctx.fillRect(0, 0, 1024, 256);
 
         ctx.strokeStyle = color;
-        ctx.lineWidth = 9;
-        ctx.strokeRect(10, 10, 1004, 236);
+        ctx.lineWidth = 12;
+        ctx.strokeRect(9, 9, 1006, 238);
 
-        ctx.fillStyle = "#F0EAFF";
+        let size = 74;
+
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 18;
-
-        let fontSize = 72;
+        ctx.fillStyle = "#F3EEFF";
 
         do {
-            ctx.font = `bold ${fontSize}px Arial`;
-            if (ctx.measureText(name).width < 930) break;
-            fontSize -= 3;
-        } while (fontSize > 30);
 
-        ctx.fillText(name, 512, 128);
+            ctx.font = `bold ${size}px Arial`;
+
+            if (
+                ctx.measureText(title).width <= 930
+            ) {
+                break;
+            }
+
+            size -= 3;
+
+        } while (size > 30);
+
+        ctx.fillText(title, 512, 128);
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
 
         const sign = new THREE.Mesh(
-            new THREE.PlaneGeometry(13, 3.25),
+            new THREE.PlaneGeometry(13, 3.1),
             new THREE.MeshBasicMaterial({
                 map: texture,
-                transparent: true,
                 side: THREE.DoubleSide,
-                depthWrite: false
+                depthTest: false,
+                transparent: true
             })
         );
 
-        sign.position.set(0, 7.1, front + 0.65);
+        // Outside and above the doorway.
+
+        sign.position.set(
+            0,
+            8.2,
+            front + 2.0
+        );
+
+        sign.renderOrder = 5;
+
         group.add(sign);
     }
 
     // =====================================================
-    // SECTION 07 // SHARED ENTRANCE STRUCTURE
+    // SECTION 06 // FUNCTIONAL AUTOMATIC DOUBLE DOORS
     // =====================================================
 
-    
-    function addEntrance(group, front, accent) {
+    function addDoors(group, front, trim) {
 
-        // Automatic two-panel sliding entrance.
-        // The building interior will be added later.
+        const entrance = new THREE.Group();
 
-        const doorFrame = new THREE.Group();
-        doorFrame.position.z = front;
+        entrance.position.z = front + 0.45;
+        group.add(entrance);
 
-        group.add(doorFrame);
+        // Door frame.
 
-        // SECTION 07A // DOOR FRAME
-
-        for (const x of [-4.1, 4.1]) {
+        for (const x of [-3.55, 3.55]) {
 
             box(
-                doorFrame, 0.45, 6.1, 1.25,
-                x, 3.05, 0.8,
-                materials.titanium
-            );
-
-            box(
-                doorFrame, 0.11, 5.6, 0.15,
-                x < 0 ? x + 0.28 : x - 0.28,
-                3.05, 1.54,
-                accent
+                entrance,
+                0.3, 6.0, 0.65,
+                x, 3, 0,
+                steel
             );
         }
 
         box(
-            doorFrame, 8.7, 0.6, 1.4,
-            0, 6.1, 0.8,
-            materials.obsidian
+            entrance,
+            7.5, 0.4, 0.7,
+            0, 6, 0,
+            trim
         );
 
-        box(
-            doorFrame, 8.2, 0.12, 0.2,
-            0, 5.7, 1.56,
-            accent
-        );
+        // Sliding glass panels.
 
-        // SECTION 07B // TWO SLIDING DOOR PANELS
+        const left = new THREE.Group();
+        const right = new THREE.Group();
 
-        const leftDoor = new THREE.Group();
-        const rightDoor = new THREE.Group();
+        left.position.x = -1.6;
+        right.position.x = 1.6;
 
-        leftDoor.position.x = -1.65;
-        rightDoor.position.x = 1.65;
-
-        for (const [panel, x] of [
-            [leftDoor, -1.65],
-            [rightDoor, 1.65]
-        ]) {
+        for (const panel of [left, right]) {
 
             box(
-                panel, 3.3, 5.2, 0.18,
-                0, 2.7, 1.57,
-                materials.glass
+                panel,
+                3.18, 5.7, 0.14,
+                0, 2.85, 0,
+                glass
             );
 
             box(
-                panel, 0.12, 5, 0.24,
-                x < 0 ? 1.54 : -1.54,
-                2.7, 1.71,
-                accent
-            );
-
-            box(
-                panel, 2.8, 0.1, 0.25,
-                0, 0.72, 1.72,
-                accent
+                panel,
+                2.8, 0.1, 0.17,
+                0, 0.75, 0.1,
+                trim
             );
         }
 
-        doorFrame.add(leftDoor);
-        doorFrame.add(rightDoor);
-
-        // SECTION 07C // FLOOR ACCESS LIGHT
-
-        box(
-            doorFrame, 8, 0.08, 1.7,
-            0, 0.055, 2,
-            accent
-        );
+        entrance.add(left, right);
 
         return {
-            leftDoor,
-            rightDoor,
+            group,
+            front,
+            left,
+            right,
             progress: 0
         };
     }
 
-
     // =====================================================
-    // SECTION 08 // DISTINCT BUILDING ARCHITECTURE
+    // SECTION 07 // DISTINCT ROOFTOPS AND SILHOUETTES
     // =====================================================
 
-    function createArchitecture(def, group) {
+    // Decorative structures remain above the rooms.
 
-        let front = def.size * 0.48;
-        let accent = materials.purple;
-        let signColor = "#8650E8";
+    function addSignature(group, type, r, h, trim) {
 
-        switch (def.type) {
+        if (type === "prism") {
 
-            // =================================================
-            // SECTION 08A // GAME GALLERY
-            // Angular exhibition prism
-            // =================================================
-
-            case "prism": {
-
-                accent = materials.purple;
-                front = 10;
-
-                const base = cylinder(
-                    group, 11, 13, 18,
-                    0, 9, 0,
-                    materials.violetGlass, 5
-                );
-
-                base.rotation.y = Math.PI / 5;
-
-                const crown = cone(
-                    group, 11, 10,
-                    0, 23, 0,
-                    materials.obsidian, 5
-                );
-
-                crown.rotation.y = Math.PI / 5;
-
-                for (let i = 0; i < 5; i++) {
-
-                    const angle = i * Math.PI * 2 / 5;
-
-                    const x = Math.sin(angle) * 12;
-                    const z = Math.cos(angle) * 12;
-
-                    beamBetween(
-                        group,
-                        [x, 2, z],
-                        [0, 28, 0],
-                        0.12,
-                        materials.cyan
-                    );
-                }
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08B // DEVELOPMENT STUDIO
-            // Split futuristic skyscraper
-            // =================================================
-
-            case "spire": {
-
-                accent = materials.cyan;
-                signColor = "#8CD6FD";
-                front = 10;
-
-                for (const x of [-5, 5]) {
-
-                    const shaft = box(
-                        group,
-                        8, x < 0 ? 35 : 43, 15,
-                        x,
-                        x < 0 ? 17.5 : 21.5,
-                        -2,
-                        materials.glass
-                    );
-
-                    shaft.rotation.z =
-                        x < 0 ? -0.055 : 0.055;
-
-                    box(
-                        group, 0.22, 35, 0.3,
-                        x < 0 ? -8.8 : 8.8,
-                        18, 5.7,
-                        accent
-                    );
-                }
-
-                box(
-                    group, 22, 4, 14,
-                    0, 5, 0,
-                    materials.obsidian
-                );
-
-                beamBetween(
-                    group,
-                    [-5, 34, -2],
-                    [5, 42, -2],
-                    0.35,
-                    accent
-                );
-
-                cone(
-                    group, 2, 11,
-                    5, 49, -2,
-                    accent, 4
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08C // COMMUNITY CENTER
-            // Wide hexagonal social hall
-            // =================================================
-
-            case "hexhall": {
-
-                accent = materials.cyan;
-                signColor = "#8CD6FD";
-                front = 9;
-
-                cylinder(
-                    group, 12, 13, 13,
-                    0, 6.5, 0,
-                    materials.midnight, 6
-                );
-
-                cylinder(
-                    group, 9, 11, 6,
-                    0, 16, 0,
-                    materials.glass, 6
-                );
-
-                cone(
-                    group, 11, 7,
-                    0, 22.5, 0,
-                    materials.titanium, 6
-                );
-
-                ring(
-                    group, 11.5, 0.25,
-                    0, 13.5, 0,
-                    accent
-                );
-
-                addVerticalFins(
-                    group, 12.2, 12,
-                    6, accent
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08D // SUPPORT CENTER
-            // Rounded high-tech service pod
-            // =================================================
-
-            case "pod": {
-
-                accent = materials.purple;
-                front = 8;
-
-                cylinder(
-                    group, 10, 11, 9,
-                    0, 4.5, 0,
-                    materials.obsidian, 16
-                );
-
-                const dome = sphere(
-                    group, 10,
-                    0, 9, 0,
-                    materials.glass, 24
-                );
-
-                dome.scale.y = 0.6;
-
-                ring(
-                    group, 10.1, 0.35,
-                    0, 9, 0,
-                    accent
-                );
-
-                ring(
-                    group, 7, 0.18,
-                    0, 12.5, 0,
-                    materials.cyan
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08E // MEDIA CENTER
-            // Twisted crystal broadcasting tower
-            // =================================================
-
-            case "crystal": {
-
-                accent = materials.magenta;
-                signColor = "#E34BC9";
-                front = 9;
-
-                cylinder(
-                    group, 10, 12, 12,
-                    0, 6, 0,
-                    materials.obsidian, 6
-                );
-
-                for (let i = 0; i < 4; i++) {
-
-                    const section = cylinder(
-                        group,
-                        8.5 - i * 1.1,
-                        9.5 - i,
-                        8,
-                        0, 16 + i * 7, 0,
-                        i % 2 === 0
-                            ? materials.glass
-                            : materials.violetGlass,
-                        5
-                    );
-
-                    section.rotation.y =
-                        i * Math.PI / 8;
-
-                    ring(
-                        group,
-                        9 - i,
-                        0.16,
-                        0,
-                        12 + i * 7,
-                        0,
-                        accent
-                    );
-                }
-
-                cone(
-                    group, 4, 11,
-                    0, 49, 0,
-                    accent, 5
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08F // BUSINESS & INVESTMENT
-            // Black-and-gold obelisk
-            // =================================================
-
-            case "obelisk": {
-
-                accent = materials.gold;
-                signColor = "#E5AF69";
-                front = 9;
-
-                cylinder(
-                    group, 11, 13, 9,
-                    0, 4.5, 0,
-                    materials.obsidian, 4
-                ).rotation.y = Math.PI / 4;
-
-                const tower = cylinder(
-                    group, 5, 9, 38,
-                    0, 28, 0,
-                    materials.titanium, 4
-                );
-
-                tower.rotation.y = Math.PI / 4;
-
-                cone(
-                    group, 6, 13,
-                    0, 53.5, 0,
-                    materials.glass, 4
-                ).rotation.y = Math.PI / 4;
-
-                for (const x of [-7, 7]) {
-
-                    beamBetween(
-                        group,
-                        [x, 9, 0],
-                        [x * 0.35, 43, 0],
-                        0.2,
-                        accent
-                    );
-                }
-
-                ring(
-                    group, 8, 0.2,
-                    0, 9, 0,
-                    accent
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08G // ADMINISTRATION & LEGAL
-            // Cyber-gothic fortress
-            // =================================================
-
-            case "citadel": {
-
-                accent = materials.purple;
-                front = 10;
-
-                box(
-                    group, 22, 15, 18,
-                    0, 7.5, 0,
-                    materials.obsidian
-                );
-
-                for (const x of [-10, 10]) {
-
-                    cylinder(
-                        group, 2.6, 3.2, 24,
-                        x, 12, 0,
-                        materials.titanium, 6
-                    );
-
-                    cone(
-                        group, 3.2, 9,
-                        x, 28.5, 0,
-                        materials.violetGlass, 6
-                    );
-                }
-
-                box(
-                    group, 10, 21, 12,
-                    0, 15.5, -2,
-                    materials.midnight
-                );
-
-                cone(
-                    group, 7, 11,
-                    0, 31.5, -2,
-                    materials.glass, 4
-                );
-
-                for (const x of [-6, 0, 6]) {
-
-                    box(
-                        group, 0.18, 12, 0.2,
-                        x, 11, 9.2,
-                        accent
-                    );
-                }
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08H // MERCHANDISE STORE
-            // Low futuristic market pavilion
-            // =================================================
-
-            case "market": {
-
-                accent = materials.cyan;
-                signColor = "#8CD6FD";
-                front = 9;
-
-                cylinder(
-                    group, 12, 14, 9,
-                    0, 4.5, 0,
-                    materials.glass, 8
-                );
-
-                cylinder(
-                    group, 15, 13, 1.3,
-                    0, 10, 0,
-                    materials.obsidian, 8
-                );
-
-                for (let i = 0; i < 8; i++) {
-
-                    const angle = i * Math.PI / 4;
-
-                    const x = Math.sin(angle) * 13;
-                    const z = Math.cos(angle) * 13;
-
-                    beamBetween(
-                        group,
-                        [x, 9.5, z],
-                        [0, 16, 0],
-                        0.16,
-                        accent
-                    );
-                }
-
-                cone(
-                    group, 13, 6,
-                    0, 13, 0,
-                    materials.titanium, 8
-                );
-
-                ring(
-                    group, 14.5, 0.25,
-                    0, 10.7, 0,
-                    accent
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08I // HARDWARE DIVISION
-            // Futuristic engineering reactor
-            // =================================================
-
-            case "reactor": {
-
-                accent = materials.cyan;
-                signColor = "#8CD6FD";
-                front = 9;
-
-                cylinder(
-                    group, 10, 12, 13,
-                    0, 6.5, 0,
-                    materials.obsidian, 8
-                );
-
-                cylinder(
-                    group, 6, 9, 19,
-                    0, 22.5, 0,
-                    materials.glass, 8
-                );
-
-                addGlassBands(
-                    group, 7.4, 5,
-                    accent
-                );
-
-                for (let i = 0; i < 4; i++) {
-
-                    const angle =
-                        i * Math.PI / 2;
-
-                    const x = Math.sin(angle) * 10;
-                    const z = Math.cos(angle) * 10;
-
-                    cylinder(
-                        group, 2, 2.6, 20,
-                        x, 10, z,
-                        materials.titanium, 8
-                    );
-
-                    cone(
-                        group, 2.2, 5,
-                        x, 22.5, z,
-                        accent, 6
-                    );
-                }
-
-                sphere(
-                    group, 3.2,
-                    0, 34, 0,
-                    materials.violetGlass
-                );
-
-                ring(
-                    group, 5.2, 0.22,
-                    0, 34, 0,
-                    accent, true
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08J // FUTURE WORLDS MUSEUM
-            // Monumental fantasy sanctum
-            // =================================================
-
-            case "sanctum": {
-
-                accent = materials.purple;
-                front = 10;
-
-                cylinder(
-                    group, 13, 15, 11,
-                    0, 5.5, 0,
-                    materials.obsidian, 8
-                );
-
-                cylinder(
-                    group, 10, 13, 12,
-                    0, 17, 0,
-                    materials.violetGlass, 8
-                );
-
-                cone(
-                    group, 11, 17,
-                    0, 31.5, 0,
-                    materials.glass, 8
-                );
-
-                for (let i = 0; i < 8; i++) {
-
-                    const angle =
-                        i * Math.PI / 4;
-
-                    const x = Math.sin(angle) * 12;
-                    const z = Math.cos(angle) * 12;
-
-                    beamBetween(
-                        group,
-                        [x, 11, z],
-                        [0, 40, 0],
-                        0.13,
-                        accent
-                    );
-                }
-
-                ring(
-                    group, 12, 0.2,
-                    0, 11.3, 0,
-                    accent
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08K // HEXCORE ARCADE
-            // Illuminated entertainment rotunda
-            // =================================================
-
-            case "arcade": {
-
-                accent = materials.magenta;
-                signColor = "#E34BC9";
-                front = 9;
-
-                cylinder(
-                    group, 12, 13, 12,
-                    0, 6, 0,
-                    materials.violetGlass, 10
-                );
-
-                addVerticalFins(
-                    group, 12.4, 12,
-                    10, accent
-                );
-
-                cylinder(
-                    group, 13.5, 12.5, 1.4,
-                    0, 12.5, 0,
-                    materials.obsidian, 10
-                );
-
-                cone(
-                    group, 11, 9,
-                    0, 17.5, 0,
-                    materials.glass, 10
-                );
-
-                ring(
-                    group, 12.6, 0.32,
-                    0, 13.5, 0,
-                    materials.cyan
-                );
-
-                ring(
-                    group, 7, 0.2,
-                    0, 18, 0,
-                    accent
-                );
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08L // HEXCORE CINEMA
-            // Cinematic geodesic theater
-            // =================================================
-
-            case "cinema": {
-
-                accent = materials.purple;
-                front = 11;
-
-                cylinder(
-                    group, 15, 16, 11,
-                    0, 5.5, 0,
-                    materials.obsidian, 16
-                );
-
-                const dome = sphere(
-                    group, 15,
-                    0, 11, 0,
-                    materials.glass, 24
-                );
-
-                dome.scale.y = 0.66;
-
-                ring(
-                    group, 15, 0.35,
-                    0, 11, 0,
-                    accent
-                );
-
-                ring(
-                    group, 13, 0.15,
-                    0, 16, 0,
-                    materials.cyan, true
-                );
-
-                const orbit = ring(
-                    group, 14.7, 0.2,
-                    0, 14, 0,
-                    materials.magenta, true
-                );
-
-                orbit.rotation.y = Math.PI / 3;
-
-                break;
-            }
-
-            // =================================================
-            // SECTION 08M // PERFORMANCE STADIUM
-            // Giant theatrical amphitheater
-            // =================================================
-
-            case "arena": {
-
-                accent = materials.gold;
-                signColor = "#E5AF69";
-                front = 17;
-
-                cylinder(
-                    group, 19, 21, 11,
-                    0, 5.5, 0,
-                    materials.obsidian, 16
-                );
-
-                cylinder(
-                    group, 21, 21, 2,
-                    0, 12, 0,
-                    materials.titanium, 16
-                );
-
-                for (const y of [4, 8, 12]) {
-
-                    ring(
-                        group, 20, 0.3,
-                        0, y, 0,
-                        accent
-                    );
-                }
-
-                const roof = sphere(
-                    group, 19,
-                    0, 13, 0,
-                    materials.violetGlass, 24
-                );
-
-                roof.scale.y = 0.5;
-
-                // Four colossal fantasy pylons.
-
-                for (const x of [-15, 15]) {
-                    for (const z of [-12, 12]) {
-
-                        cylinder(
-                            group, 1.6, 2.1, 20,
-                            x, 10, z,
-                            materials.titanium, 6
-                        );
-
-                        cone(
-                            group, 2.3, 9,
-                            x, 24.5, z,
-                            accent, 6
-                        );
-                    }
-                }
-
-                break;
-            }
-        }
-
-        // =====================================================
-        // SECTION 09 // BUILDING ACCESS FACADE
-        // =====================================================
-
-                const doors = addEntrance(group, front, accent);
-
-        makeSign(
-            group,
-            def.name,
-            signColor,
-            front
-        );
-
-        // SECTION 09A // GROUND-LEVEL LIGHTING
-
-        // Small guide lights point toward the entrance.
-
-        for (const x of [-5.5, 5.5]) {
-
-            box(
+            cone(
                 group,
-                0.24, 0.08, 4,
-                x, 0.08, front + 3.5,
-                accent
+                r * 0.83, 14,
+                0, h + 7, 0,
+                violetGlass, 5
             );
+
+            ring(group, r * 0.75, h + 2, trim);
+
+        } else if (type === "spire") {
+
+            for (const x of [-4, 4]) {
+
+                box(
+                    group,
+                    5, 17, 6,
+                    x, h + 9, 0,
+                    glass
+                );
+
+                cone(
+                    group,
+                    3, 8,
+                    x, h + 21, 0,
+                    trim, 4
+                );
+            }
+
+        } else if (type === "hexhall") {
+
+            cylinder(
+                group,
+                r * 0.65, r * 0.9, 5,
+                0, h + 3, 0,
+                glass, 6
+            );
+
+            cone(
+                group,
+                r * 0.7, 7,
+                0, h + 9, 0,
+                trim, 6
+            );
+
+        } else if (type === "pod") {
+
+            const dome = new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    r * 0.85,
+                    18, 12,
+                    0, Math.PI * 2,
+                    0, Math.PI / 2
+                ),
+                glass
+            );
+
+            dome.scale.y = 0.58;
+            dome.position.y = h + 0.6;
+
+            group.add(dome);
+
+            ring(
+                group,
+                r * 0.8,
+                h + 1,
+                trim
+            );
+
+        } else if (type === "crystal") {
+
+            const crystal = new THREE.Mesh(
+                new THREE.IcosahedronGeometry(8, 0),
+                violetGlass
+            );
+
+            crystal.position.y = h + 8;
+            crystal.scale.y = 1.7;
+
+            group.add(crystal);
+
+            ring(group, 9, h + 5, trim, true);
+
+        } else if (type === "obelisk") {
+
+            cylinder(
+                group,
+                4, 7, 19,
+                0, h + 9.5, 0,
+                steel, 4
+            ).rotation.y = Math.PI / 4;
+
+            cone(
+                group,
+                5, 13,
+                0, h + 25.5, 0,
+                trim, 4
+            );
+
+        } else if (type === "citadel") {
+
+            for (const x of [-r * 0.68, r * 0.68]) {
+
+                cylinder(
+                    group,
+                    2.8, 3.1, 10,
+                    x, h + 5, 0,
+                    steel, 6
+                );
+
+                cone(
+                    group,
+                    3.2, 9,
+                    x, h + 14.5, 0,
+                    trim, 6
+                );
+            }
+
+            cone(
+                group,
+                7, 9,
+                0, h + 5, 0,
+                violetGlass, 6
+            );
+
+        } else if (type === "market") {
+
+            cone(
+                group,
+                r * 0.9, 7,
+                0, h + 4, 0,
+                glass, 8
+            );
+
+            ring(
+                group,
+                r * 0.95,
+                h + 1,
+                trim
+            );
+
+        } else if (type === "reactor") {
+
+            for (const x of [-6, 6]) {
+
+                cylinder(
+                    group,
+                    2.3, 2.8, 9,
+                    x, h + 4.5, 0,
+                    steel, 8
+                );
+
+                cone(
+                    group,
+                    2.5, 5,
+                    x, h + 11.5, 0,
+                    trim, 6
+                );
+            }
+
+            ring(
+                group,
+                7, h + 8,
+                trim, true
+            );
+
+        } else if (type === "sanctum") {
+
+            cone(
+                group,
+                r * 0.79, 20,
+                0, h + 10, 0,
+                violetGlass, 8
+            );
+
+            ring(
+                group,
+                r * 0.7,
+                h + 2,
+                trim
+            );
+
+            ring(
+                group,
+                r * 0.42,
+                h + 13,
+                trim, true
+            );
+
+        } else if (type === "arcade") {
+
+            cone(
+                group,
+                r * 0.84, 8,
+                0, h + 4, 0,
+                glass, 10
+            );
+
+            for (let i = 0; i < 10; i++) {
+
+                const a = i * Math.PI / 5;
+
+                box(
+                    group,
+                    0.3, 4, 0.4,
+                    Math.sin(a) * r * 0.85,
+                    h + 2,
+                    Math.cos(a) * r * 0.85,
+                    trim, a
+                );
+            }
+
+        } else if (type === "cinema") {
+
+            const dome = new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    r * 0.85,
+                    24, 12,
+                    0, Math.PI * 2,
+                    0, Math.PI / 2
+                ),
+                glass
+            );
+
+            dome.scale.y = 0.75;
+            dome.position.y = h + 0.4;
+
+            group.add(dome);
+
+            ring(
+                group,
+                r * 0.95,
+                h + 1,
+                trim
+            );
+
+            ring(
+                group,
+                r * 0.8,
+                h + 7,
+                trim, true
+            );
+
+        } else if (type === "arena") {
+
+            const dome = new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    r * 0.8,
+                    24, 12,
+                    0, Math.PI * 2,
+                    0, Math.PI / 2
+                ),
+                violetGlass
+            );
+
+            dome.scale.y = 0.5;
+            dome.position.y = h + 0.5;
+
+            group.add(dome);
+
+            for (let i = 0; i < 6; i++) {
+
+                const a = i * Math.PI / 3;
+
+                const x =
+                    Math.sin(a) * r * 0.83;
+
+                const z =
+                    Math.cos(a) * r * 0.83;
+
+                cylinder(
+                    group,
+                    1.3, 1.6, 9,
+                    x, h + 4.5, z,
+                    steel, 6
+                );
+
+                cone(
+                    group,
+                    1.7, 6,
+                    x, h + 12, z,
+                    trim, 6
+                );
+            }
         }
-
-        // SECTION 09B // ENTRANCE LANDING
-
-        box(
-            group,
-            11, 0.12, 5,
-            0, 0.04, front + 3.5,
-            materials.titanium
-        );
-
-              return {
-            front,
-            accent,
-            doors
-        };
     }
 
     // =====================================================
-    // SECTION 10 // BUILD THE CITY DEPARTMENTS
+    // SECTION 08 // ASSEMBLE CITY BUILDINGS
     // =====================================================
-    const automaticDoors = [];
-    const directory = [];
 
-    for (const def of departments) {
+    for (
+        const [
+            id, name, x, z, rotation,
+            radius, height, type, glow
+        ] of buildings
+    ) {
 
         const group = new THREE.Group();
 
-        group.name = def.id;
-
-        group.position.set(
-            def.x, 0, def.z
-        );
+        group.name = id;
+        group.position.set(x, 0, z);
 
         group.rotation.y =
-            THREE.MathUtils.degToRad(
-                def.rotation
-            );
+            THREE.MathUtils.degToRad(rotation);
 
-      
-        const architecture = createArchitecture(def, group);
-
-        automaticDoors.push({
+        const front = createShell(
             group,
-            front: architecture.front,
-            doors: architecture.doors
-        });
+            radius,
+            height,
+            accent[glow]
+        );
 
+        addSignature(
+            group,
+            type,
+            radius,
+            height,
+            accent[glow]
+        );
 
-        city.add(group);
+        addSign(
+            group,
+            name,
+            front,
+            accentHex[glow]
+        );
+
+        const door = addDoors(
+            group,
+            front,
+            accent[glow]
+        );
+
+        activeDoors.push(door);
 
         directory.push({
-            id: def.id,
-            name: def.name,
-            x: def.x,
-            z: def.z,
-            rotation: def.rotation,
-            size: def.size,
-            type: def.type
+            id,
+            name,
+            x,
+            z,
+            rotation,
+            radius,
+            front,
+            type,
+            doorOpen: 0
         });
-    }
 
-    // =====================================================
-    // SECTION 11 // DEPARTMENT DIRECTORY
-    // =====================================================
+        city.add(group);
+    }
 
     window.hexcoreCityBuildingDirectory = directory;
 
-   
     // =====================================================
-    // SECTION 12 // AUTOMATIC CITY DOOR ANIMATION
+    // SECTION 09 // AUTOMATIC DOOR ANIMATION
     // =====================================================
 
-    const clock = new THREE.Clock();
-
-    const playerPosition = new THREE.Vector3();
-    const doorPosition = new THREE.Vector3();
-
-    let playerPositionKnown = false;
-
-    // Receive player coordinates from the existing
-    // player movement system.
+    let playerX = 0;
+    let playerZ = 0;
+    let hasPlayer = false;
 
     window.addEventListener(
         "hexcore-player-position",
         event => {
 
-            playerPosition.set(
-                event.detail.x,
-                0,
-                event.detail.z
-            );
+            playerX = event.detail.x;
+            playerZ = event.detail.z;
 
-            playerPositionKnown = true;
+            hasPlayer = true;
         }
     );
 
+    const clock = new THREE.Clock();
+    const doorWorld = new THREE.Vector3();
+
     function animateCityBuildings() {
 
-        const delta = Math.min(clock.getDelta(), 0.05);
+        const delta = Math.min(
+            clock.getDelta(),
+            0.05
+        );
 
-        for (const entrance of automaticDoors) {
+        activeDoors.forEach((door, i) => {
 
-            // Find the world position of this doorway.
-
-            doorPosition.set(
-                0,
-                0,
-                entrance.front + 2
+            doorWorld.set(
+                0, 0, door.front + 1.2
             );
 
-            entrance.group.localToWorld(doorPosition);
+            door.group.localToWorld(doorWorld);
 
-            const distance =
-                playerPosition.distanceTo(doorPosition);
+            const distance = Math.hypot(
+                playerX - doorWorld.x,
+                playerZ - doorWorld.z
+            );
 
-            // Doors open when visitors come within
-            // approximately 8 world units.
+            const target =
+                hasPlayer && distance < 9 ? 1 : 0;
 
-            const shouldOpen =
-                playerPositionKnown && distance < 8;
+            door.progress = THREE.MathUtils.damp(
+                door.progress,
+                target,
+                5,
+                delta
+            );
 
-            const target = shouldOpen ? 1 : 0;
+            door.left.position.x =
+                -1.6 - 3.25 * door.progress;
 
-            entrance.doors.progress =
-                THREE.MathUtils.damp(
-                    entrance.doors.progress,
-                    target,
-                    4,
-                    delta
-                );
+            door.right.position.x =
+                1.6 + 3.25 * door.progress;
 
-            const opening = entrance.doors.progress;
-
-            // Slide panels away from the middle.
-
-            entrance.doors.leftDoor.position.x =
-                -1.65 - opening * 3.4;
-
-            entrance.doors.rightDoor.position.x =
-                1.65 + opening * 3.4;
-        }
+            directory[i].doorOpen = door.progress;
+        });
     }
 
-
     // =====================================================
-    // SECTION 13 // OUTPUT
+    // SECTION 10 // OUTPUT
     // =====================================================
 
     return animateCityBuildings;

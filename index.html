@@ -275,6 +275,12 @@
             createCityPlaza
         } from "./world/cityPlaza.js";
 
+        // SECTION 02E // PLAZA ENTERTAINMENT IMPORT
+
+        import {
+            createPlazaExtras
+        } from "./world/plazaExtras.js";
+
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -292,18 +298,21 @@
         const animateCityBuildings =
             createCityBuildings(scene);
 
-        // ==========================================
-        // SECTION 04 // CREATE PLAYER
-        // ==========================================
-
-        const updatePlayer =
-            createPlayer(camera, renderer);
-
         // SECTION 03C // CREATE SOCIAL PLAZA
 
         const animateCityPlaza =
             createCityPlaza(scene);
 
+        // SECTION 03D // CREATE PLAZA ENTERTAINMENT
+
+        const animatePlazaExtras =
+            createPlazaExtras(scene);
+// ==========================================
+        // SECTION 04 // CREATE PLAYER
+        // ==========================================
+
+        const updatePlayer =
+            createPlayer(camera, renderer);
         // ==========================================
         // SECTION 04A // CREATE HEADQUARTERS NPCS
         // ==========================================
@@ -330,6 +339,10 @@
             // SECTION 05C // ANIMATE SOCIAL PLAZA
 
             animateCityPlaza();
+
+            // SECTION 05D // ANIMATE PLAZA ENTERTAINMENT
+
+            animatePlazaExtras();
 
             updateNPCs();
 

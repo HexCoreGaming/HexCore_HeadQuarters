@@ -690,6 +690,7 @@
 
         ];
 
+       
         // SECTION 08D // CLOSE DIALOGUE
 
         function closeReceptionDialogue() {
@@ -699,10 +700,28 @@
 
             receptionDialogue.style.display = "none";
 
-            if (document.pointerLockElement) {
-                document.exitPointerLock();
+            // On desktop, restore mouse camera control
+            // after the receptionist conversation.
+
+            if (
+                !window.matchMedia("(pointer: coarse)").matches
+            ) {
+
+                const gameCanvas =
+                    document.querySelector("canvas");
+
+                if (
+                    gameCanvas &&
+                    document.pointerLockElement !== gameCanvas
+                ) {
+
+                    gameCanvas.requestPointerLock().catch(() => {
+                        // Some browsers require another click.
+                    });
+                }
             }
         }
+
 
         // SECTION 08E // SHOW DIALOGUE LINE
 

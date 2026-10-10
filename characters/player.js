@@ -109,6 +109,35 @@ export function createPlayer(camera, renderer) {
     });
 
 
+    // =====================================================
+    // SECTION 04A // DISABLE CANVAS TOUCH CAMERA
+    // =====================================================
+
+    // Only the dedicated mobile look joystick
+    // should control the camera on touchscreen devices.
+
+    renderer.domElement.style.touchAction = "none";
+
+    renderer.domElement.addEventListener(
+        "pointerdown",
+        (event) => {
+
+            if (event.pointerType === "touch") {
+                event.preventDefault();
+            }
+        }
+    );
+
+    renderer.domElement.addEventListener(
+        "pointermove",
+        (event) => {
+
+            if (event.pointerType === "touch") {
+                event.preventDefault();
+            }
+        }
+    );
+
    
     // =====================================================
     // SECTION 04B // PLAYER COLLISION

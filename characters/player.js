@@ -5,7 +5,9 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 // HEXCORE GAMING // PLAYER CHARACTER SYSTEM
 // =====================================================
 
+// =====================================================
 // SECTION 01 // CHARACTER CONTROLS
+// =====================================================
 
 export function createPlayer(camera, renderer) {
 
@@ -20,7 +22,9 @@ export function createPlayer(camera, renderer) {
         pitch: 0
     };
 
+    // =====================================================
     // SECTION 02 // FIRST-PERSON CAMERA
+    // =====================================================
 
     camera.rotation.order = "YXZ";
 
@@ -30,7 +34,9 @@ export function createPlayer(camera, renderer) {
         player.position.z
     );
 
+    // =====================================================
     // SECTION 03 // KEYBOARD INPUT
+    // =====================================================
 
     window.addEventListener("keydown", (event) => {
         keys[event.code] = true;
@@ -40,7 +46,9 @@ export function createPlayer(camera, renderer) {
         keys[event.code] = false;
     });
 
+    // =====================================================
     // SECTION 04 // MOUSE LOOK
+    // =====================================================
 
     renderer.domElement.addEventListener("click", () => {
         renderer.domElement.requestPointerLock();
@@ -61,69 +69,73 @@ export function createPlayer(camera, renderer) {
             Math.PI / 2 - 0.1
         );
     });
-// =====================================================
-// SECTION 04B // PLAYER COLLISION
-// =====================================================
-
-// Four existing lobby pillar positions
-const pillars = [
-    { x: -20, z: -18 },
-    { x: -20, z: 18 },
-    { x: 20, z: -18 },
-    { x: 20, z: 18 }
-];
-
-const playerRadius = 0.5;
-const pillarHalfWidth = 1;
 
     // =====================================================
-// SECTION 04C // CENTRAL PLATFORM COLLISION
-// =====================================================
+    // SECTION 04B // PLAYER COLLISION
+    // =====================================================
 
-// Central circular platform:
-// Radius = 5 units
-// Player collision radius = 0.5 units
+    // Four existing lobby pillar positions
 
-const platformRadius = 5;
+    const pillars = [
+        { x: -20, z: -18 },
+        { x: -20, z: 18 },
+        { x: 20, z: -18 },
+        { x: 20, z: 18 }
+    ];
 
-function collidesWithPlatform(x, z) {
+    const playerRadius = 0.5;
+    const pillarHalfWidth = 1;
 
-    const distanceSquared = x * x + z * z;
+    function collidesWithPillar(x, z) {
 
-    const collisionDistance =
-        platformRadius + playerRadius;
+        for (const pillar of pillars) {
 
-    return distanceSquared <
-        collisionDistance * collisionDistance;
-}
+            const closestX = THREE.MathUtils.clamp(
+                x,
+                pillar.x - pillarHalfWidth,
+                pillar.x + pillarHalfWidth
+            );
 
-function collidesWithPillar(x, z) {
+            const closestZ = THREE.MathUtils.clamp(
+                z,
+                pillar.z - pillarHalfWidth,
+                pillar.z + pillarHalfWidth
+            );
 
-    for (const pillar of pillars) {
+            const dx = x - closestX;
+            const dz = z - closestZ;
 
-        const closestX = THREE.MathUtils.clamp(
-            x,
-            pillar.x - pillarHalfWidth,
-            pillar.x + pillarHalfWidth
-        );
-
-        const closestZ = THREE.MathUtils.clamp(
-            z,
-            pillar.z - pillarHalfWidth,
-            pillar.z + pillarHalfWidth
-        );
-
-        const dx = x - closestX;
-        const dz = z - closestZ;
-
-        if (dx * dx + dz * dz < playerRadius * playerRadius) {
-            return true;
+            if (
+                dx * dx + dz * dz <
+                playerRadius * playerRadius
+            ) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
-}
+    // =====================================================
+    // SECTION 04C // CENTRAL PLATFORM COLLISION
+    // =====================================================
+
+    const platformRadius = 5;
+
+    function collidesWithPlatform(x, z) {
+
+        const distanceSquared = x * x + z * z;
+
+        const collisionDistance =
+            platformRadius + playerRadius;
+
+        return distanceSquared <
+            collisionDistance * collisionDistance;
+    }
+
+    // =====================================================
     // SECTION 05 // MOVEMENT AND CAMERA UPDATE
+    // =====================================================
 
     const clock = new THREE.Clock();
 
@@ -152,38 +164,41 @@ function collidesWithPillar(x, z) {
                     ? player.sprintSpeed
                     : player.speed;
 
-            // Test X and Z separately to allow sliding along pillars
+            const stepX = movement.x * speed * delta;
+            const stepZ = movement.z * speed * delta;
 
-const stepX = movement.x * speed * delta;
-const stepZ = movement.z * speed * delta;
+            // =====================================================
+            // SECTION 05A // COLLISION-AWARE MOVEMENT
+            // =====================================================
 
-// =====================================================
-// SECTION 05A // COLLISION-AWARE MOVEMENT
-// =====================================================
+            // Horizontal movement
 
-// Horizontal movement
+            const nextX = player.position.x + stepX;
 
-const nextX = player.position.x + stepX;
+            if (
+                !collidesWithPillar(nextX, player.position.z) &&
+                !collidesWithPlatform(nextX, player.position.z)
+            ) {
+                player.position.x = nextX;
+            }
 
-if (
-    !collidesWithPillar(nextX, player.position.z) &&
-    !collidesWithPlatform(nextX, player.position.z)
-) {
-    player.position.x = nextX;
-}
+            // Forward / backward movement
 
-// Forward / backward movement
+            const nextZ = player.position.z + stepZ;
 
-const nextZ = player.position.z + stepZ;
+            if (
+                !collidesWithPillar(player.position.x, nextZ) &&
+                !collidesWithPlatform(player.position.x, nextZ)
+            ) {
+                player.position.z = nextZ;
+            }
 
-if (
-    !collidesWithPillar(player.position.x, nextZ) &&
-    !collidesWithPlatform(player.position.x, nextZ)
-) {
-    player.position.z = nextZ;
-}
+        }
 
-        // Temporary room boundaries
+        // =====================================================
+        // SECTION 05B // ROOM BOUNDARIES
+        // =====================================================
+
         player.position.x = THREE.MathUtils.clamp(
             player.position.x,
             -28,
@@ -196,6 +211,10 @@ if (
             28
         );
 
+        // =====================================================
+        // SECTION 05C // CAMERA UPDATE
+        // =====================================================
+
         camera.position.set(
             player.position.x,
             player.height,
@@ -206,10 +225,14 @@ if (
             player.pitch,
             player.yaw,
             0
-        
+        );
+
     }
 
+    // =====================================================
     // SECTION 06 // PLAYER SYSTEM OUTPUT
+    // =====================================================
 
     return updatePlayer;
+
 }

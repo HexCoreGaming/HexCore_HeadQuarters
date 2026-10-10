@@ -61,7 +61,47 @@ export function createPlayer(camera, renderer) {
             Math.PI / 2 - 0.1
         );
     });
+// =====================================================
+// SECTION 04B // PLAYER COLLISION
+// =====================================================
 
+// Four existing lobby pillar positions
+const pillars = [
+    { x: -20, z: -18 },
+    { x: -20, z: 18 },
+    { x: 20, z: -18 },
+    { x: 20, z: 18 }
+];
+
+const playerRadius = 0.5;
+const pillarHalfWidth = 1;
+
+function collidesWithPillar(x, z) {
+
+    for (const pillar of pillars) {
+
+        const closestX = THREE.MathUtils.clamp(
+            x,
+            pillar.x - pillarHalfWidth,
+            pillar.x + pillarHalfWidth
+        );
+
+        const closestZ = THREE.MathUtils.clamp(
+            z,
+            pillar.z - pillarHalfWidth,
+            pillar.z + pillarHalfWidth
+        );
+
+        const dx = x - closestX;
+        const dz = z - closestZ;
+
+        if (dx * dx + dz * dz < playerRadius * playerRadius) {
+            return true;
+        }
+    }
+
+    return false;
+}
     // SECTION 05 // MOVEMENT AND CAMERA UPDATE
 
     const clock = new THREE.Clock();

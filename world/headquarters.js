@@ -399,4 +399,32 @@ export function createHeadquarters(scene) {
     coreLight.position.set(0, 5, 0);
     scene.add(coreLight);
 
+    // =====================================================
+    // SECTION 28 // ENVIRONMENT ANIMATION
+    // =====================================================
+
+    // ANIMATION 01 // FLOATING ENERGY CORE
+
+    const animationClock = new THREE.Clock();
+
+    function animateHeadquarters() {
+
+        const elapsedTime = animationClock.getElapsedTime();
+
+        // Slowly rotate the energy core
+        energyCore.rotation.y = elapsedTime * 0.3;
+        energyCore.rotation.x = elapsedTime * 0.1;
+
+        // Make the core gently float up and down
+        energyCore.position.y =
+            5 + Math.sin(elapsedTime * 1.2) * 0.35;
+
+        // Keep its light moving with it
+        coreLight.position.y = energyCore.position.y;
+    }
+
+    // SECTION 29 // REGISTER ANIMATION
+
+    return animateHeadquarters;
+
 }

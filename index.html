@@ -263,6 +263,12 @@
             createNPCs
         } from "./npcs/npcs.js";
 
+        // SECTION 02C // CITY DEPARTMENT BUILDINGS IMPORT
+
+        import {
+            createCityBuildings
+        } from "./world/cityBuildings.js";
+
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -274,6 +280,11 @@
 
         const animateCityFoundation =
             createCityFoundation(scene);
+
+        // SECTION 03B // CREATE CITY DEPARTMENT BUILDINGS
+
+        const animateCityBuildings =
+            createCityBuildings(scene);
 
         // ==========================================
         // SECTION 04 // CREATE PLAYER
@@ -300,6 +311,10 @@
 
             // Animate floating city systems
             animateCityFoundation();
+
+            // SECTION 05B // ANIMATE CITY BUILDINGS
+
+            animateCityBuildings();
 
             updateNPCs();
 

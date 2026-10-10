@@ -414,23 +414,25 @@ export function createPlayer(camera, renderer) {
             const stepX = movement.x * speed * delta;
             const stepZ = movement.z * speed * delta;
 
+          
+            // =====================================================
             // SECTION 05C-1 // X-AXIS MOVEMENT
+            // =====================================================
 
             const nextX = player.position.x + stepX;
 
-          
             if (
-                !collidesWithPillar(player.position.x, nextZ) &&
-                !collidesWithPlatform(player.position.x, nextZ) &&
-                !collidesWithReception(player.position.x, nextZ) &&
-                !blockedByFrontExit &&
-                !collidesWithCityBuilding(player.position.x, nextZ)
+                !collidesWithPillar(nextX, player.position.z) &&
+                !collidesWithPlatform(nextX, player.position.z) &&
+                !collidesWithReception(nextX, player.position.z) &&
+                !collidesWithCityBuilding(nextX, player.position.z)
             ) {
-                player.position.z = nextZ;
+                player.position.x = nextX;
             }
 
-
+            // =====================================================
             // SECTION 05C-2 // Z-AXIS MOVEMENT
+            // =====================================================
 
             const nextZ = player.position.z + stepZ;
 
@@ -462,12 +464,13 @@ export function createPlayer(camera, renderer) {
                 !collidesWithPillar(player.position.x, nextZ) &&
                 !collidesWithPlatform(player.position.x, nextZ) &&
                 !collidesWithReception(player.position.x, nextZ) &&
-                !blockedByFrontExit
-                !collidesWithCityBuilding(player.position.x, nextZ) &&
+                !blockedByFrontExit &&
+                !collidesWithCityBuilding(player.position.x, nextZ)
             ) {
                 player.position.z = nextZ;
             }
         }
+
 
        
         // =====================================================

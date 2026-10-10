@@ -271,23 +271,38 @@ export function createPlayer(camera, renderer) {
     function updatePlayer() {
 
         const delta = Math.min(clock.getDelta(), 0.05);
+        // =====================================================
+        // SECTION 05A-1 // MOBILE LOOK JOYSTICK CAMERA
+        // =====================================================
 
-        // SECTION 05A // PAUSE DURING DIALOGUE
+        if (window.hexcoreMobileLook) {
 
-       
+            player.yaw -= window.hexcoreMobileLook.x * 0.06;
+            player.pitch -= window.hexcoreMobileLook.y * 0.045;
+
+            player.pitch = THREE.MathUtils.clamp(
+                player.pitch,
+                -Math.PI / 2 + 0.1,
+                Math.PI / 2 - 0.1
+            );
+        }
+              // SECTION 05A // PAUSE DURING DIALOGUE
+
         if (window.hexcoreDialogueOpen === true) {
 
             for (const key in keys) {
                 keys[key] = false;
             }
 
-            // Prevent the mobile joystick from continuing
-            // to move the player during conversations.
-
             if (window.hexcoreMobileInput) {
                 window.hexcoreMobileInput.x = 0;
                 window.hexcoreMobileInput.z = 0;
                 window.hexcoreMobileInput.sprint = false;
+            }
+
+            if (window.hexcoreMobileLook) {
+                window.hexcoreMobileLook.x = 0;
+                window.hexcoreMobileLook.y = 0;
             }
 
             return;

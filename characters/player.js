@@ -206,7 +206,7 @@ if (
             player.pitch,
             player.yaw,
             0
-        );
+        
     }
 
     // SECTION 06 // PLAYER SYSTEM OUTPUT

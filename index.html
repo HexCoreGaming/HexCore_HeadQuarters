@@ -232,6 +232,151 @@
 
     </script>
 
+    <!-- ========================================== -->
+    <!-- SECTION 07 // HEADQUARTERS QUEST TRACKER   -->
+    <!-- ========================================== -->
+
+    <div id="hexcore-quest-tracker">
+
+        <div class="quest-header">
+            ◈ HEXCORE // ACTIVE OBJECTIVE
+        </div>
+
+        <div class="quest-title" id="quest-title">
+            WELCOME TO HEXCORE
+        </div>
+
+        <div class="quest-description" id="quest-description">
+            Speak to the Reception Representative.
+        </div>
+
+        <div class="quest-footer">
+
+            <span id="quest-category">
+                QUEST 01 // ORIENTATION
+            </span>
+
+            <span id="quest-progress">
+                0 / 1
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- SECTION 07A // QUEST TRACKER APPEARANCE -->
+
+    <style>
+
+        #hexcore-quest-tracker {
+            position: fixed;
+            top: 68px;
+            right: 20px;
+            width: 285px;
+            max-width: calc(100vw - 40px);
+            box-sizing: border-box;
+            padding: 16px;
+            background: rgba(8, 7, 17, 0.88);
+            border: 1px solid rgba(134, 80, 232, 0.65);
+            border-left: 3px solid #8650E8;
+            box-shadow: 0 0 20px rgba(134, 80, 232, 0.12);
+            color: #EAE8FF;
+            font-family: Consolas, monospace;
+            z-index: 90;
+            pointer-events: none;
+        }
+
+        .quest-header {
+            color: #8CD6FD;
+            font-size: 11px;
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(140, 214, 253, 0.2);
+        }
+
+        .quest-title {
+            color: #D9C5FF;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 9px;
+        }
+
+        .quest-description {
+            color: #D0CADF;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .quest-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 10px;
+            color: #8E87AA;
+        }
+
+        @media (max-width: 600px) {
+
+            #hexcore-quest-tracker {
+                top: 60px;
+                right: 10px;
+                width: 240px;
+                padding: 12px;
+            }
+
+        }
+
+    </style>
+
+    <!-- SECTION 07B // QUEST MANAGEMENT -->
+
+    <script>
+
+        // Quest state for the current visitor session.
+        // The receptionist interaction will update this later.
+
+        window.hexcoreQuest = {
+            id: 1,
+            title: "WELCOME TO HEXCORE",
+            description: "Speak to the Reception Representative.",
+            category: "QUEST 01 // ORIENTATION",
+            progress: "0 / 1"
+        };
+
+        // SECTION 07C // UPDATE QUEST DISPLAY
+
+        window.hexcoreUpdateQuest = function(
+            title,
+            description,
+            category,
+            progress
+        ) {
+
+            window.hexcoreQuest = {
+                id: window.hexcoreQuest.id + 1,
+                title: title,
+                description: description,
+                category: category,
+                progress: progress
+            };
+
+            document.getElementById("quest-title").textContent =
+                title;
+
+            document.getElementById("quest-description").textContent =
+                description;
+
+            document.getElementById("quest-category").textContent =
+                category;
+
+            document.getElementById("quest-progress").textContent =
+                progress;
+        };
+
+    </script>
+
 
 </body>
 </html>

@@ -596,24 +596,203 @@ export function createHeadquarters(scene) {
         scene.add(lightBeam);
     }
 
+    
     // =====================================================
-    // SECTION 26 // CENTRAL HOLOGRAPHIC ENERGY CORE
+    // SECTION 26 // HEXCORE COSMIC ENERGY ARTIFACT
     // =====================================================
 
-    const energyCore = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(2, 2),
-        new THREE.MeshStandardMaterial({
-            color: 0x8650E8,
-            emissive: 0x5F1DDA,
-            emissiveIntensity: 0.8,
-            metalness: 0.4,
-            roughness: 0.15,
-            flatShading: true
-        })
-    );
+    // SECTION 26A // CENTRAL PURPLE ENERGY CRYSTAL
+
+    const energyCore = new THREE.Group();
 
     energyCore.position.set(0, 5, 0);
     scene.add(energyCore);
+
+    const crystalMaterial = new THREE.MeshStandardMaterial({
+        color: 0xC58AFF,
+        emissive: 0x852DFF,
+        emissiveIntensity: 2.5,
+        metalness: 0.25,
+        roughness: 0.08,
+        flatShading: true
+    });
+
+    const crystal = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1.0, 1),
+        crystalMaterial
+    );
+
+    energyCore.add(crystal);
+
+    // SECTION 26B // INNER ENERGY SHELL
+
+    const innerShell = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1.35, 2),
+        new THREE.MeshBasicMaterial({
+            color: 0xB75FFF,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.45,
+            depthWrite: false
+        })
+    );
+
+    energyCore.add(innerShell);
+
+    // SECTION 26C // ARTIFACT METALLIC MATERIALS
+
+    const artifactMetal = new THREE.MeshStandardMaterial({
+        color: 0x211A36,
+        metalness: 0.9,
+        roughness: 0.2,
+        emissive: 0x43117F,
+        emissiveIntensity: 0.5,
+        side: THREE.DoubleSide
+    });
+
+    const artifactGlow = new THREE.MeshBasicMaterial({
+        color: 0xB568FF
+    });
+
+    const artifactCyan = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    // SECTION 26D // ROTATING SEGMENTED RINGS
+
+    const artifactRings = [];
+
+    for (let ringIndex = 0; ringIndex < 3; ringIndex++) {
+
+        const ringGroup = new THREE.Group();
+
+        const radius = 1.75 + ringIndex * 0.33;
+
+        const segmentCount = 14 + ringIndex * 4;
+
+        const segmentArc =
+            (Math.PI * 2) / segmentCount;
+
+        for (let i = 0; i < segmentCount; i++) {
+
+            const startAngle =
+                i * segmentArc + 0.035;
+
+            const endAngle =
+                (i + 0.72) * segmentArc;
+
+            const segment = new THREE.Mesh(
+                new THREE.RingGeometry(
+                    radius,
+                    radius + 0.17,
+                    5,
+                    1,
+                    startAngle,
+                    endAngle - startAngle
+                ),
+                artifactMetal
+            );
+
+            ringGroup.add(segment);
+
+            // Thin luminous segment within each metal ring.
+
+            const glowSegment = new THREE.Mesh(
+                new THREE.RingGeometry(
+                    radius + 0.17,
+                    radius + 0.21,
+                    5,
+                    1,
+                    startAngle,
+                    endAngle - startAngle
+                ),
+                ringIndex === 1
+                    ? artifactCyan
+                    : artifactGlow
+            );
+
+            ringGroup.add(glowSegment);
+        }
+
+        ringGroup.rotation.set(
+            ringIndex * 0.45,
+            ringIndex * 0.6,
+            ringIndex * 0.3
+        );
+
+        energyCore.add(ringGroup);
+        artifactRings.push(ringGroup);
+    }
+
+    // SECTION 26E // FLOATING METALLIC FRAGMENTS
+
+    const artifactFragments = new THREE.Group();
+
+    const fragmentGeometry =
+        new THREE.OctahedronGeometry(0.16, 0);
+
+    const fragmentCount = 34;
+
+    for (let i = 0; i < fragmentCount; i++) {
+
+        const fragment = new THREE.Mesh(
+            fragmentGeometry,
+            i % 5 === 0
+                ? artifactGlow
+                : artifactMetal
+        );
+
+        const angle =
+            (i / fragmentCount) * Math.PI * 2;
+
+        const distance =
+            2.4 + (i % 4) * 0.17;
+
+        const height =
+            Math.sin(i * 2.4) * 0.8;
+
+        fragment.position.set(
+            Math.cos(angle) * distance,
+            height,
+            Math.sin(angle) * distance
+        );
+
+        fragment.rotation.set(
+            i * 0.7,
+            i * 0.4,
+            i * 0.9
+        );
+
+        fragment.scale.set(
+            0.7 + (i % 3) * 0.35,
+            1.1,
+            0.7
+        );
+
+        artifactFragments.add(fragment);
+    }
+
+    energyCore.add(artifactFragments);
+
+    // SECTION 26F // INNER ENERGY HALO
+
+    const energyHalo = new THREE.Mesh(
+        new THREE.TorusGeometry(1.48, 0.035, 8, 96),
+        artifactGlow
+    );
+
+    energyHalo.rotation.x = Math.PI / 2;
+    energyCore.add(energyHalo);
+
+    // SECTION 26G // CORE PULSE LIGHT
+
+    const innerCoreLight = new THREE.PointLight(
+        0xA24EFF,
+        25,
+        12
+    );
+
+    energyCore.add(innerCoreLight);
 
     // SECTION 27 // ENERGY CORE LIGHT
 
@@ -1008,21 +1187,65 @@ export function createHeadquarters(scene) {
 
     const animationClock = new THREE.Clock();
 
+    
     function animateHeadquarters() {
 
         const elapsedTime = animationClock.getElapsedTime();
 
-        energyCore.rotation.y = elapsedTime * 0.3;
-        energyCore.rotation.x = elapsedTime * 0.1;
+        // ANIMATION 01 // FLOATING ENERGY ARTIFACT
 
         energyCore.position.y =
             5 + Math.sin(elapsedTime * 1.2) * 0.35;
 
+        energyCore.rotation.y = elapsedTime * 0.12;
+
+        // ANIMATION 02 // ROTATING CRYSTAL
+
+        crystal.rotation.y = elapsedTime * 0.45;
+        crystal.rotation.x = elapsedTime * 0.22;
+
+        innerShell.rotation.y = -elapsedTime * 0.18;
+        innerShell.rotation.z = elapsedTime * 0.11;
+
+        // ANIMATION 03 // INDEPENDENT METALLIC RINGS
+
+        artifactRings[0].rotation.z =
+            elapsedTime * 0.25;
+
+        artifactRings[1].rotation.z =
+            -elapsedTime * 0.34;
+
+        artifactRings[2].rotation.z =
+            elapsedTime * 0.18;
+
+        // ANIMATION 04 // FLOATING FRAGMENTS
+
+        artifactFragments.rotation.y =
+            -elapsedTime * 0.2;
+
+        artifactFragments.rotation.z =
+            Math.sin(elapsedTime * 0.4) * 0.12;
+
+        // ANIMATION 05 // ENERGY PULSE
+
+        const pulse =
+            1 + Math.sin(elapsedTime * 2.5) * 0.07;
+
+        crystal.scale.setScalar(pulse);
+
+        innerCoreLight.intensity =
+            22 + Math.sin(elapsedTime * 3) * 8;
+
+        // ANIMATION 06 // EXISTING ENERGY LIGHT
+
         coreLight.position.y = energyCore.position.y;
+
+        // ANIMATION 07 // RECEPTION SIGN
 
         receptionSign.material.opacity =
             0.85 + Math.sin(elapsedTime * 1.5) * 0.15;
     }
+
 
     // =====================================================
     // SECTION 34 // REGISTER ANIMATION

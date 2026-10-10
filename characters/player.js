@@ -230,18 +230,41 @@ export function createPlayer(camera, renderer) {
                 player.position.x = nextX;
             }
 
+           
             // Z-axis movement
 
             const nextZ = player.position.z + stepZ;
 
+            // Check if the reception key has been granted
+            // and the exit doors have finished opening.
+
+            const cityDoorReady =
+                window.hexcoreHasCityKey === true &&
+                (window.hexcoreExitOpenProgress || 0) > 0.95;
+
+            // Stop players crossing the front wall anywhere
+            // except through the central doorway.
+
+            const insideDoorway =
+                Math.abs(player.position.x) < 4.0;
+
+            const insideFrontWall =
+                nextZ > 27.7 &&
+                nextZ < 30.3;
+
+            const blockedByFrontExit =
+                insideFrontWall &&
+                (!insideDoorway || !cityDoorReady);
+
             if (
                 !collidesWithPillar(player.position.x, nextZ) &&
                 !collidesWithPlatform(player.position.x, nextZ) &&
-                !collidesWithReception(player.position.x, nextZ)
+                !collidesWithReception(player.position.x, nextZ) &&
+                !blockedByFrontExit
             ) {
                 player.position.z = nextZ;
             }
-        }
+
 
         // =====================================================
         // SECTION 05B // ROOM BOUNDARIES
@@ -257,6 +280,24 @@ export function createPlayer(camera, renderer) {
             player.position.z,
             -28,
             28
+        );
+
+        // SECTION 05B // HEADQUARTERS AND CITY BOUNDARIES
+
+        const cityAccessEnabled =
+            window.hexcoreHasCityKey === true &&
+            (window.hexcoreExitOpenProgress || 0) > 0.95;
+
+        // Visitors without a key remain inside HQ.
+        // Authorized visitors can explore the exterior.
+
+        const maximumZ =
+            cityAccessEnabled ? 205 : 28;
+
+        player.position.z = THREE.MathUtils.clamp(
+            player.position.z,
+            -28,
+            maximumZ
         );
 
         // =====================================================

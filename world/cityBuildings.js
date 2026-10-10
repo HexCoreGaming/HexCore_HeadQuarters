@@ -327,12 +327,15 @@ export function createCityBuildings(scene) {
 
         const sign = new THREE.Mesh(
             new THREE.PlaneGeometry(13, 3.1),
+            
             new THREE.MeshBasicMaterial({
                 map: texture,
                 side: THREE.DoubleSide,
-                depthTest: false,
-                transparent: true
+                depthTest: true,
+                depthWrite: true,
+                transparent: false
             })
+
         );
 
         // Outside and above the doorway.
@@ -343,7 +346,7 @@ export function createCityBuildings(scene) {
             front + 2.0
         );
 
-        sign.renderOrder = 5;
+                sign.renderOrder = 0;
 
         group.add(sign);
     }

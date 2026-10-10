@@ -77,9 +77,24 @@ export function createPlayer(camera, renderer) {
     });
 
 
+   
+    // =====================================================
+    // SECTION 04 // DESKTOP MOUSE CAMERA ONLY
+    // =====================================================
+
     document.addEventListener("mousemove", (event) => {
 
-        if (document.pointerLockElement !== renderer.domElement) {
+        // Mobile devices use the dedicated look joystick.
+        // Ignore touchscreen-generated mouse events.
+
+        if (window.matchMedia("(pointer: coarse)").matches) {
+            return;
+        }
+
+        if (
+            document.pointerLockElement !==
+            renderer.domElement
+        ) {
             return;
         }
 
@@ -92,6 +107,7 @@ export function createPlayer(camera, renderer) {
             Math.PI / 2 - 0.1
         );
     });
+
 
    
     // =====================================================

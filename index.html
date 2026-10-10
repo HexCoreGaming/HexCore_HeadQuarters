@@ -572,6 +572,12 @@
 
             window.hexcoreHasCityKey = true;
 
+            // SECTION 08B-1 // CONFIRM KEY RECEIVED
+
+            window.dispatchEvent(
+                new CustomEvent("hexcore-city-key-granted")
+            );
+
             window.hexcoreUpdateQuest(
                 "EXPLORE HEXCORE CITY",
                 "Use your City Access Key to leave headquarters.",
@@ -649,6 +655,55 @@
 
     </script>
 
+
+    <!-- ========================================== -->
+    <!-- SECTION 09 // CITY ACCESS KEY DISPLAY     -->
+    <!-- ========================================== -->
+
+    <div id="hexcore-key-display">
+        ◆ HEXCORE CITY ACCESS KEY // ACQUIRED
+    </div>
+
+    <!-- SECTION 09A // KEY DISPLAY APPEARANCE -->
+
+    <style>
+
+        #hexcore-key-display {
+            display: none;
+            position: fixed;
+            top: 215px;
+            right: 20px;
+            max-width: calc(100vw - 40px);
+            box-sizing: border-box;
+            padding: 12px 16px;
+            background: rgba(8, 7, 17, 0.94);
+            border: 1px solid #8CD6FD;
+            border-left: 3px solid #8650E8;
+            color: #8CD6FD;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            z-index: 90;
+            pointer-events: none;
+        }
+
+    </style>
+
+    <!-- SECTION 09B // KEY ACQUISITION EVENT -->
+
+    <script>
+
+        window.addEventListener(
+            "hexcore-city-key-granted",
+            () => {
+
+                document.getElementById(
+                    "hexcore-key-display"
+                ).style.display = "block";
+
+            }
+        );
+
+    </script>
 
 </body>
 </html>

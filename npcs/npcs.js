@@ -220,6 +220,42 @@ export function createNPCs(scene) {
         0x163C51
     ];
 
+    // =====================================================
+    // SECTION 05A // FEMALE VISITOR APPEARANCE
+    // =====================================================
+
+    // Shared dress geometry with a fitted upper section
+    // and a wider skirt.
+
+    const dressSkirtGeometry =
+        new THREE.CylinderGeometry(0.23, 0.58, 1.05, 12);
+
+    const dressWaistGeometry =
+        new THREE.CylinderGeometry(0.22, 0.3, 0.48, 10);
+
+    // Longer hair falls behind the shoulders.
+
+    const longHairGeometry =
+        new THREE.CylinderGeometry(0.20, 0.29, 0.85, 10);
+
+    const femaleDressColors = [
+        0x54256B,
+        0x192F58,
+        0x642345,
+        0x293D53,
+        0x43245F
+    ];
+
+    const femaleDressMaterials =
+        femaleDressColors.map(color =>
+            new THREE.MeshStandardMaterial({
+                color,
+                metalness: 0.25,
+                roughness: 0.5,
+                side: THREE.DoubleSide
+            })
+        );
+
     const visitorNames = [
         "NeonWraith",
         "VoidRunner",
@@ -449,6 +485,13 @@ export function createNPCs(scene) {
 
         const group = new THREE.Group();
 
+        // SECTION 08A-1 // VISITOR BODY TYPE
+
+        // Alternate between male and female visitors.
+        // This creates an even population split.
+
+        const isFemale = index % 2 === 1;
+
         const outfit =
             outfitMaterials[index % outfitMaterials.length];
 
@@ -467,6 +510,58 @@ export function createNPCs(scene) {
 
         body.position.y = 1.25;
         group.add(body);
+
+        // SECTION 08A-2 // FEMALE DRESS
+
+        if (isFemale) {
+
+            // Hide the original cylindrical torso.
+
+            body.visible = false;
+
+            const dressMaterial =
+                femaleDressMaterials[
+                    Math.floor(index / 2) %
+                    femaleDressMaterials.length
+                ];
+
+            // Fitted upper part of the dress.
+
+            const dressUpper = new THREE.Mesh(
+                dressWaistGeometry,
+                dressMaterial
+            );
+
+            dressUpper.position.y = 1.43;
+            group.add(dressUpper);
+
+            // Flowing skirt, wider toward the bottom.
+
+            const dressSkirt = new THREE.Mesh(
+                dressSkirtGeometry,
+                dressMaterial
+            );
+
+            dressSkirt.position.y = 0.73;
+            group.add(dressSkirt);
+
+            // Subtle glowing waist decoration.
+
+            const waistGlow = new THREE.Mesh(
+                new THREE.TorusGeometry(
+                    0.27,
+                    0.018,
+                    6,
+                    20
+                ),
+                purpleTrim
+            );
+
+            waistGlow.rotation.x = Math.PI / 2;
+            waistGlow.position.y = 1.21;
+
+            group.add(waistGlow);
+        }
 
         // SECTION 08B // LEGS
 
@@ -521,6 +616,45 @@ export function createNPCs(scene) {
 
         visitorHairMesh.position.y = 1.91;
         group.add(visitorHairMesh);
+
+        // SECTION 08D-1 // LONG FEMALE HAIRSTYLES
+
+        if (isFemale) {
+
+            const longHair = new THREE.Mesh(
+                longHairGeometry,
+                visitorHair
+            );
+
+            // Position the long hair behind the head.
+            // This leaves the face visible.
+
+            longHair.position.set(0, 1.58, -0.13);
+
+            group.add(longHair);
+
+            // Add two strands around the shoulders.
+
+            const strandGeometry =
+                new THREE.CylinderGeometry(
+                    0.065,
+                    0.095,
+                    0.7,
+                    8
+                );
+
+            for (const x of [-0.21, 0.21]) {
+
+                const strand = new THREE.Mesh(
+                    strandGeometry,
+                    visitorHair
+                );
+
+                strand.position.set(x, 1.55, 0.04);
+
+                group.add(strand);
+            }
+        }
 
         // SECTION 08E // USERNAME
 

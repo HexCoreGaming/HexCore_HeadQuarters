@@ -233,29 +233,12 @@ export function createPlayer(camera, renderer) {
         );
     }
 
+   
     // =====================================================
     // SECTION 04E // CITY BUILDING COLLISION
     // =====================================================
 
-    const cityBuildingRadii = {
-        prism: 12,
-        spire: 11,
-        hexhall: 13,
-        pod: 11,
-        crystal: 12,
-        obelisk: 11,
-        citadel: 13,
-        market: 14,
-        reactor: 12,
-        sanctum: 15,
-        arcade: 14,
-        cinema: 16,
-        arena: 21
-    };
-
     function collidesWithCityBuilding(x, z) {
-
-        // Do not apply department collisions inside HQ.
 
         if (z < 30.3) {
             return false;
@@ -266,19 +249,60 @@ export function createPlayer(camera, renderer) {
 
         for (const building of buildings) {
 
-            const radius =
-                (cityBuildingRadii[building.type] || 12) +
-                playerRadius;
-
             const dx = x - building.x;
             const dz = z - building.z;
 
-            if (
-                dx * dx + dz * dz <
-                radius * radius
-            ) {
-                return true;
+            // Transform player position into the
+            // building's own rotated coordinate system.
+
+            const angle = THREE.MathUtils.degToRad(
+                building.rotation
+            );
+
+            const localX =
+                dx * Math.cos(angle) -
+                dz * Math.sin(angle);
+
+            const localZ =
+                dx * Math.sin(angle) +
+                dz * Math.cos(angle);
+
+            const distance = Math.hypot(
+                localX,
+                localZ
+            );
+
+            const radius = building.radius;
+
+            // Inside the main room, movement is allowed.
+
+            if (distance < radius - 1.1) {
+                continue;
             }
+
+            // Outside the building, movement is allowed.
+
+            if (distance > radius + 0.7) {
+                continue;
+            }
+
+            // The entrance occupies the front-facing
+            // section of the building.
+
+            const insideDoorway =
+                Math.abs(localX) < 3.05 &&
+                localZ > building.front - 2.5;
+
+            const doorOpen =
+                building.doorOpen > 0.83;
+
+            if (insideDoorway && doorOpen) {
+                continue;
+            }
+
+            // The remaining wall perimeter is solid.
+
+            return true;
         }
 
         return false;

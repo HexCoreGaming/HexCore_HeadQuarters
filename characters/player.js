@@ -149,7 +149,7 @@ if (!collidesWithPillar(
 )) {
     player.position.z += stepZ;
 }
-            );
+            
         }
 
         // Temporary room boundaries

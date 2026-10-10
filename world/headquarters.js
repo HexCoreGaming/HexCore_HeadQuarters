@@ -1708,22 +1708,105 @@ export function createHeadquarters(scene) {
     }
 
  
-    // SECTION 34E-1 // OUTER CITY SKYLINE
+ 
+    // =====================================================
+    // SECTION 34E // OUTER CITY SKYLINE
+    // =====================================================
 
-    // Place decorative towers along the far edges
-    // instead of among the department buildings.
+    // Decorative skyscrapers stand at the outer edges
+    // of the city, away from department buildings.
 
-    exteriorTowers.push(
-        createExteriorTower(-132, 0, 55, 10, 42, 10),
-        createExteriorTower(-138, 0, 105, 12, 55, 12),
-        createExteriorTower(-128, 0, 160, 11, 48, 11),
-        createExteriorTower(-137, 0, 215, 13, 62, 13),
+    function createExteriorTower(x, z, width, height, depth) {
 
-        createExteriorTower(132, 0, 65, 10, 45, 10),
-        createExteriorTower(138, 0, 115, 12, 58, 12),
-        createExteriorTower(128, 0, 175, 11, 51, 11),
-        createExteriorTower(137, 0, 225, 13, 65, 13)
-    );
+        const tower = new THREE.Group();
+
+        tower.position.set(x, 0, z);
+
+        // Main tower structure.
+
+        const body = new THREE.Mesh(
+            new THREE.BoxGeometry(width, height, depth),
+            exteriorTowerMaterial
+        );
+
+        body.position.y = height / 2;
+        tower.add(body);
+
+        // Illuminated rooftop crown.
+
+        const crown = new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width + 0.8,
+                0.45,
+                depth + 0.8
+            ),
+            exteriorPurpleGlow
+        );
+
+        crown.position.y = height + 0.25;
+        tower.add(crown);
+
+        // Glowing vertical architectural accents.
+
+        for (const side of [-1, 1]) {
+
+            const strip = new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    0.18,
+                    height * 0.85,
+                    0.2
+                ),
+                exteriorCyanGlow
+            );
+
+            strip.position.set(
+                side * (width / 2 + 0.12),
+                height / 2,
+                depth / 2 + 0.12
+            );
+
+            tower.add(strip);
+        }
+
+        // Window bands.
+
+        for (let y = 5; y < height - 2; y += 5) {
+
+            const windows = new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    width * 0.75,
+                    0.35,
+                    0.15
+                ),
+                exteriorPanelMaterial
+            );
+
+            windows.position.set(
+                0,
+                y,
+                depth / 2 + 0.13
+            );
+
+            tower.add(windows);
+        }
+
+        exteriorRealm.add(tower);
+
+        return tower;
+    }
+
+    // SECTION 34E-1 // SKYLINE POSITIONS
+
+    createExteriorTower(-132, 55, 10, 42, 10);
+    createExteriorTower(-138, 105, 12, 55, 12);
+    createExteriorTower(-128, 160, 11, 48, 11);
+    createExteriorTower(-137, 215, 13, 62, 13);
+
+    createExteriorTower(132, 65, 10, 45, 10);
+    createExteriorTower(138, 115, 12, 58, 12);
+    createExteriorTower(128, 175, 11, 51, 11);
+    createExteriorTower(137, 225, 13, 65, 13);
+
 
     // SECTION 34F // FLOATING PLATFORMS / RINGS
 

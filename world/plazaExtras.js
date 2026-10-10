@@ -240,8 +240,59 @@ export function createPlazaExtras(scene) {
         };
     }
 
-    const dancerA = createDancer(0x6229A7, 0xB9856A);
-    const dancerB = createDancer(0x294C79, 0xD1A287);
+   
+    // Male dancer wearing a formal blue suit.
+
+    const dancerA = createDancer(
+        0x294C79,
+        0xB9856A
+    );
+
+    // Female dancer wearing a purple evening dress.
+
+    const dancerB = createDancer(
+        0x7529B8,
+        0xD1A287
+    );
+
+    // Flowing dress skirt.
+
+    const dressMaterial = new THREE.MeshStandardMaterial({
+        color: 0x7529B8,
+        metalness: 0.25,
+        roughness: 0.5,
+        side: THREE.DoubleSide
+    });
+
+    const dressSkirt = new THREE.Mesh(
+        new THREE.CylinderGeometry(
+            0.26,
+            0.75,
+            1.05,
+            24
+        ),
+        dressMaterial
+    );
+
+    dressSkirt.position.set(0, 0.85, 0);
+
+    dancerB.dancer.add(dressSkirt);
+
+    // Longer hair framing the back of her head.
+
+    const longHair = new THREE.Mesh(
+        new THREE.SphereGeometry(0.31, 16, 12),
+        new THREE.MeshStandardMaterial({
+            color: 0x211626,
+            roughness: 0.85
+        })
+    );
+
+    longHair.scale.set(1, 1.45, 0.75);
+    longHair.position.set(0, 2.12, -0.16);
+
+    dancerB.dancer.add(longHair);
+
 
     // Dance just outside the central fountain basin.
 

@@ -1457,9 +1457,404 @@ export function createHeadquarters(scene) {
 
     createLobbyLounge(-20);
     createLobbyLounge(20);
-
     // =====================================================
-    // SECTION 34 // ENVIRONMENT ANIMATION
+    // SECTION 34 // EXTERIOR DIGITAL REALM
+    // =====================================================
+
+    // This exterior sits outside the front glass wall.
+    // Interior front glass is at Z = 29.5, so the realm
+    // begins beyond that point and stretches outward.
+
+    // SECTION 34A // EXTERIOR MATERIALS
+
+    const exteriorTowerMaterial = new THREE.MeshStandardMaterial({
+        color: 0x0A0D14,
+        metalness: 0.92,
+        roughness: 0.22,
+        emissive: 0x120E24,
+        emissiveIntensity: 0.22
+    });
+
+    const exteriorPanelMaterial = new THREE.MeshStandardMaterial({
+        color: 0x121827,
+        metalness: 0.75,
+        roughness: 0.18,
+        emissive: 0x1A1F35,
+        emissiveIntensity: 0.35
+    });
+
+    const exteriorPurpleGlow = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    const exteriorCyanGlow = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    const exteriorMagentaGlow = new THREE.MeshBasicMaterial({
+        color: 0xD96BFF
+    });
+
+    // SECTION 34B // EXTERIOR MASTER GROUP
+
+    const exteriorRealm = new THREE.Group();
+    exteriorRealm.position.set(0, 0, 0);
+    scene.add(exteriorRealm);
+
+    // SECTION 34C // EXTERIOR GROUND PLANE
+
+    const exteriorGround = new THREE.Mesh(
+        new THREE.BoxGeometry(200, 2, 220),
+        new THREE.MeshStandardMaterial({
+            color: 0x05070B,
+            metalness: 0.55,
+            roughness: 0.35,
+            emissive: 0x090B14,
+            emissiveIntensity: 0.18
+        })
+    );
+
+    exteriorGround.position.set(0, -1.2, 110);
+    exteriorRealm.add(exteriorGround);
+
+    // SECTION 34D // GLOWING EXTERIOR PATHWAYS
+
+    function addExteriorPathway(width, length, x, z, material) {
+        const path = new THREE.Mesh(
+            new THREE.BoxGeometry(width, 0.06, length),
+            material
+        );
+
+        path.position.set(x, 0.08, z);
+        exteriorRealm.add(path);
+    }
+
+    addExteriorPathway(6, 160, 0, 105, exteriorPurpleGlow);
+    addExteriorPathway(0.14, 160, -3.2, 105, exteriorCyanGlow);
+    addExteriorPathway(0.14, 160, 3.2, 105, exteriorCyanGlow);
+
+    for (const laneX of [-42, -22, 22, 42]) {
+        addExteriorPathway(0.12, 150, laneX, 112, exteriorPurpleGlow);
+    }
+
+    // SECTION 34E // DISTANT TOWERS
+
+    function createExteriorTower(x, y, z, width, height, depth) {
+
+        const tower = new THREE.Group();
+
+        const body = new THREE.Mesh(
+            new THREE.BoxGeometry(width, height, depth),
+            exteriorTowerMaterial
+        );
+
+        body.position.y = height / 2;
+        tower.add(body);
+
+        // Vertical edge glows
+        for (const edgeX of [-width / 2 + 0.18, width / 2 - 0.18]) {
+
+            const edgeGlow = new THREE.Mesh(
+                new THREE.BoxGeometry(0.14, height * 0.92, 0.12),
+                exteriorPurpleGlow
+            );
+
+            edgeGlow.position.set(edgeX, height / 2, depth / 2 + 0.08);
+            tower.add(edgeGlow);
+        }
+
+        // Top cyan trim
+        const topTrim = new THREE.Mesh(
+            new THREE.BoxGeometry(width * 0.94, 0.12, 0.12),
+            exteriorCyanGlow
+        );
+
+        topTrim.position.set(0, height - 0.35, depth / 2 + 0.08);
+        tower.add(topTrim);
+
+        // Mid panel
+        const midPanel = new THREE.Mesh(
+            new THREE.BoxGeometry(width * 0.72, height * 0.28, 0.18),
+            exteriorPanelMaterial
+        );
+
+        midPanel.position.set(0, height * 0.58, depth / 2 + 0.09);
+        tower.add(midPanel);
+
+        tower.position.set(x, y, z);
+        exteriorRealm.add(tower);
+
+        return tower;
+    }
+
+    const exteriorTowers = [];
+
+    exteriorTowers.push(
+        createExteriorTower(-52, 0, 78, 10, 34, 10),
+        createExteriorTower(-32, 0, 68, 8, 26, 8),
+        createExteriorTower(-12, 0, 58, 7, 22, 7),
+        createExteriorTower(14, 0, 60, 8, 25, 8),
+        createExteriorTower(34, 0, 72, 10, 30, 10),
+        createExteriorTower(56, 0, 84, 12, 38, 12),
+        createExteriorTower(-68, 0, 98, 12, 46, 12),
+        createExteriorTower(74, 0, 102, 13, 50, 13)
+    );
+
+    // SECTION 34F // FLOATING PLATFORMS / RINGS
+
+    const floatingStructures = [];
+
+    function createFloatingRing(x, y, z, radius, tiltX, tiltY) {
+
+        const ringGroup = new THREE.Group();
+
+        const outerRing = new THREE.Mesh(
+            new THREE.TorusGeometry(radius, 0.25, 14, 72),
+            exteriorPurpleGlow
+        );
+
+        ringGroup.add(outerRing);
+
+        const innerRing = new THREE.Mesh(
+            new THREE.TorusGeometry(radius - 0.65, 0.12, 12, 72),
+            exteriorCyanGlow
+        );
+
+        ringGroup.add(innerRing);
+
+        const platform = new THREE.Mesh(
+            new THREE.CylinderGeometry(radius * 0.8, radius * 0.8, 0.5, 8),
+            exteriorTowerMaterial
+        );
+
+        platform.position.y = -0.05;
+        ringGroup.add(platform);
+
+        ringGroup.position.set(x, y, z);
+        ringGroup.rotation.x = tiltX;
+        ringGroup.rotation.y = tiltY;
+
+        exteriorRealm.add(ringGroup);
+        floatingStructures.push(ringGroup);
+
+        return ringGroup;
+    }
+
+    createFloatingRing(-24, 18, 86, 5.2, Math.PI / 2, 0.4);
+    createFloatingRing(26, 24, 94, 6.4, Math.PI / 2, -0.25);
+    createFloatingRing(0, 31, 128, 10, Math.PI / 2, 0);
+
+    // SECTION 34G // CENTRAL ENERGY SPIRE
+
+    const energySpire = new THREE.Group();
+
+    const spireBase = new THREE.Mesh(
+        new THREE.CylinderGeometry(3.8, 5.5, 8, 8),
+        exteriorTowerMaterial
+    );
+
+    spireBase.position.y = 4;
+    energySpire.add(spireBase);
+
+    const spireCore = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.5, 0.5, 34, 8),
+        exteriorCyanGlow
+    );
+
+    spireCore.position.y = 20;
+    energySpire.add(spireCore);
+
+    const spireHalo = new THREE.Mesh(
+        new THREE.TorusGeometry(4.8, 0.16, 12, 72),
+        exteriorMagentaGlow
+    );
+
+    spireHalo.rotation.x = Math.PI / 2;
+    spireHalo.position.y = 16;
+    energySpire.add(spireHalo);
+
+    const spireTop = new THREE.Mesh(
+        new THREE.OctahedronGeometry(2.2, 0),
+        new THREE.MeshStandardMaterial({
+            color: 0xC58AFF,
+            emissive: 0x852DFF,
+            emissiveIntensity: 1.3,
+            metalness: 0.25,
+            roughness: 0.08
+        })
+    );
+
+    spireTop.position.y = 36;
+    energySpire.add(spireTop);
+
+    energySpire.position.set(0, 0, 88);
+    exteriorRealm.add(energySpire);
+
+    // SECTION 34H // SIDE ENERGY BEAMS
+
+    function createBeamLine(length, x, y, z, rotationY, material) {
+        const beam = new THREE.Mesh(
+            new THREE.BoxGeometry(length, 0.07, 0.07),
+            material
+        );
+
+        beam.position.set(x, y, z);
+        beam.rotation.y = rotationY;
+        exteriorRealm.add(beam);
+
+        return beam;
+    }
+
+    const beamLines = [];
+
+    beamLines.push(
+        createBeamLine(38, -26, 18, 88, 0.08, exteriorPurpleGlow),
+        createBeamLine(38, 26, 18, 88, -0.08, exteriorPurpleGlow),
+        createBeamLine(44, -34, 16, 88, 0.04, exteriorCyanGlow),
+        createBeamLine(44, 34, 16, 88, -0.04, exteriorCyanGlow)
+    );
+
+    // SECTION 34I // HOLOGRAPHIC BILLBOARDS
+
+    function createHologramPanel(textLines, x, y, z, width, height) {
+
+        const holoCanvas = document.createElement("canvas");
+        holoCanvas.width = 512;
+        holoCanvas.height = 768;
+
+        const holoContext = holoCanvas.getContext("2d");
+
+        holoContext.clearRect(0, 0, 512, 768);
+
+        const holoGradient = holoContext.createLinearGradient(0, 0, 0, 768);
+        holoGradient.addColorStop(0, "rgba(90,40,180,0.82)");
+        holoGradient.addColorStop(1, "rgba(20,10,40,0.18)");
+
+        holoContext.fillStyle = holoGradient;
+        holoContext.fillRect(0, 0, 512, 768);
+
+        holoContext.strokeStyle = "rgba(140,214,253,0.95)";
+        holoContext.lineWidth = 8;
+        holoContext.strokeRect(16, 16, 480, 736);
+
+        holoContext.textAlign = "center";
+        holoContext.textBaseline = "middle";
+        holoContext.shadowColor = "#8650E8";
+        holoContext.shadowBlur = 18;
+        holoContext.fillStyle = "#F0ECFF";
+        holoContext.font = "bold 42px Arial";
+
+        const startY = 220;
+        const stepY = 88;
+
+        textLines.forEach((line, index) => {
+            holoContext.fillText(line, 256, startY + index * stepY);
+        });
+
+        const holoTexture = new THREE.CanvasTexture(holoCanvas);
+        holoTexture.colorSpace = THREE.SRGBColorSpace;
+
+        const holoMaterial = new THREE.MeshBasicMaterial({
+            map: holoTexture,
+            transparent: true,
+            opacity: 0.82,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        });
+
+        const panel = new THREE.Mesh(
+            new THREE.PlaneGeometry(width, height),
+            holoMaterial
+        );
+
+        panel.position.set(x, y, z);
+        exteriorRealm.add(panel);
+
+        return panel;
+    }
+
+    const hologramPanels = [];
+
+    hologramPanels.push(
+        createHologramPanel(
+            ["NEUTRAL", "GROUND", "DOMAIN"],
+            -44, 18, 62, 7, 10.5
+        ),
+        createHologramPanel(
+            ["HUMANS", "VS", "ELVES"],
+            44, 18, 68, 7, 10.5
+        ),
+        createHologramPanel(
+            ["SIMULATION", "BEYOND"],
+            0, 28, 116, 8.5, 11.5
+        )
+    );
+
+    // SECTION 34J // FLOATING DIGITAL SHARDS
+
+    const exteriorShards = new THREE.Group();
+
+    for (let i = 0; i < 40; i++) {
+
+        const shard = new THREE.Mesh(
+            new THREE.OctahedronGeometry(0.4 + (i % 4) * 0.08, 0),
+            i % 3 === 0
+                ? exteriorCyanGlow
+                : exteriorPurpleGlow
+        );
+
+        const angle = (i / 40) * Math.PI * 2;
+        const radius = 18 + (i % 5) * 3.5;
+
+        shard.position.set(
+            Math.cos(angle) * radius,
+            16 + Math.sin(i * 0.7) * 8,
+            88 + Math.sin(angle) * 10
+        );
+
+        shard.rotation.set(i * 0.2, i * 0.5, i * 0.3);
+        exteriorShards.add(shard);
+    }
+
+    exteriorRealm.add(exteriorShards);
+
+    // SECTION 34K // EXTERIOR ATMOSPHERIC HAZE
+
+    const hazeSphere = new THREE.Mesh(
+        new THREE.SphereGeometry(90, 24, 16),
+        new THREE.MeshBasicMaterial({
+            color: 0x1D1038,
+            transparent: true,
+            opacity: 0.08,
+            side: THREE.BackSide,
+            depthWrite: false
+        })
+    );
+
+    hazeSphere.position.set(0, 28, 98);
+    exteriorRealm.add(hazeSphere);
+
+    // SECTION 34L // EXTERIOR LIGHTING
+
+    const realmGlowLight = new THREE.PointLight(
+        0x8650E8,
+        26,
+        140
+    );
+
+    realmGlowLight.position.set(0, 26, 88);
+    exteriorRealm.add(realmGlowLight);
+
+    const realmCyanLight = new THREE.PointLight(
+        0x8CD6FD,
+        18,
+        120
+    );
+
+    realmCyanLight.position.set(0, 18, 104);
+    exteriorRealm.add(realmCyanLight);
+    // =====================================================
+    // SECTION 35 // ENVIRONMENT ANIMATION
     // =====================================================
 
     // ANIMATION 01 // ROTATING AND FLOATING ENERGY CORE
@@ -1528,7 +1923,7 @@ export function createHeadquarters(scene) {
 
 
     // =====================================================
-    // SECTION 35 // REGISTER ANIMATION
+    // SECTION 36 // REGISTER ANIMATION
     // =====================================================
 
     return animateHeadquarters;

@@ -269,6 +269,12 @@
             createCityBuildings
         } from "./world/cityBuildings.js";
 
+        // SECTION 02D // SOCIAL PLAZA IMPORT
+
+        import {
+            createCityPlaza
+        } from "./world/cityPlaza.js";
+
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -293,6 +299,11 @@
         const updatePlayer =
             createPlayer(camera, renderer);
 
+        // SECTION 03C // CREATE SOCIAL PLAZA
+
+        const animateCityPlaza =
+            createCityPlaza(scene);
+
         // ==========================================
         // SECTION 04A // CREATE HEADQUARTERS NPCS
         // ==========================================
@@ -315,6 +326,10 @@
             // SECTION 05B // ANIMATE CITY BUILDINGS
 
             animateCityBuildings();
+
+            // SECTION 05C // ANIMATE SOCIAL PLAZA
+
+            animateCityPlaza();
 
             updateNPCs();
 

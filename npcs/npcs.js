@@ -45,9 +45,6 @@ export function createNPCs(scene) {
 
     const receptionist = new THREE.Group();
 
-    // Desk is centered at Z = -24.
-    // Receptionist stands behind the desk.
-
     receptionist.position.set(0, 0, -26.2);
 
     // SECTION 03A // LOWER BODY
@@ -142,10 +139,8 @@ export function createNPCs(scene) {
     const nameContext = nameCanvas.getContext("2d");
 
     nameContext.clearRect(0, 0, 1024, 256);
-
     nameContext.textAlign = "center";
     nameContext.textBaseline = "middle";
-
     nameContext.fillStyle = "#8CD6FD";
     nameContext.font = "bold 70px Consolas";
 
@@ -171,32 +166,720 @@ export function createNPCs(scene) {
     nameDisplay.position.set(0, 2.95, 0);
     receptionist.add(nameDisplay);
 
-    // Face toward the visitor side of the desk.
     scene.add(receptionist);
 
     // =====================================================
-    // SECTION 05 // NPC ANIMATION
+    // SECTION 05 // SHARED VISITOR RESOURCES
     // =====================================================
 
-    const clock = new THREE.Clock();
+    const bodyGeometry =
+        new THREE.CylinderGeometry(0.25, 0.23, 0.8, 8);
 
-    function updateNPCs() {
+    const legGeometry =
+        new THREE.CylinderGeometry(0.09, 0.08, 0.8, 6);
 
-        const time = clock.getElapsedTime();
+    const armGeometry =
+        new THREE.CylinderGeometry(0.085, 0.075, 0.72, 6);
 
-        // Gentle idle movement
+    const headGeometry =
+        new THREE.SphereGeometry(0.22, 10, 8);
 
-        torso.rotation.z = Math.sin(time * 1.3) * 0.025;
-        head.rotation.y = Math.sin(time * 0.7) * 0.12;
+    const hairGeometry =
+        new THREE.SphereGeometry(
+            0.235, 10, 8,
+            0, Math.PI * 2,
+            0, Math.PI * 0.55
+        );
 
-        // Subtle uniform accent pulse
+    const visitorColors = [
+        0x292044,
+        0x182B43,
+        0x3D193C,
+        0x202A2F,
+        0x40283B,
+        0x253644,
+        0x322842,
+        0x183A39,
+        0x3E284A,
+        0x242838
+    ];
 
-        const pulse = 0.85 + Math.sin(time * 1.7) * 0.15;
-        chestTrim.scale.x = pulse;
+    const skinColors = [
+        0xBA8F7D,
+        0xD5AA8A,
+        0x805544,
+        0xE0B899,
+        0xA77859
+    ];
+
+    const hairColors = [
+        0x17111F,
+        0x412B29,
+        0xD2C5B0,
+        0x4B214D,
+        0x163C51
+    ];
+
+    const visitorNames = [
+        "NeonWraith",
+        "VoidRunner",
+        "HexGhost",
+        "CyberNova",
+        "ArcLight",
+        "VioletZero",
+        "SkyBreaker",
+        "EchoShift",
+        "NightPixel",
+        "GlitchFox"
+    ];
+
+    const outfitMaterials = visitorColors.map(color =>
+        new THREE.MeshStandardMaterial({
+            color,
+            metalness: 0.25,
+            roughness: 0.65
+        })
+    );
+
+    const visitorSkinMaterials = skinColors.map(color =>
+        new THREE.MeshStandardMaterial({
+            color,
+            roughness: 0.8
+        })
+    );
+
+    const visitorHairMaterials = hairColors.map(color =>
+        new THREE.MeshStandardMaterial({
+            color,
+            roughness: 0.85
+        })
+    );
+
+    // =====================================================
+    // SECTION 06 // VISITOR NAME AND CHAT DISPLAYS
+    // =====================================================
+
+    function createTextSprite(text, options = {}) {
+
+        const isChat = options.chat === true;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 128;
+
+        const ctx = canvas.getContext("2d");
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthWrite: false
+        });
+
+        const sprite = new THREE.Sprite(material);
+
+        sprite.scale.set(
+            isChat ? 3.8 : 2.0,
+            isChat ? 0.95 : 0.5,
+            1
+        );
+
+        function setText(value) {
+
+            ctx.clearRect(0, 0, 512, 128);
+
+            if (isChat) {
+
+                ctx.fillStyle = "rgba(8,7,23,0.90)";
+                ctx.fillRect(8, 8, 496, 112);
+
+                ctx.strokeStyle = "#8650E8";
+                ctx.lineWidth = 4;
+                ctx.strokeRect(8, 8, 496, 112);
+
+                ctx.fillStyle = "#EAE8FF";
+                ctx.font = "25px Consolas, monospace";
+
+                const words = value.split(" ");
+                const lines = [];
+                let line = "";
+
+                for (const word of words) {
+
+                    const test = line
+                        ? line + " " + word
+                        : word;
+
+                    if (
+                        ctx.measureText(test).width > 460 &&
+                        line
+                    ) {
+                        lines.push(line);
+                        line = word;
+                    } else {
+                        line = test;
+                    }
+                }
+
+                if (line) {
+                    lines.push(line);
+                }
+
+                const visibleLines = lines.slice(0, 3);
+                const lineHeight = 30;
+
+                const startY =
+                    64 - ((visibleLines.length - 1) * lineHeight) / 2;
+
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                visibleLines.forEach((part, i) => {
+                    ctx.fillText(
+                        part,
+                        256,
+                        startY + i * lineHeight
+                    );
+                });
+
+            } else {
+
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.font = "bold 43px Consolas, monospace";
+
+                ctx.shadowColor = "#000000";
+                ctx.shadowBlur = 10;
+
+                ctx.fillStyle = "#8CD6FD";
+                ctx.fillText(value, 256, 64);
+            }
+
+            texture.needsUpdate = true;
+        }
+
+        setText(text);
+
+        return {
+            sprite,
+            setText
+        };
     }
 
     // =====================================================
-    // SECTION 06 // NPC SYSTEM OUTPUT
+    // SECTION 07 // VISITOR MOVEMENT AREAS
+    // =====================================================
+
+    // These visitor destinations avoid the reception desk,
+    // central energy platform, and main structural pillars.
+
+    const roamingPoints = [
+        { x: -12, z: -12 },
+        { x: -14, z: 1 },
+        { x: -10, z: 13 },
+        { x: -6, z: 20 },
+
+        { x: 12, z: -12 },
+        { x: 14, z: 1 },
+        { x: 10, z: 13 },
+        { x: 6, z: 20 },
+
+        { x: -15, z: -7 },
+        { x: 15, z: -7 },
+
+        { x: -8, z: -18 },
+        { x: 8, z: -18 }
+    ];
+
+    function validVisitorPosition(x, z) {
+
+        if (
+            Math.abs(x) > 23 ||
+            Math.abs(z) > 22
+        ) {
+            return false;
+        }
+
+        // Central platform.
+
+        if (x * x + z * z < 48) {
+            return false;
+        }
+
+        // Reception desk.
+
+        if (
+            Math.abs(x) < 7.5 &&
+            z < -21
+        ) {
+            return false;
+        }
+
+        // Lobby pillars.
+
+        for (const px of [-20, 20]) {
+            for (const pz of [-18, 18]) {
+
+                if (
+                    Math.abs(x - px) < 2.5 &&
+                    Math.abs(z - pz) < 2.5
+                ) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // =====================================================
+    // SECTION 08 // CREATE SIMULATED VISITORS
+    // =====================================================
+
+    const isMobile =
+        window.matchMedia("(pointer: coarse)").matches;
+
+    const visitorCount = isMobile ? 6 : 10;
+
+    const visitors = [];
+
+    function createVisitor(index) {
+
+        const group = new THREE.Group();
+
+        const outfit =
+            outfitMaterials[index % outfitMaterials.length];
+
+        const skin =
+            visitorSkinMaterials[index % visitorSkinMaterials.length];
+
+        const visitorHair =
+            visitorHairMaterials[index % visitorHairMaterials.length];
+
+        // SECTION 08A // BODY
+
+        const body = new THREE.Mesh(
+            bodyGeometry,
+            outfit
+        );
+
+        body.position.y = 1.25;
+        group.add(body);
+
+        // SECTION 08B // LEGS
+
+        const leftLeg = new THREE.Mesh(
+            legGeometry,
+            outfit
+        );
+
+        leftLeg.position.set(-0.13, 0.42, 0);
+        group.add(leftLeg);
+
+        const rightLeg = new THREE.Mesh(
+            legGeometry,
+            outfit
+        );
+
+        rightLeg.position.set(0.13, 0.42, 0);
+        group.add(rightLeg);
+
+        // SECTION 08C // ARMS
+
+        const leftArm = new THREE.Mesh(
+            armGeometry,
+            outfit
+        );
+
+        leftArm.position.set(-0.34, 1.2, 0);
+        group.add(leftArm);
+
+        const rightArm = new THREE.Mesh(
+            armGeometry,
+            outfit
+        );
+
+        rightArm.position.set(0.34, 1.2, 0);
+        group.add(rightArm);
+
+        // SECTION 08D // HEAD AND HAIR
+
+        const visitorHead = new THREE.Mesh(
+            headGeometry,
+            skin
+        );
+
+        visitorHead.position.y = 1.86;
+        group.add(visitorHead);
+
+        const visitorHairMesh = new THREE.Mesh(
+            hairGeometry,
+            visitorHair
+        );
+
+        visitorHairMesh.position.y = 1.91;
+        group.add(visitorHairMesh);
+
+        // SECTION 08E // USERNAME
+
+        const username = createTextSprite(
+            visitorNames[index]
+        );
+
+        username.sprite.position.y = 2.45;
+        group.add(username.sprite);
+
+        // SECTION 08F // OVERHEAD CHAT
+
+        const chat = createTextSprite("", {
+            chat: true
+        });
+
+        chat.sprite.position.y = 3.25;
+        chat.sprite.visible = false;
+
+        group.add(chat.sprite);
+
+        // SECTION 08G // INITIAL POSITION
+
+        const start =
+            roamingPoints[index % roamingPoints.length];
+
+        group.position.set(start.x, 0, start.z);
+
+        scene.add(group);
+
+        const visitor = {
+            group,
+            name: visitorNames[index],
+            chat,
+            leftLeg,
+            rightLeg,
+            leftArm,
+            rightArm,
+            target: new THREE.Vector3(
+                start.x, 0, start.z
+            ),
+            speed: 0.85 + Math.random() * 0.45,
+            waitUntil: Math.random() * 4,
+            walking: false,
+            chatUntil: 0,
+            nextChatTime: 7 + Math.random() * 8,
+            movementPhase: Math.random() * Math.PI * 2
+        };
+
+        visitors.push(visitor);
+    }
+
+    for (let i = 0; i < visitorCount; i++) {
+        createVisitor(i);
+    }
+
+    // =====================================================
+    // SECTION 09 // VISITOR WANDERING BEHAVIOR
+    // =====================================================
+
+    function chooseVisitorTarget(visitor) {
+
+        // Usually roam around the headquarters.
+        // Occasionally stop for a longer period.
+
+        if (Math.random() < 0.22) {
+
+            visitor.walking = false;
+            visitor.waitUntil =
+                elapsedTime + 3 + Math.random() * 6;
+
+            return;
+        }
+
+        const point =
+            roamingPoints[
+                Math.floor(Math.random() * roamingPoints.length)
+            ];
+
+        visitor.target.set(point.x, 0, point.z);
+        visitor.walking = true;
+    }
+
+    // =====================================================
+    // SECTION 10 // RANDOM NPC CONVERSATIONS
+    // =====================================================
+
+    const conversations = [
+        [
+            "Have you checked out Cyber_Arena yet?",
+            "I heard you can walk on the ceilings.",
+            "That movement system sounds wild."
+        ],
+        [
+            "This headquarters is huge.",
+            "Wait until we get into HexCore City.",
+            "I'm heading to the arcade first."
+        ],
+        [
+            "Did you see the floating city outside?",
+            "Yeah, the atmosphere here is incredible.",
+            "I wonder what the other buildings are like."
+        ],
+        [
+            "What game are you most excited for?",
+            "Probably Untamed Horizon.",
+            "I want to explore that world."
+        ],
+        [
+            "I want to see Where Light Dies.",
+            "That rainforest sounds terrifying at night.",
+            "Especially with all the glowing wildlife."
+        ],
+        [
+            "Have you seen the fantasy academy concept?",
+            "Yeah, the whole world looks massive.",
+            "I'm curious about the classes."
+        ],
+        [
+            "Are there other visitors here?",
+            "These are simulated visitors for now.",
+            "The multiplayer version is planned later."
+        ],
+        [
+            "I really like the cyber-fantasy design.",
+            "The purple lighting is my favorite.",
+            "It feels like walking through a game."
+        ],
+        [
+            "What is that energy structure in the center?",
+            "No idea, but it looks powerful.",
+            "Maybe the receptionist knows."
+        ],
+        [
+            "I hope they add vehicles to the city.",
+            "Imagine driving through those neon streets.",
+            "I'm definitely exploring everything."
+        ]
+    ];
+
+    // Conversations are coordinated, rather than having
+    // every visitor speak unrelated sentences constantly.
+
+    const socialPairs = [];
+
+    for (let i = 0; i + 1 < visitors.length; i += 2) {
+
+        socialPairs.push({
+            first: visitors[i],
+            second: visitors[i + 1],
+            lines: [],
+            step: 0,
+            nextTime: 9 + Math.random() * 12,
+            active: false
+        });
+    }
+
+    function displayVisitorChat(visitor, message, now) {
+
+        visitor.chat.setText(message);
+        visitor.chat.sprite.visible = true;
+
+        visitor.chatUntil = now + 4.5;
+    }
+
+    function updateSocialConversations(now) {
+
+        for (const pair of socialPairs) {
+
+            if (now < pair.nextTime) {
+                continue;
+            }
+
+            if (!pair.active) {
+
+                // Conversations only begin when NPCs
+                // are near enough to plausibly socialize.
+
+                const distance =
+                    pair.first.group.position.distanceTo(
+                        pair.second.group.position
+                    );
+
+                if (distance > 9) {
+
+                    pair.nextTime = now + 5;
+                    continue;
+                }
+
+                pair.lines =
+                    conversations[
+                        Math.floor(
+                            Math.random() * conversations.length
+                        )
+                    ];
+
+                pair.step = 0;
+                pair.active = true;
+
+                pair.first.walking = false;
+                pair.second.walking = false;
+
+                pair.first.waitUntil = now + 18;
+                pair.second.waitUntil = now + 18;
+            }
+
+            if (pair.step < pair.lines.length) {
+
+                const speaker =
+                    pair.step % 2 === 0
+                        ? pair.first
+                        : pair.second;
+
+                displayVisitorChat(
+                    speaker,
+                    pair.lines[pair.step],
+                    now
+                );
+
+                pair.step++;
+                pair.nextTime = now + 5.5;
+
+            } else {
+
+                pair.active = false;
+                pair.nextTime =
+                    now + 20 + Math.random() * 20;
+            }
+        }
+    }
+
+    // =====================================================
+    // SECTION 11 // NPC ANIMATION SYSTEM
+    // =====================================================
+
+    const clock = new THREE.Clock();
+    let elapsedTime = 0;
+
+    function updateNPCs() {
+
+        const delta = Math.min(clock.getDelta(), 0.05);
+        elapsedTime += delta;
+
+        // SECTION 11A // RECEPTIONIST IDLE ANIMATION
+
+        torso.rotation.z =
+            Math.sin(elapsedTime * 1.3) * 0.025;
+
+        head.rotation.y =
+            Math.sin(elapsedTime * 0.7) * 0.12;
+
+        const pulse =
+            0.85 + Math.sin(elapsedTime * 1.7) * 0.15;
+
+        chestTrim.scale.x = pulse;
+
+        // SECTION 11B // VISITOR MOVEMENT
+
+        for (const visitor of visitors) {
+
+            if (
+                !visitor.walking &&
+                elapsedTime >= visitor.waitUntil
+            ) {
+                chooseVisitorTarget(visitor);
+            }
+
+            if (visitor.walking) {
+
+                const dx =
+                    visitor.target.x -
+                    visitor.group.position.x;
+
+                const dz =
+                    visitor.target.z -
+                    visitor.group.position.z;
+
+                const distance = Math.hypot(dx, dz);
+
+                if (distance < 0.3) {
+
+                    visitor.walking = false;
+
+                    visitor.waitUntil =
+                        elapsedTime + 2 + Math.random() * 5;
+
+                } else {
+
+                    const step = Math.min(
+                        distance,
+                        visitor.speed * delta
+                    );
+
+                    const nx =
+                        visitor.group.position.x +
+                        (dx / distance) * step;
+
+                    const nz =
+                        visitor.group.position.z +
+                        (dz / distance) * step;
+
+                    if (validVisitorPosition(nx, nz)) {
+
+                        visitor.group.position.x = nx;
+                        visitor.group.position.z = nz;
+
+                        // Rotate character toward travel direction.
+
+                        visitor.group.rotation.y =
+                            Math.atan2(dx, dz);
+
+                    } else {
+
+                        visitor.walking = false;
+                        visitor.waitUntil =
+                            elapsedTime + 1.5;
+                    }
+                }
+            }
+
+            // SECTION 11C // WALK ANIMATION
+
+            const walkingMotion =
+                visitor.walking
+                    ? Math.sin(
+                        elapsedTime * 7 +
+                        visitor.movementPhase
+                    ) * 0.45
+                    : 0;
+
+            visitor.leftLeg.rotation.x =
+                walkingMotion;
+
+            visitor.rightLeg.rotation.x =
+                -walkingMotion;
+
+            visitor.leftArm.rotation.x =
+                -walkingMotion * 0.65;
+
+            visitor.rightArm.rotation.x =
+                walkingMotion * 0.65;
+
+            // SECTION 11D // HIDE EXPIRED CHAT
+
+            if (
+                visitor.chat.sprite.visible &&
+                elapsedTime >= visitor.chatUntil
+            ) {
+                visitor.chat.sprite.visible = false;
+            }
+        }
+
+        // SECTION 11E // UPDATE SOCIAL CHAT
+
+        updateSocialConversations(elapsedTime);
+    }
+
+    // =====================================================
+    // SECTION 12 // NPC SYSTEM OUTPUT
     // =====================================================
 
     return updateNPCs;

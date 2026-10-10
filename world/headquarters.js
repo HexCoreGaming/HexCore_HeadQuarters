@@ -1,3 +1,4 @@
+
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 // =====================================================
@@ -97,10 +98,10 @@ export function createHeadquarters(scene) {
     // =====================================================
 
     const wallMaterial = new THREE.MeshStandardMaterial({
-    color: 0x101020,
-    metalness: 0.8,
-    roughness: 0.25
-});
+        color: 0x101020,
+        metalness: 0.8,
+        roughness: 0.25
+    });
 
     const frameMaterial = new THREE.MeshStandardMaterial({
         color: 0x241247,
@@ -197,6 +198,7 @@ export function createHeadquarters(scene) {
         strip.position.set(x, 0.12, 0);
         scene.add(strip);
     }
+
     // =====================================================
     // SECTION 17 // ILLUMINATED WALL ARCHITECTURE
     // =====================================================
@@ -277,7 +279,6 @@ export function createHeadquarters(scene) {
         scene.add(upperBeam);
     }
 
-    
     // =====================================================
     // SECTION 23 // GRAND LOBBY SUPPORT PILLARS
     // =====================================================
@@ -400,31 +401,7 @@ export function createHeadquarters(scene) {
     scene.add(coreLight);
 
     // =====================================================
-    // SECTION 28 // ENVIRONMENT ANIMATION
-    // =====================================================
-
-    // ANIMATION 01 // FLOATING ENERGY CORE
-
-    const animationClock = new THREE.Clock();
-
-    function animateHeadquarters() {
-
-        const elapsedTime = animationClock.getElapsedTime();
-
-        // Slowly rotate the energy core
-        energyCore.rotation.y = elapsedTime * 0.3;
-        energyCore.rotation.x = elapsedTime * 0.1;
-
-        // Make the core gently float up and down
-        energyCore.position.y =
-            5 + Math.sin(elapsedTime * 1.2) * 0.35;
-
-        // Keep its light moving with it
-        coreLight.position.y = energyCore.position.y;
-    }
-
-    // =====================================================
-    // SECTION 30 // HEXCORE RECEPTION CENTER
+    // SECTION 28 // HEXCORE RECEPTION CENTER
     // =====================================================
 
     // Reception desk is positioned near the rear wall,
@@ -440,7 +417,7 @@ export function createHeadquarters(scene) {
         color: 0x8650E8
     });
 
-    // SECTION 30A // RECEPTION DESK
+    // SECTION 28A // RECEPTION DESK
 
     const receptionDesk = new THREE.Mesh(
         new THREE.BoxGeometry(12, 1.5, 2.5),
@@ -450,7 +427,7 @@ export function createHeadquarters(scene) {
     receptionDesk.position.set(0, 0.75, -24);
     scene.add(receptionDesk);
 
-    // SECTION 30B // DESK TOP
+    // SECTION 28B // DESK TOP
 
     const deskTop = new THREE.Mesh(
         new THREE.BoxGeometry(12.5, 0.2, 3),
@@ -460,7 +437,7 @@ export function createHeadquarters(scene) {
     deskTop.position.set(0, 1.6, -24);
     scene.add(deskTop);
 
-    // SECTION 30C // FRONT LIGHT STRIP
+    // SECTION 28C // FRONT LIGHT STRIP
 
     const deskGlow = new THREE.Mesh(
         new THREE.BoxGeometry(11.5, 0.12, 0.08),
@@ -471,7 +448,7 @@ export function createHeadquarters(scene) {
     scene.add(deskGlow);
 
     // =====================================================
-    // SECTION 30D // HOLOGRAPHIC HEXCORE SIGN
+    // SECTION 28D // HOLOGRAPHIC HEXCORE SIGN
     // =====================================================
 
     const signCanvas = document.createElement("canvas");
@@ -513,22 +490,317 @@ export function createHeadquarters(scene) {
     receptionSign.position.set(0, 5, -28.8);
     scene.add(receptionSign);
 
-    // SECTION 30E // HOLOGRAPHIC SIGN ANIMATION
+    // =====================================================
+    // SECTION 29 // HERO LOBBY WALL
+    // =====================================================
 
-    const originalAnimateHeadquarters = animateHeadquarters;
+    const heroWallMaterial = new THREE.MeshStandardMaterial({
+        color: 0x11111d,
+        metalness: 0.82,
+        roughness: 0.22
+    });
 
-    animateHeadquarters = function() {
+    const heroPanelMaterial = new THREE.MeshStandardMaterial({
+        color: 0x1b1731,
+        metalness: 0.75,
+        roughness: 0.18,
+        emissive: 0x221044,
+        emissiveIntensity: 0.25
+    });
 
-        originalAnimateHeadquarters();
+    const heroGlowPurple = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
 
-        const time = animationClock.getElapsedTime();
+    const heroGlowCyan = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    // SECTION 29A // CENTRAL TOWER SHELL
+
+    const centralTower = new THREE.Mesh(
+        new THREE.BoxGeometry(22, 30, 2.2),
+        heroWallMaterial
+    );
+
+    centralTower.position.set(0, 15, -28.8);
+    scene.add(centralTower);
+
+    // SECTION 29B // CENTRAL DISPLAY PANEL
+
+    const centralPanel = new THREE.Mesh(
+        new THREE.BoxGeometry(16, 18, 0.3),
+        heroPanelMaterial
+    );
+
+    centralPanel.position.set(0, 13, -27.55);
+    scene.add(centralPanel);
+
+    // SECTION 29C // CENTRAL PANEL GLOW FRAME
+
+    const leftFrame = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 23, 0.18),
+        heroGlowPurple
+    );
+
+    leftFrame.position.set(-8.2, 13, -27.35);
+    scene.add(leftFrame);
+
+    const rightFrame = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 23, 0.18),
+        heroGlowPurple
+    );
+
+    rightFrame.position.set(8.2, 13, -27.35);
+    scene.add(rightFrame);
+
+    const topFrame = new THREE.Mesh(
+        new THREE.BoxGeometry(16.6, 0.2, 0.18),
+        heroGlowCyan
+    );
+
+    topFrame.position.set(0, 24.4, -27.35);
+    scene.add(topFrame);
+
+    const bottomFrame = new THREE.Mesh(
+        new THREE.BoxGeometry(16.6, 0.2, 0.18),
+        heroGlowCyan
+    );
+
+    bottomFrame.position.set(0, 1.6, -27.35);
+    scene.add(bottomFrame);
+
+    // SECTION 29D // HERO TITLE PANEL
+
+    const heroTitleCanvas = document.createElement("canvas");
+    heroTitleCanvas.width = 1400;
+    heroTitleCanvas.height = 500;
+
+    const heroTitleContext =
+        heroTitleCanvas.getContext("2d");
+
+    heroTitleContext.clearRect(
+        0,
+        0,
+        heroTitleCanvas.width,
+        heroTitleCanvas.height
+    );
+
+    heroTitleContext.textAlign = "center";
+    heroTitleContext.textBaseline = "middle";
+
+    heroTitleContext.shadowColor = "#8650E8";
+    heroTitleContext.shadowBlur = 40;
+
+    heroTitleContext.fillStyle = "#E7E4FF";
+    heroTitleContext.font = "bold 160px Arial";
+    heroTitleContext.fillText(
+        "HEXCORE",
+        700,
+        180
+    );
+
+    heroTitleContext.fillStyle = "#C79CFF";
+    heroTitleContext.font = "bold 70px Arial";
+    heroTitleContext.fillText(
+        "GAMING",
+        700,
+        310
+    );
+
+    const heroTitleTexture =
+        new THREE.CanvasTexture(heroTitleCanvas);
+
+    const heroTitleMaterial =
+        new THREE.MeshBasicMaterial({
+            map: heroTitleTexture,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        });
+
+    const heroTitle = new THREE.Mesh(
+        new THREE.PlaneGeometry(16, 5.7),
+        heroTitleMaterial
+    );
+
+    heroTitle.position.set(0, 12, -27.2);
+    scene.add(heroTitle);
+
+    // SECTION 29E // UPPER EMBLEM
+
+    const heroEmblem = new THREE.Mesh(
+        new THREE.OctahedronGeometry(2.6, 0),
+        new THREE.MeshStandardMaterial({
+            color: 0x9B6BFF,
+            emissive: 0x5F1DDA,
+            emissiveIntensity: 0.8,
+            metalness: 0.35,
+            roughness: 0.12
+        })
+    );
+
+    heroEmblem.position.set(0, 22, -27.35);
+    scene.add(heroEmblem);
+
+    const heroEmblemRing = new THREE.Mesh(
+        new THREE.TorusGeometry(3.8, 0.12, 12, 96),
+        heroGlowCyan
+    );
+
+    heroEmblemRing.rotation.x = Math.PI / 2;
+    heroEmblemRing.position.set(0, 22, -27.8);
+    scene.add(heroEmblemRing);
+
+    // =====================================================
+    // SECTION 30 // SIDE TOWER WALLS
+    // =====================================================
+
+    for (const x of [-24, 24]) {
+
+        const sideTower = new THREE.Mesh(
+            new THREE.BoxGeometry(8, 26, 2),
+            heroWallMaterial
+        );
+
+        sideTower.position.set(x, 13, -28.9);
+        scene.add(sideTower);
+
+        const sideInnerPanel = new THREE.Mesh(
+            new THREE.BoxGeometry(5.6, 18, 0.25),
+            heroPanelMaterial
+        );
+
+        sideInnerPanel.position.set(x, 16, -27.6);
+        scene.add(sideInnerPanel);
+    }
+
+    // =====================================================
+    // SECTION 31 // SIDE BANNER PANELS
+    // =====================================================
+
+    function createBannerPanel(lines, xPosition) {
+
+        const bannerCanvas = document.createElement("canvas");
+        bannerCanvas.width = 512;
+        bannerCanvas.height = 1024;
+
+        const bannerContext = bannerCanvas.getContext("2d");
+
+        bannerContext.fillStyle = "rgba(20, 12, 40, 0.92)";
+        bannerContext.fillRect(0, 0, 512, 1024);
+
+        bannerContext.strokeStyle = "#8650E8";
+        bannerContext.lineWidth = 10;
+        bannerContext.strokeRect(12, 12, 488, 1000);
+
+        bannerContext.textAlign = "center";
+        bannerContext.textBaseline = "middle";
+        bannerContext.fillStyle = "#EFEAFF";
+        bannerContext.shadowColor = "#8650E8";
+        bannerContext.shadowBlur = 28;
+        bannerContext.font = "bold 50px Arial";
+
+        const startY = 220;
+        const stepY = 130;
+
+        lines.forEach((line, index) => {
+            bannerContext.fillText(
+                line,
+                256,
+                startY + index * stepY
+            );
+        });
+
+        const bannerTexture =
+            new THREE.CanvasTexture(bannerCanvas);
+
+        const bannerMaterial =
+            new THREE.MeshBasicMaterial({
+                map: bannerTexture,
+                transparent: true,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+
+        const banner = new THREE.Mesh(
+            new THREE.PlaneGeometry(5.2, 12),
+            bannerMaterial
+        );
+
+        banner.position.set(xPosition, 16.5, -27.1);
+        scene.add(banner);
+    }
+
+    createBannerPanel(
+        ["GAMES", "PEOPLE", "WORLDS", "BEYOND"],
+        -24
+    );
+
+    createBannerPanel(
+        ["PLAY", "CREATE", "BELONG", "FURTHER"],
+        24
+    );
+
+    // =====================================================
+    // SECTION 32 // LOWER SIDE DISPLAY PANELS
+    // =====================================================
+
+    const displayPanelMaterial = new THREE.MeshStandardMaterial({
+        color: 0x171428,
+        metalness: 0.65,
+        roughness: 0.2,
+        emissive: 0x140c2b,
+        emissiveIntensity: 0.35
+    });
+
+    for (const x of [-21, 21]) {
+
+        const displayPanel = new THREE.Mesh(
+            new THREE.BoxGeometry(7, 4.5, 0.4),
+            displayPanelMaterial
+        );
+
+        displayPanel.position.set(x, 6, -26.8);
+        scene.add(displayPanel);
+
+        const displayGlow = new THREE.Mesh(
+            new THREE.BoxGeometry(6.6, 0.12, 0.08),
+            heroGlowCyan
+        );
+
+        displayGlow.position.set(x, 3.9, -26.5);
+        scene.add(displayGlow);
+    }
+
+    // =====================================================
+    // SECTION 33 // ENVIRONMENT ANIMATION
+    // =====================================================
+
+    // ANIMATION 01 // ROTATING AND FLOATING ENERGY CORE
+    // ANIMATION 02 // PULSING RECEPTION SIGN
+
+    const animationClock = new THREE.Clock();
+
+    function animateHeadquarters() {
+
+        const elapsedTime = animationClock.getElapsedTime();
+
+        energyCore.rotation.y = elapsedTime * 0.3;
+        energyCore.rotation.x = elapsedTime * 0.1;
+
+        energyCore.position.y =
+            5 + Math.sin(elapsedTime * 1.2) * 0.35;
+
+        coreLight.position.y = energyCore.position.y;
 
         receptionSign.material.opacity =
-            0.85 + Math.sin(time * 1.5) * 0.15;
-    };
+            0.85 + Math.sin(elapsedTime * 1.5) * 0.15;
+    }
 
-    // SECTION 29 // REGISTER ANIMATION
+    // =====================================================
+    // SECTION 34 // REGISTER ANIMATION
+    // =====================================================
 
     return animateHeadquarters;
-
 }

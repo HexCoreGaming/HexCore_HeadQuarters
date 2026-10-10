@@ -263,6 +263,23 @@ export function createPlayer(camera, renderer) {
             player.yaw,
             0
         );
+        
+        // =====================================================
+        // SECTION 05D // PLAYER POSITION NOTIFICATION
+        // =====================================================
+
+        // Tell the interface where the player is standing.
+        // Used by the headquarters exit access system.
+
+        window.dispatchEvent(
+            new CustomEvent("hexcore-player-position", {
+                detail: {
+                    x: player.position.x,
+                    z: player.position.z
+                }
+            })
+        );
+
     }
 
     // =====================================================

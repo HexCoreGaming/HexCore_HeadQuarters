@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,7 +41,7 @@
 <body>
 
     <div id="status">
-        HEXCORE GAMING // 3D SYSTEM ONLINE
+        HEXCORE GAMING // HEADQUARTERS INITIALIZED
     </div>
 
     <!-- ========================================== -->
@@ -48,58 +49,32 @@
     <!-- ========================================== -->
 
     <script type="module">
+
         import {
             scene,
             camera,
-            renderer,
-            animate
+            renderer
         } from "./world/engine.js";
 
-        import * as THREE from
-        "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+        import {
+            createHeadquarters
+        } from "./world/headquarters.js";
 
-        // SECTION 01 // TEST OBJECT
+        // SECTION 01 // BUILD HEADQUARTERS
 
-        const geometry = new THREE.BoxGeometry(2, 2, 2);
+        createHeadquarters(scene);
 
-        const material = new THREE.MeshStandardMaterial({
-            color: 0x8650E8,
-            emissive: 0x5F1DDA,
-            emissiveIntensity: 0.6,
-            metalness: 0.5,
-            roughness: 0.3
-        });
+        // SECTION 02 // POSITION CAMERA
 
-        const cube = new THREE.Mesh(geometry, material);
-
-        scene.add(cube);
-
-        // SECTION 02 // LIGHTING
-
-        const light = new THREE.PointLight(
-            0x8CD6FD,
-            40,
-            30
-        );
-
-        light.position.set(3, 5, 5);
-        scene.add(light);
-
-        scene.add(new THREE.AmbientLight(0x8650E8, 2));
-
-        // SECTION 03 // CAMERA
-
-        camera.position.set(0, 1, 6);
+        camera.position.set(12, 10, 18);
         camera.lookAt(0, 0, 0);
 
-        // SECTION 04 // ANIMATION
+        // SECTION 03 // START RENDERING
 
         renderer.setAnimationLoop(() => {
-            cube.rotation.x += 0.005;
-            cube.rotation.y += 0.01;
-
             renderer.render(scene, camera);
         });
+
     </script>
 
 </body>

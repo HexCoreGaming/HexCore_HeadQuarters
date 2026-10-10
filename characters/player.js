@@ -131,9 +131,24 @@ function collidesWithPillar(x, z) {
                     ? player.sprintSpeed
                     : player.speed;
 
-            player.position.addScaledVector(
-                movement,
-                speed * delta
+            // Test X and Z separately to allow sliding along pillars
+
+const stepX = movement.x * speed * delta;
+const stepZ = movement.z * speed * delta;
+
+if (!collidesWithPillar(
+    player.position.x + stepX,
+    player.position.z
+)) {
+    player.position.x += stepX;
+}
+
+if (!collidesWithPillar(
+    player.position.x,
+    player.position.z + stepZ
+)) {
+    player.position.z += stepZ;
+}
             );
         }
 

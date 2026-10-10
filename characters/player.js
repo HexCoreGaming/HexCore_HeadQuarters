@@ -76,6 +76,27 @@ const pillars = [
 const playerRadius = 0.5;
 const pillarHalfWidth = 1;
 
+    // =====================================================
+// SECTION 04C // CENTRAL PLATFORM COLLISION
+// =====================================================
+
+// Central circular platform:
+// Radius = 5 units
+// Player collision radius = 0.5 units
+
+const platformRadius = 5;
+
+function collidesWithPlatform(x, z) {
+
+    const distanceSquared = x * x + z * z;
+
+    const collisionDistance =
+        platformRadius + playerRadius;
+
+    return distanceSquared <
+        collisionDistance * collisionDistance;
+}
+
 function collidesWithPillar(x, z) {
 
     for (const pillar of pillars) {
@@ -136,21 +157,31 @@ function collidesWithPillar(x, z) {
 const stepX = movement.x * speed * delta;
 const stepZ = movement.z * speed * delta;
 
-if (!collidesWithPillar(
-    player.position.x + stepX,
-    player.position.z
-)) {
-    player.position.x += stepX;
+// =====================================================
+// SECTION 05A // COLLISION-AWARE MOVEMENT
+// =====================================================
+
+// Horizontal movement
+
+const nextX = player.position.x + stepX;
+
+if (
+    !collidesWithPillar(nextX, player.position.z) &&
+    !collidesWithPlatform(nextX, player.position.z)
+) {
+    player.position.x = nextX;
 }
 
-if (!collidesWithPillar(
-    player.position.x,
-    player.position.z + stepZ
-)) {
-    player.position.z += stepZ;
+// Forward / backward movement
+
+const nextZ = player.position.z + stepZ;
+
+if (
+    !collidesWithPillar(player.position.x, nextZ) &&
+    !collidesWithPlatform(player.position.x, nextZ)
+) {
+    player.position.z = nextZ;
 }
-            
-        }
 
         // Temporary room boundaries
         player.position.x = THREE.MathUtils.clamp(

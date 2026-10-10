@@ -134,6 +134,42 @@ export function createPlayer(camera, renderer) {
     }
 
     // =====================================================
+    // SECTION 04D // RECEPTION DESK COLLISION
+    // =====================================================
+
+    // Matches the reception desk and wider desktop
+    // located at X = 0, Z = -24.
+
+    function collidesWithReception(x, z) {
+
+        const deskMinX = -6.25;
+        const deskMaxX = 6.25;
+
+        const deskMinZ = -25.5;
+        const deskMaxZ = -22.5;
+
+        const closestX = THREE.MathUtils.clamp(
+            x,
+            deskMinX,
+            deskMaxX
+        );
+
+        const closestZ = THREE.MathUtils.clamp(
+            z,
+            deskMinZ,
+            deskMaxZ
+        );
+
+        const dx = x - closestX;
+        const dz = z - closestZ;
+
+        return (
+            dx * dx + dz * dz <
+            playerRadius * playerRadius
+        );
+    }
+
+    // =====================================================
     // SECTION 05 // MOVEMENT AND CAMERA UPDATE
     // =====================================================
 
@@ -167,49 +203,6 @@ export function createPlayer(camera, renderer) {
             const stepX = movement.x * speed * delta;
             const stepZ = movement.z * speed * delta;
 
-    // =====================================================
-    // SECTION 04D // RECEPTION DESK COLLISION
-    // =====================================================
-
-    // Reception desk center: X = 0, Z = -24
-    // Includes the wider desktop and player radius.
-
-    function collidesWithReception(x, z) {
-
-        const deskMinX = -6.25;
-        const deskMaxX = 6.25;
-
-        const deskMinZ = -25.5;
-        const deskMaxZ = -22.5;
-
-        const closestX = THREE.MathUtils.clamp(
-            x,
-            deskMinX,
-            deskMaxX
-        );
-
-        const closestZ = THREE.MathUtils.clamp(
-            z,
-            deskMinZ,
-            deskMaxZ
-        );
-
-        const dx = x - closestX;
-        const dz = z - closestZ;
-
-        return (
-            dx * dx + dz * dz <
-            playerRadius * playerRadius
-        
-    }
-
-            // =====================================================
-            // SECTION 05A // COLLISION-AWARE MOVEMENT
-            // =====================================================
-
-            // Horizontal movement
-
-            
             // =====================================================
             // SECTION 05A // COLLISION-AWARE MOVEMENT
             // =====================================================
@@ -237,8 +230,6 @@ export function createPlayer(camera, renderer) {
             ) {
                 player.position.z = nextZ;
             }
-
-
         }
 
         // =====================================================
@@ -272,7 +263,6 @@ export function createPlayer(camera, renderer) {
             player.yaw,
             0
         );
-
     }
 
     // =====================================================
@@ -280,5 +270,4 @@ export function createPlayer(camera, renderer) {
     // =====================================================
 
     return updatePlayer;
-
 }

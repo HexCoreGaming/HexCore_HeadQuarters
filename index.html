@@ -391,11 +391,29 @@
                     !doorUnlocked
                 ) {
 
+                   
+                    // Unlock the headquarters exit.
+
                     window.hexcoreDoorUnlocked = true;
+
+                    // Remove the Cyber Key from inventory.
 
                     window.dispatchEvent(
                         new CustomEvent("hexcore-cyber-key-used")
                     );
+
+                    // Complete the headquarters introduction.
+                    // Hide the quest tracker on PC and mobile.
+
+                    const questTracker =
+                        document.getElementById(
+                            "hexcore-quest-tracker"
+                        );
+
+                    if (questTracker) {
+                        questTracker.style.display = "none";
+                    }
+
 
                 }
 

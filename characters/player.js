@@ -39,6 +39,11 @@ export function createPlayer(camera, renderer) {
     // =====================================================
 
     window.addEventListener("keydown", (event) => {
+
+        if (window.hexcoreDialogueOpen === true) {
+            return;
+        }
+
         keys[event.code] = true;
     });
 
@@ -51,6 +56,11 @@ export function createPlayer(camera, renderer) {
     // =====================================================
 
     renderer.domElement.addEventListener("click", () => {
+
+        if (window.hexcoreDialogueOpen === true) {
+            return;
+        }
+
         renderer.domElement.requestPointerLock();
     });
 
@@ -73,8 +83,6 @@ export function createPlayer(camera, renderer) {
     // =====================================================
     // SECTION 04B // PLAYER COLLISION
     // =====================================================
-
-    // Four existing lobby pillar positions
 
     const pillars = [
         { x: -20, z: -18 },
@@ -137,9 +145,6 @@ export function createPlayer(camera, renderer) {
     // SECTION 04D // RECEPTION DESK COLLISION
     // =====================================================
 
-    // Matches the reception desk and wider desktop
-    // located at X = 0, Z = -24.
-
     function collidesWithReception(x, z) {
 
         const deskMinX = -6.25;
@@ -179,7 +184,7 @@ export function createPlayer(camera, renderer) {
 
         const delta = Math.min(clock.getDelta(), 0.05);
 
-        // SECTION 05A // PAUSE MOVEMENT DURING DIALOGUE
+        // SECTION 05A // PAUSE DURING DIALOGUE
 
         if (window.hexcoreDialogueOpen === true) {
 
@@ -190,12 +195,16 @@ export function createPlayer(camera, renderer) {
             return;
         }
 
+        // SECTION 05B // MOVEMENT INPUT
+
         const movement = new THREE.Vector3();
 
         if (keys["KeyW"]) movement.z -= 1;
         if (keys["KeyS"]) movement.z += 1;
         if (keys["KeyA"]) movement.x -= 1;
         if (keys["KeyD"]) movement.x += 1;
+
+        // SECTION 05C // COLLISION-AWARE MOVEMENT
 
         if (movement.lengthSq() > 0) {
 
@@ -214,11 +223,7 @@ export function createPlayer(camera, renderer) {
             const stepX = movement.x * speed * delta;
             const stepZ = movement.z * speed * delta;
 
-            // =====================================================
-            // SECTION 05A // COLLISION-AWARE MOVEMENT
-            // =====================================================
-
-            // X-axis movement
+            // SECTION 05C-1 // X-AXIS MOVEMENT
 
             const nextX = player.position.x + stepX;
 
@@ -230,32 +235,32 @@ export function createPlayer(camera, renderer) {
                 player.position.x = nextX;
             }
 
-           
-            // Z-axis movement
+            // SECTION 05C-2 // Z-AXIS MOVEMENT
 
             const nextZ = player.position.z + stepZ;
 
-            // Check if the reception key has been granted
-            // and the exit doors have finished opening.
-
-           
             const cityDoorReady =
                 window.hexcoreDoorUnlocked === true &&
                 (window.hexcoreExitOpenProgress || 0) > 0.95;
 
-
-            // Stop players crossing the front wall anywhere
-            // except through the central doorway.
+            // The entrance is centered at X = 0.
+            // Only an opened door allows crossing.
 
             const insideDoorway =
                 Math.abs(player.position.x) < 4.0;
 
-            const insideFrontWall =
-                nextZ > 27.7 &&
-                nextZ < 30.3;
+            const crossingFrontWall =
+                (
+                    player.position.z <= 30.3 &&
+                    nextZ >= 27.7
+                ) ||
+                (
+                    player.position.z >= 27.7 &&
+                    nextZ <= 30.3
+                );
 
             const blockedByFrontExit =
-                insideFrontWall &&
+                crossingFrontWall &&
                 (!insideDoorway || !cityDoorReady);
 
             if (
@@ -266,10 +271,10 @@ export function createPlayer(camera, renderer) {
             ) {
                 player.position.z = nextZ;
             }
-
+        }
 
         // =====================================================
-        // SECTION 05B // ROOM BOUNDARIES
+        // SECTION 05D // HEADQUARTERS AND CITY BOUNDARIES
         // =====================================================
 
         player.position.x = THREE.MathUtils.clamp(
@@ -278,22 +283,9 @@ export function createPlayer(camera, renderer) {
             28
         );
 
-        player.position.z = THREE.MathUtils.clamp(
-            player.position.z,
-            -28,
-            28
-        );
-
-        // SECTION 05B // HEADQUARTERS AND CITY BOUNDARIES
-
-       
         const cityAccessEnabled =
             window.hexcoreDoorUnlocked === true &&
             (window.hexcoreExitOpenProgress || 0) > 0.95;
-
-
-        // Visitors without a key remain inside HQ.
-        // Authorized visitors can explore the exterior.
 
         const maximumZ =
             cityAccessEnabled ? 205 : 28;
@@ -305,7 +297,7 @@ export function createPlayer(camera, renderer) {
         );
 
         // =====================================================
-        // SECTION 05C // CAMERA UPDATE
+        // SECTION 05E // CAMERA UPDATE
         // =====================================================
 
         camera.position.set(
@@ -319,13 +311,10 @@ export function createPlayer(camera, renderer) {
             player.yaw,
             0
         );
-        
-        // =====================================================
-        // SECTION 05D // PLAYER POSITION NOTIFICATION
-        // =====================================================
 
-        // Tell the interface where the player is standing.
-        // Used by the headquarters exit access system.
+        // =====================================================
+        // SECTION 05F // PLAYER POSITION NOTIFICATION
+        // =====================================================
 
         window.dispatchEvent(
             new CustomEvent("hexcore-player-position", {
@@ -335,7 +324,6 @@ export function createPlayer(camera, renderer) {
                 }
             })
         );
-
     }
 
     // =====================================================

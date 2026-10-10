@@ -899,20 +899,23 @@
 
     </script>
 
-    <!-- ========================================== -->
+       <!-- ========================================== -->
     <!-- SECTION 10 // MOBILE GAME CONTROLS         -->
     <!-- ========================================== -->
 
     <div id="hexcore-mobile-controls">
 
         <!-- SECTION 10A // MOVEMENT JOYSTICK -->
-
         <div id="mobile-joystick">
             <div id="mobile-joystick-knob"></div>
         </div>
 
-        <!-- SECTION 10B // ACTION BUTTONS -->
+        <!-- SECTION 10B // LOOK JOYSTICK -->
+        <div id="mobile-look-joystick">
+            <div id="mobile-look-joystick-knob"></div>
+        </div>
 
+        <!-- SECTION 10C // ACTION BUTTONS -->
         <div id="mobile-action-buttons">
 
             <button id="mobile-interact" type="button">
@@ -927,7 +930,7 @@
 
     </div>
 
-    <!-- SECTION 10C // MOBILE CONTROLS APPEARANCE -->
+    <!-- SECTION 10D // MOBILE CONTROLS APPEARANCE -->
 
     <style>
 
@@ -940,52 +943,62 @@
             touch-action: none;
         }
 
-        #mobile-joystick {
+        #mobile-joystick,
+        #mobile-look-joystick {
             position: absolute;
-            bottom: max(34px, calc(env(safe-area-inset-bottom) + 22px));
-            left: max(28px, calc(env(safe-area-inset-left) + 16px));
-            width: 112px;
-            height: 112px;
+            width: 104px;
+            height: 104px;
             border-radius: 50%;
-            background: rgba(14, 10, 33, 0.55);
+            background: rgba(14, 10, 33, 0.50);
             border: 2px solid #8650E8;
-            box-shadow: 0 0 20px rgba(134, 80, 232, 0.3);
+            box-shadow: 0 0 20px rgba(134, 80, 232, 0.28);
             pointer-events: auto;
             touch-action: none;
         }
 
-        #mobile-joystick-knob {
+        #mobile-joystick {
+            bottom: max(22px, calc(env(safe-area-inset-bottom) + 12px));
+            left: max(18px, calc(env(safe-area-inset-left) + 10px));
+        }
+
+        #mobile-look-joystick {
+            bottom: max(22px, calc(env(safe-area-inset-bottom) + 12px));
+            right: max(18px, calc(env(safe-area-inset-right) + 10px));
+        }
+
+        #mobile-joystick-knob,
+        #mobile-look-joystick-knob {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: rgba(140, 214, 253, 0.45);
+            background: rgba(140, 214, 253, 0.42);
             border: 2px solid #8CD6FD;
-            box-shadow: 0 0 15px rgba(140, 214, 253, 0.4);
+            box-shadow: 0 0 12px rgba(140, 214, 253, 0.35);
             transform: translate(-50%, -50%);
             pointer-events: none;
         }
 
         #mobile-action-buttons {
             position: absolute;
-            right: max(24px, calc(env(safe-area-inset-right) + 12px));
-            bottom: max(34px, calc(env(safe-area-inset-bottom) + 22px));
+            right: max(132px, calc(env(safe-area-inset-right) + 124px));
+            bottom: max(22px, calc(env(safe-area-inset-bottom) + 12px));
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             pointer-events: none;
         }
 
         #mobile-action-buttons button {
-            width: 90px;
-            min-height: 50px;
+            width: 84px;
+            min-height: 42px;
             border: 1px solid #8650E8;
             border-radius: 12px;
             background: rgba(20, 12, 45, 0.82);
             color: #8CD6FD;
-            font: bold 12px Consolas, monospace;
+            font: bold 11px Consolas, monospace;
             box-shadow: 0 0 14px rgba(134, 80, 232, 0.25);
             pointer-events: auto;
             touch-action: none;
@@ -994,42 +1007,48 @@
         }
 
         #mobile-action-buttons button:active {
-            background: rgba(134, 80, 232, 0.7);
+            background: rgba(134, 80, 232, 0.68);
         }
 
         @media (pointer: coarse) {
-
             #hexcore-mobile-controls {
                 display: block;
             }
-
         }
 
         @media (max-width: 900px) and (orientation: landscape) {
 
-            #mobile-joystick {
+            #mobile-joystick,
+            #mobile-look-joystick {
                 width: 90px;
                 height: 90px;
-                bottom: 14px;
-                left: 18px;
+                bottom: 12px;
+            }
+
+            #mobile-joystick {
+                left: 14px;
+            }
+
+            #mobile-look-joystick {
+                right: 14px;
             }
 
             #mobile-action-buttons {
-                bottom: 14px;
-                right: 18px;
-                gap: 8px;
+                right: 112px;
+                bottom: 12px;
+                gap: 6px;
             }
 
             #mobile-action-buttons button {
-                min-height: 40px;
-                width: 82px;
+                width: 74px;
+                min-height: 36px;
+                font-size: 10px;
             }
-
         }
 
     </style>
 
-    <!-- SECTION 10D // MOBILE INPUT STATE -->
+    <!-- SECTION 10E // MOBILE INPUT STATE -->
 
     <script>
 
@@ -1039,11 +1058,22 @@
             sprint: false
         };
 
+        window.hexcoreMobileLook = {
+            x: 0,
+            y: 0
+        };
+
         const mobileJoystick =
             document.getElementById("mobile-joystick");
 
         const mobileJoystickKnob =
             document.getElementById("mobile-joystick-knob");
+
+        const mobileLookJoystick =
+            document.getElementById("mobile-look-joystick");
+
+        const mobileLookJoystickKnob =
+            document.getElementById("mobile-look-joystick-knob");
 
         const mobileSprint =
             document.getElementById("mobile-sprint");
@@ -1051,22 +1081,17 @@
         const mobileInteract =
             document.getElementById("mobile-interact");
 
-        let activeJoystickPointer = null;
+        let activeMovePointer = null;
+        let activeLookPointer = null;
 
-        // SECTION 10E // JOYSTICK MOVEMENT
+        // SECTION 10F // GENERIC JOYSTICK UPDATE
 
-        function updateMobileJoystick(event) {
+        function updateJoystick(event, element, knob, maxDistance) {
 
-            const bounds =
-                mobileJoystick.getBoundingClientRect();
+            const bounds = element.getBoundingClientRect();
 
-            const centerX =
-                bounds.left + bounds.width / 2;
-
-            const centerY =
-                bounds.top + bounds.height / 2;
-
-            const maxDistance = 35;
+            const centerX = bounds.left + bounds.width / 2;
+            const centerY = bounds.top + bounds.height / 2;
 
             const dx = event.clientX - centerX;
             const dy = event.clientY - centerY;
@@ -1081,19 +1106,20 @@
             const x = dx * scale;
             const y = dy * scale;
 
-            mobileJoystickKnob.style.transform =
+            knob.style.transform =
                 `translate(-50%, -50%) translate(${x}px, ${y}px)`;
 
-            window.hexcoreMobileInput.x =
-                x / maxDistance;
-
-            window.hexcoreMobileInput.z =
-                y / maxDistance;
+            return {
+                x: x / maxDistance,
+                y: y / maxDistance
+            };
         }
 
-        function resetMobileJoystick() {
+        // SECTION 10G // MOVE JOYSTICK
 
-            activeJoystickPointer = null;
+        function resetMoveJoystick() {
+
+            activeMovePointer = null;
 
             window.hexcoreMobileInput.x = 0;
             window.hexcoreMobileInput.z = 0;
@@ -1102,89 +1128,135 @@
                 "translate(-50%, -50%)";
         }
 
-        // SECTION 10F // JOYSTICK POINTER EVENTS
+        mobileJoystick.addEventListener("pointerdown", (event) => {
 
-        mobileJoystick.addEventListener(
-            "pointerdown",
-            (event) => {
-
-                if (activeJoystickPointer !== null) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                activeJoystickPointer = event.pointerId;
-
-                mobileJoystick.setPointerCapture(
-                    event.pointerId
-                );
-
-                updateMobileJoystick(event);
+            if (activeMovePointer !== null) {
+                return;
             }
-        );
 
-        mobileJoystick.addEventListener(
-            "pointermove",
-            (event) => {
+            event.preventDefault();
 
-                if (event.pointerId !== activeJoystickPointer) {
-                    return;
-                }
+            activeMovePointer = event.pointerId;
+            mobileJoystick.setPointerCapture(event.pointerId);
 
-                updateMobileJoystick(event);
+            const result = updateJoystick(
+                event,
+                mobileJoystick,
+                mobileJoystickKnob,
+                32
+            );
+
+            window.hexcoreMobileInput.x = result.x;
+            window.hexcoreMobileInput.z = result.y;
+        });
+
+        mobileJoystick.addEventListener("pointermove", (event) => {
+
+            if (event.pointerId !== activeMovePointer) {
+                return;
             }
-        );
 
-        function releaseMobileJoystick(event) {
+            const result = updateJoystick(
+                event,
+                mobileJoystick,
+                mobileJoystickKnob,
+                32
+            );
 
-            if (event.pointerId === activeJoystickPointer) {
-                resetMobileJoystick();
+            window.hexcoreMobileInput.x = result.x;
+            window.hexcoreMobileInput.z = result.y;
+        });
+
+        function releaseMoveJoystick(event) {
+
+            if (event.pointerId === activeMovePointer) {
+                resetMoveJoystick();
             }
         }
 
-        mobileJoystick.addEventListener(
-            "pointerup",
-            releaseMobileJoystick
-        );
+        mobileJoystick.addEventListener("pointerup", releaseMoveJoystick);
+        mobileJoystick.addEventListener("pointercancel", releaseMoveJoystick);
 
-        mobileJoystick.addEventListener(
-            "pointercancel",
-            releaseMobileJoystick
-        );
+        // SECTION 10H // LOOK JOYSTICK
 
-        // SECTION 10G // SPRINT BUTTON
+        function resetLookJoystick() {
 
-        mobileSprint.addEventListener(
-            "pointerdown",
-            (event) => {
+            activeLookPointer = null;
 
-                event.preventDefault();
+            window.hexcoreMobileLook.x = 0;
+            window.hexcoreMobileLook.y = 0;
 
-                mobileSprint.setPointerCapture(
-                    event.pointerId
-                );
+            mobileLookJoystickKnob.style.transform =
+                "translate(-50%, -50%)";
+        }
 
-                window.hexcoreMobileInput.sprint = true;
+        mobileLookJoystick.addEventListener("pointerdown", (event) => {
+
+            if (activeLookPointer !== null) {
+                return;
             }
-        );
+
+            event.preventDefault();
+
+            activeLookPointer = event.pointerId;
+            mobileLookJoystick.setPointerCapture(event.pointerId);
+
+            const result = updateJoystick(
+                event,
+                mobileLookJoystick,
+                mobileLookJoystickKnob,
+                32
+            );
+
+            window.hexcoreMobileLook.x = result.x;
+            window.hexcoreMobileLook.y = result.y;
+        });
+
+        mobileLookJoystick.addEventListener("pointermove", (event) => {
+
+            if (event.pointerId !== activeLookPointer) {
+                return;
+            }
+
+            const result = updateJoystick(
+                event,
+                mobileLookJoystick,
+                mobileLookJoystickKnob,
+                32
+            );
+
+            window.hexcoreMobileLook.x = result.x;
+            window.hexcoreMobileLook.y = result.y;
+        });
+
+        function releaseLookJoystick(event) {
+
+            if (event.pointerId === activeLookPointer) {
+                resetLookJoystick();
+            }
+        }
+
+        mobileLookJoystick.addEventListener("pointerup", releaseLookJoystick);
+        mobileLookJoystick.addEventListener("pointercancel", releaseLookJoystick);
+
+        // SECTION 10I // SPRINT BUTTON
+
+        mobileSprint.addEventListener("pointerdown", (event) => {
+
+            event.preventDefault();
+
+            mobileSprint.setPointerCapture(event.pointerId);
+            window.hexcoreMobileInput.sprint = true;
+        });
 
         function releaseMobileSprint() {
-
             window.hexcoreMobileInput.sprint = false;
         }
 
-        mobileSprint.addEventListener(
-            "pointerup",
-            releaseMobileSprint
-        );
+        mobileSprint.addEventListener("pointerup", releaseMobileSprint);
+        mobileSprint.addEventListener("pointercancel", releaseMobileSprint);
 
-        mobileSprint.addEventListener(
-            "pointercancel",
-            releaseMobileSprint
-        );
-
-        // SECTION 10H // INTERACT BUTTON
+        // SECTION 10J // INTERACT BUTTON
 
         mobileInteract.addEventListener("click", () => {
 
@@ -1193,21 +1265,17 @@
             }
 
             if (typeof window.hexcoreInteract === "function") {
-
                 window.hexcoreInteract();
             }
-
         });
 
-        // SECTION 10I // RESET MOBILE INPUT
+        // SECTION 10K // RESET ALL MOBILE INPUT
 
         window.addEventListener("blur", () => {
 
-            resetMobileJoystick();
+            resetMoveJoystick();
+            resetLookJoystick();
             releaseMobileSprint();
         });
 
     </script>
-
-</body>
-</html>

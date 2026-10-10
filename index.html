@@ -424,6 +424,106 @@
 
     </script>
 
+    <!-- ========================================== -->
+    <!-- SECTION 08 // RECEPTION INTERACTION        -->
+    <!-- ========================================== -->
+
+    <div id="reception-prompt">
+        [E] SPEAK TO RECEPTION REPRESENTATIVE
+    </div>
+
+    <div id="reception-dialogue">
+
+        <div class="dialogue-heading">
+            HEXCORE GAMING // RECEPTION
+        </div>
+
+        <div class="dialogue-speaker">
+            RECEPTION REPRESENTATIVE
+        </div>
+
+        <div id="reception-dialogue-text"></div>
+
+        <button id="reception-dialogue-button">
+            CONTINUE
+        </button>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 08A // INTERACTION APPEARANCE      -->
+    <!-- ========================================== -->
+
+    <style>
+
+        #reception-prompt {
+            display: none;
+            position: fixed;
+            bottom: 115px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 7, 17, 0.92);
+            border: 1px solid #8CD6FD;
+            padding: 12px 20px;
+            color: #8CD6FD;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #reception-dialogue {
+            display: none;
+            position: fixed;
+            left: 50%;
+            bottom: 55px;
+            transform: translateX(-50%);
+            width: min(540px, 90vw);
+            box-sizing: border-box;
+            padding: 24px;
+            background: rgba(8, 7, 17, 0.97);
+            border: 1px solid #8650E8;
+            box-shadow: 0 0 35px rgba(134, 80, 232, 0.3);
+            font-family: Consolas, monospace;
+            z-index: 200;
+        }
+
+        .dialogue-heading {
+            color: #8CD6FD;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        .dialogue-speaker {
+            color: #B568FF;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        #reception-dialogue-text {
+            color: #EAE8FF;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        #reception-dialogue-button {
+            padding: 12px 20px;
+            background: #241247;
+            color: #EAE8FF;
+            border: 1px solid #8650E8;
+            font-family: Consolas, monospace;
+            cursor: pointer;
+        }
+
+        #reception-dialogue-button:hover {
+            background: #40216E;
+        }
+
+    </style>
+
    
     <!-- ========================================== -->
     <!-- SECTION 08B // RECEPTION DIALOGUE LOGIC    -->

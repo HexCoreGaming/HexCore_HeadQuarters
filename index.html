@@ -579,8 +579,18 @@
                 "0 / 1"
             );
 
-            closeReceptionDialogue();
-        });
+          
+        function closeReceptionDialogue() {
+
+            receptionDialogueOpen = false;
+            window.hexcoreDialogueOpen = false;
+
+            receptionDialogue.style.display = "none";
+
+            if (document.pointerLockElement) {
+                document.exitPointerLock();
+            }
+        }
 
         // SECTION 08C // RECEPTION PROXIMITY
 
@@ -615,8 +625,27 @@
                 return;
             }
 
-            openReceptionDialogue();
-        });
+         
+        function openReceptionDialogue() {
+
+            receptionDialogueStep =
+                window.hexcoreHasCityKey
+                    ? receptionLines.length - 1
+                    : 0;
+
+            receptionDialogueOpen = true;
+            window.hexcoreDialogueOpen = true;
+
+            receptionDialogue.style.display = "block";
+            receptionPrompt.style.display = "none";
+
+            if (document.pointerLockElement) {
+                document.exitPointerLock();
+            }
+
+            showReceptionLine();
+        }
+
 
     </script>
 

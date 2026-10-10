@@ -1971,13 +1971,27 @@ export function createHeadquarters(scene) {
                 panel.position.y + Math.sin(elapsedTime * 0.001);
         });
 
-        // ANIMATION 12 // EXTERIOR SHARDS
+        
+        // ANIMATION 11 // HOLOGRAM PANELS
 
-        exteriorShards.rotation.y =
-            elapsedTime * 0.08;
+        hologramPanels[0].material.opacity =
+            0.7 + Math.sin(elapsedTime * 1.8) * 0.12;
 
-        exteriorShards.rotation.x =
-            Math.sin(elapsedTime * 0.22) * 0.08;
+        hologramPanels[1].material.opacity =
+            0.7 + Math.sin(elapsedTime * 1.8 + 1) * 0.12;
+
+        hologramPanels[2].material.opacity =
+            0.7 + Math.sin(elapsedTime * 1.8 + 2) * 0.12;
+
+        hologramPanels[0].position.y =
+            18 + Math.sin(elapsedTime * 0.8) * 0.3;
+
+        hologramPanels[1].position.y =
+            18 + Math.sin(elapsedTime * 0.9 + 1.4) * 0.3;
+
+        hologramPanels[2].position.y =
+            28 + Math.sin(elapsedTime * 0.7 + 0.6) * 0.45;
+
     }
 
     // =====================================================

@@ -5,64 +5,86 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <title>HexCore Gaming | Headquarters</title>
 
-    <style>
-
     <!-- ========================================== -->
-    <!-- SECTION 00A // MOBILE SCREEN SUPPORT       -->
+    <!-- SECTION 00 // WEBSITE APPEARANCE          -->
     <!-- ========================================== -->
 
     <style>
 
-        /* Prevent mobile browsers from scrolling
-           or zooming the game during gameplay. */
+        * {
+            box-sizing: border-box;
+        }
 
         html, body {
+            margin: 0;
+            padding: 0;
             width: 100%;
             height: 100%;
-            margin: 0;
             overflow: hidden;
             overscroll-behavior: none;
+            background: #080711;
+            color: #8CD6FD;
+            font-family: Consolas, monospace;
         }
 
         canvas {
-            width: 100%;
-            height: 100%;
             display: block;
             touch-action: none;
         }
 
-        /* ========================================== */
-        /* SECTION 00B // RESPONSIVE MOBILE INTERFACE */
-        /* ========================================== */
+        #status {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            color: #B863ED;
+            text-shadow: 0 0 12px #8650E8;
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            padding: 12px;
+            background: rgba(8, 7, 17, 0.8);
+            border: 1px solid #8650E8;
+            font-size: 12px;
+            line-height: 1.8;
+            pointer-events: none;
+        }
+
+    </style>
+
+    <!-- ========================================== -->
+    <!-- SECTION 00A // MOBILE SCREEN SUPPORT      -->
+    <!-- ========================================== -->
+
+    <style>
 
         @media (max-width: 768px) {
 
             #status {
                 top: max(10px, env(safe-area-inset-top));
-                left: max(10px, env(safe-area-inset-left));
+                left: 10px;
                 font-size: 10px;
-                max-width: 55vw;
+                max-width: 45vw;
             }
-
-            /* Hide desktop keyboard instructions
-               when using the mobile layout. */
 
             #controls {
                 display: none;
             }
 
-            /* Quest tracker */
-
             #hexcore-quest-tracker {
-                top: max(44px, calc(env(safe-area-inset-top) + 38px));
-                right: max(8px, env(safe-area-inset-right));
+                top: max(45px, calc(env(safe-area-inset-top) + 35px));
+                right: 8px;
                 width: min(205px, 48vw);
                 padding: 10px;
             }
@@ -84,14 +106,12 @@
                 font-size: 9px;
             }
 
-            /* Cyber Key indicator */
-
             #hexcore-key-display {
                 top: auto;
-                bottom: max(135px, calc(env(safe-area-inset-bottom) + 125px));
+                bottom: 165px;
                 right: 8px;
+                max-width: 170px;
                 padding: 9px;
-                max-width: 165px;
             }
 
             .cyber-key-title {
@@ -102,15 +122,12 @@
                 font-size: 9px;
             }
 
-            /* Reception dialogue */
-
             #reception-dialogue {
                 width: min(440px, 92vw);
-                max-height: 65dvh;
+                max-height: 72dvh;
                 overflow-y: auto;
                 bottom: max(12px, env(safe-area-inset-bottom));
                 padding: 16px;
-                box-sizing: border-box;
             }
 
             #reception-dialogue-text {
@@ -119,25 +136,22 @@
             }
 
             #reception-dialogue-button {
-                min-height: 44px;
                 width: 100%;
+                min-height: 44px;
             }
-
-            /* Interaction prompts */
 
             #reception-prompt,
             #exit-notification {
-                bottom: max(100px, calc(env(safe-area-inset-bottom) + 90px));
+                bottom: 160px;
                 max-width: 85vw;
                 font-size: 11px;
                 padding: 10px;
-                box-sizing: border-box;
             }
 
         }
 
         /* ========================================== */
-        /* SECTION 00C // LANDSCAPE PHONE SUPPORT    */
+        /* SECTION 00B // LANDSCAPE PHONE SUPPORT    */
         /* ========================================== */
 
         @media (max-width: 900px) and (orientation: landscape) {
@@ -158,54 +172,15 @@
                 bottom: 8px;
             }
 
+            #reception-prompt,
+            #exit-notification {
+                bottom: 85px;
+            }
+
         }
 
     </style>
 
-        /* ========================================== */
-        /* HEXCORE // WEBSITE APPEARANCE             */
-        /* ========================================== */
-
-        body {
-            margin: 0;
-            background: #080711;
-            color: #8CD6FD;
-            font-family: Consolas, monospace;
-            overflow: hidden;
-        }
-
-        canvas {
-            display: block;
-        }
-
-        #status {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-            color: #B863ED;
-            text-shadow: 0 0 12px #8650E8;
-            pointer-events: none;
-        }
-
-        /* ========================================== */
-        /* HEXCORE // MOVEMENT INSTRUCTIONS          */
-        /* ========================================== */
-
-        #controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 10;
-            padding: 12px;
-            background: rgba(8, 7, 17, 0.8);
-            border: 1px solid #8650E8;
-            font-size: 12px;
-            line-height: 1.8;
-            pointer-events: none;
-        }
-
-    </style>
 </head>
 
 <body>
@@ -224,6 +199,8 @@
         WASD // MOVE
         <br>
         SHIFT // MOVE FASTER
+        <br>
+        E // INTERACT
         <br>
         ESC // RELEASE MOUSE
     </div>
@@ -254,7 +231,6 @@
             createNPCs
         } from "./npcs/npcs.js";
 
-
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -262,14 +238,12 @@
         const animateHeadquarters =
             createHeadquarters(scene);
 
-
         // ==========================================
         // SECTION 04 // CREATE PLAYER
         // ==========================================
 
         const updatePlayer =
             createPlayer(camera, renderer);
-
 
         // ==========================================
         // SECTION 04A // CREATE HEADQUARTERS NPCS
@@ -283,28 +257,22 @@
 
         renderer.setAnimationLoop(() => {
 
-            // Update player movement and camera
             updatePlayer();
 
-            // Update animated headquarters objects
             animateHeadquarters();
 
-            // Update NPC character animations
             updateNPCs();
 
-            // Render the headquarters
             renderer.render(scene, camera);
 
         });
 
     </script>
-  
 
     <!-- ========================================== -->
     <!-- SECTION 06 // EXIT ACCESS NOTIFICATION    -->
     <!-- ========================================== -->
 
-    
     <div id="exit-notification">
 
         <div class="exit-notification-title">
@@ -312,7 +280,7 @@
         </div>
 
         <div class="exit-notification-message">
-            ACCESS DENIED // CITY KEY REQUIRED
+            ACCESS DENIED // CYBER KEY REQUIRED
         </div>
 
         <div class="exit-notification-hint">
@@ -321,7 +289,7 @@
 
     </div>
 
-    <!-- SECTION 06A // NOTIFICATION APPEARANCE -->
+    <!-- SECTION 06A // EXIT NOTIFICATION STYLE -->
 
     <style>
 
@@ -332,13 +300,11 @@
             transform: translateX(-50%);
             width: min(380px, 85vw);
             padding: 16px 22px;
-            box-sizing: border-box;
             background: rgba(8, 7, 17, 0.93);
             border: 1px solid #8650E8;
             border-left: 4px solid #B568FF;
             box-shadow: 0 0 22px rgba(134, 80, 232, 0.25);
             color: #EAE8FF;
-            font-family: Consolas, monospace;
             text-align: center;
             z-index: 100;
             display: none;
@@ -372,6 +338,8 @@
         const exitNotification =
             document.getElementById("exit-notification");
 
+        window.hexcoreDoorUnlocked = false;
+
         window.addEventListener(
             "hexcore-player-position",
             (event) => {
@@ -383,11 +351,7 @@
                     z > 23 &&
                     z < 29;
 
-                
-                // SECTION 06C // USE CYBER KEY AT EXIT
-
-                const hasCityKey =
-                    window.hexcoreHasCityKey === true;
+                // SECTION 06C // USE CYBER KEY
 
                 const hasCyberKey =
                     window.hexcoreHasCyberKey === true;
@@ -401,24 +365,18 @@
                     !doorUnlocked
                 ) {
 
-                    // Unlock the doors permanently
-                    // for this visitor session.
-
                     window.hexcoreDoorUnlocked = true;
-
-                    // Remove the Cyber Key from inventory.
 
                     window.dispatchEvent(
                         new CustomEvent("hexcore-cyber-key-used")
                     );
+
                 }
 
-
-              
                 exitNotification.style.display =
                     nearExit &&
-                    !hasCyberKey &&
-                    !doorUnlocked
+                    !window.hexcoreDoorUnlocked &&
+                    !window.hexcoreHasCyberKey
                         ? "block"
                         : "none";
 
@@ -469,14 +427,12 @@
             right: 20px;
             width: 285px;
             max-width: calc(100vw - 40px);
-            box-sizing: border-box;
             padding: 16px;
             background: rgba(8, 7, 17, 0.88);
             border: 1px solid rgba(134, 80, 232, 0.65);
             border-left: 3px solid #8650E8;
             box-shadow: 0 0 20px rgba(134, 80, 232, 0.12);
             color: #EAE8FF;
-            font-family: Consolas, monospace;
             z-index: 90;
             pointer-events: none;
         }
@@ -512,25 +468,11 @@
             color: #8E87AA;
         }
 
-        @media (max-width: 600px) {
-
-            #hexcore-quest-tracker {
-                top: 60px;
-                right: 10px;
-                width: 240px;
-                padding: 12px;
-            }
-
-        }
-
     </style>
 
     <!-- SECTION 07B // QUEST MANAGEMENT -->
 
     <script>
-
-        // Quest state for the current visitor session.
-        // The receptionist interaction will update this later.
 
         window.hexcoreQuest = {
             id: 1,
@@ -592,15 +534,13 @@
 
         <div id="reception-dialogue-text"></div>
 
-        <button id="reception-dialogue-button">
+        <button id="reception-dialogue-button" type="button">
             CONTINUE
         </button>
 
     </div>
 
-    <!-- ========================================== -->
-    <!-- SECTION 08A // INTERACTION APPEARANCE      -->
-    <!-- ========================================== -->
+    <!-- SECTION 08A // RECEPTION APPEARANCE -->
 
     <style>
 
@@ -614,7 +554,6 @@
             border: 1px solid #8CD6FD;
             padding: 12px 20px;
             color: #8CD6FD;
-            font-family: Consolas, monospace;
             font-size: 13px;
             text-align: center;
             z-index: 100;
@@ -628,12 +567,10 @@
             bottom: 55px;
             transform: translateX(-50%);
             width: min(540px, 90vw);
-            box-sizing: border-box;
             padding: 24px;
             background: rgba(8, 7, 17, 0.97);
             border: 1px solid #8650E8;
             box-shadow: 0 0 35px rgba(134, 80, 232, 0.3);
-            font-family: Consolas, monospace;
             z-index: 200;
         }
 
@@ -672,10 +609,7 @@
 
     </style>
 
-   
-    <!-- ========================================== -->
-    <!-- SECTION 08B // RECEPTION DIALOGUE LOGIC    -->
-    <!-- ========================================== -->
+    <!-- SECTION 08B // RECEPTION DIALOGUE LOGIC -->
 
     <script>
 
@@ -698,9 +632,7 @@
         const receptionDialogueButton =
             document.getElementById("reception-dialogue-button");
 
-        // =====================================================
         // SECTION 08C // RECEPTION CONVERSATION
-        // =====================================================
 
         const receptionLines = [
 
@@ -714,9 +646,7 @@
 
         ];
 
-        // =====================================================
-        // SECTION 08D // CLOSE RECEPTION DIALOGUE
-        // =====================================================
+        // SECTION 08D // CLOSE DIALOGUE
 
         function closeReceptionDialogue() {
 
@@ -730,9 +660,7 @@
             }
         }
 
-        // =====================================================
-        // SECTION 08E // DISPLAY RECEPTION DIALOGUE
-        // =====================================================
+        // SECTION 08E // SHOW DIALOGUE LINE
 
         function showReceptionLine() {
 
@@ -749,9 +677,7 @@
                     : "CONTINUE";
         }
 
-        // =====================================================
-        // SECTION 08F // OPEN RECEPTION DIALOGUE
-        // =====================================================
+        // SECTION 08F // OPEN DIALOGUE
 
         function openReceptionDialogue() {
 
@@ -766,20 +692,16 @@
             receptionDialogue.style.display = "block";
             receptionPrompt.style.display = "none";
 
+            showReceptionLine();
+
             if (document.pointerLockElement) {
                 document.exitPointerLock();
             }
-
-            showReceptionLine();
         }
 
-        // =====================================================
-        // SECTION 08G // RECEPTION BUTTON ACTION
-        // =====================================================
+        // SECTION 08G // RECEPTION BUTTON
 
         receptionDialogueButton.addEventListener("click", () => {
-
-            // Advance through the dialogue.
 
             if (
                 receptionDialogueStep <
@@ -788,28 +710,19 @@
 
                 receptionDialogueStep++;
                 showReceptionLine();
-
                 return;
             }
 
-            // Don't give another key if one was
-            // already granted during this session.
-
             if (window.hexcoreHasCityKey === true) {
-
                 closeReceptionDialogue();
                 return;
             }
-
-            // Grant the Cyber Key.
 
             window.hexcoreHasCityKey = true;
 
             window.dispatchEvent(
                 new CustomEvent("hexcore-city-key-granted")
             );
-
-            // Update the visitor's objective.
 
             window.hexcoreUpdateQuest(
                 "EXPLORE HEXCORE CITY",
@@ -819,11 +732,10 @@
             );
 
             closeReceptionDialogue();
+
         });
 
-        // =====================================================
         // SECTION 08H // RECEPTION PROXIMITY
-        // =====================================================
 
         window.addEventListener(
             "hexcore-player-position",
@@ -843,15 +755,11 @@
             }
         );
 
-        // =====================================================
-        // SECTION 08I // E-KEY INTERACTION
-        // =====================================================
+        // SECTION 08I // INTERACTION HANDLER
 
-        window.addEventListener("keydown", (event) => {
+        function interactWithReception() {
 
             if (
-                event.code !== "KeyE" ||
-                event.repeat ||
                 receptionDialogueOpen ||
                 !receptionNearby
             ) {
@@ -859,22 +767,37 @@
             }
 
             openReceptionDialogue();
+        }
+
+        window.addEventListener("keydown", (event) => {
+
+            if (
+                event.code === "KeyE" &&
+                !event.repeat
+            ) {
+                interactWithReception();
+            }
         });
+
+        // Mobile uses the same interaction function.
+
+        window.hexcoreInteract =
+            interactWithReception;
 
     </script>
 
-   
     <!-- ========================================== -->
-    <!-- SECTION 09 // CYBER KEY INVENTORY DISPLAY  -->
+    <!-- SECTION 09 // CYBER KEY INVENTORY          -->
     <!-- ========================================== -->
 
     <div id="hexcore-key-display">
 
         <div class="cyber-key-icon">
-            <icon>◆</icon>
+            ◆
         </div>
 
         <div class="cyber-key-information">
+
             <div class="cyber-key-title">
                 CYBER KEY
             </div>
@@ -882,11 +805,12 @@
             <div class="cyber-key-status">
                 HEXCORE CITY ACCESS // READY
             </div>
+
         </div>
 
     </div>
 
-    <!-- SECTION 09A // CYBER KEY APPEARANCE -->
+    <!-- SECTION 09A // KEY INVENTORY APPEARANCE -->
 
     <style>
 
@@ -900,7 +824,6 @@
             border: 1px solid #8650E8;
             border-left: 3px solid #8CD6FD;
             box-shadow: 0 0 18px rgba(134, 80, 232, 0.3);
-            font-family: Consolas, monospace;
             color: #EAE8FF;
             z-index: 90;
             pointer-events: none;
@@ -929,7 +852,7 @@
 
     </style>
 
-    <!-- SECTION 09B // CYBER KEY INVENTORY LOGIC -->
+    <!-- SECTION 09B // KEY INVENTORY LOGIC -->
 
     <script>
 
@@ -938,27 +861,23 @@
 
         window.hexcoreHasCyberKey = false;
 
-        // The receptionist gives the player a Cyber Key.
-
         window.addEventListener(
             "hexcore-city-key-granted",
             () => {
 
                 window.hexcoreHasCyberKey = true;
-
                 cyberKeyDisplay.style.display = "flex";
+
             }
         );
-
-        // The Cyber Key disappears after being used.
 
         window.addEventListener(
             "hexcore-cyber-key-used",
             () => {
 
                 window.hexcoreHasCyberKey = false;
-
                 cyberKeyDisplay.style.display = "none";
+
             }
         );
 
@@ -992,7 +911,7 @@
 
     </div>
 
-    <!-- SECTION 10C // MOBILE CONTROL APPEARANCE -->
+    <!-- SECTION 10C // MOBILE CONTROLS APPEARANCE -->
 
     <style>
 
@@ -1062,8 +981,6 @@
             background: rgba(134, 80, 232, 0.7);
         }
 
-        /* Only show these controls on touch devices. */
-
         @media (pointer: coarse) {
 
             #hexcore-mobile-controls {
@@ -1072,13 +989,33 @@
 
         }
 
+        @media (max-width: 900px) and (orientation: landscape) {
+
+            #mobile-joystick {
+                width: 90px;
+                height: 90px;
+                bottom: 14px;
+                left: 18px;
+            }
+
+            #mobile-action-buttons {
+                bottom: 14px;
+                right: 18px;
+                gap: 8px;
+            }
+
+            #mobile-action-buttons button {
+                min-height: 40px;
+                width: 82px;
+            }
+
+        }
+
     </style>
 
-    <!-- SECTION 10D // TOUCH INPUT SYSTEM -->
+    <!-- SECTION 10D // MOBILE INPUT STATE -->
 
     <script>
-
-        // Shared input state for the player movement system.
 
         window.hexcoreMobileInput = {
             x: 0,
@@ -1100,12 +1037,18 @@
 
         let activeJoystickPointer = null;
 
+        // SECTION 10E // JOYSTICK MOVEMENT
+
         function updateMobileJoystick(event) {
 
-            const bounds = mobileJoystick.getBoundingClientRect();
+            const bounds =
+                mobileJoystick.getBoundingClientRect();
 
-            const centerX = bounds.left + bounds.width / 2;
-            const centerY = bounds.top + bounds.height / 2;
+            const centerX =
+                bounds.left + bounds.width / 2;
+
+            const centerY =
+                bounds.top + bounds.height / 2;
 
             const maxDistance = 35;
 
@@ -1125,8 +1068,11 @@
             mobileJoystickKnob.style.transform =
                 `translate(-50%, -50%) translate(${x}px, ${y}px)`;
 
-            window.hexcoreMobileInput.x = x / maxDistance;
-            window.hexcoreMobileInput.z = y / maxDistance;
+            window.hexcoreMobileInput.x =
+                x / maxDistance;
+
+            window.hexcoreMobileInput.z =
+                y / maxDistance;
         }
 
         function resetMobileJoystick() {
@@ -1140,31 +1086,39 @@
                 "translate(-50%, -50%)";
         }
 
-        // SECTION 10E // JOYSTICK POINTER EVENTS
+        // SECTION 10F // JOYSTICK POINTER EVENTS
 
-        mobileJoystick.addEventListener("pointerdown", (event) => {
+        mobileJoystick.addEventListener(
+            "pointerdown",
+            (event) => {
 
-            if (activeJoystickPointer !== null) {
-                return;
+                if (activeJoystickPointer !== null) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                activeJoystickPointer = event.pointerId;
+
+                mobileJoystick.setPointerCapture(
+                    event.pointerId
+                );
+
+                updateMobileJoystick(event);
             }
+        );
 
-            event.preventDefault();
+        mobileJoystick.addEventListener(
+            "pointermove",
+            (event) => {
 
-            activeJoystickPointer = event.pointerId;
+                if (event.pointerId !== activeJoystickPointer) {
+                    return;
+                }
 
-            mobileJoystick.setPointerCapture(event.pointerId);
-
-            updateMobileJoystick(event);
-        });
-
-        mobileJoystick.addEventListener("pointermove", (event) => {
-
-            if (event.pointerId !== activeJoystickPointer) {
-                return;
+                updateMobileJoystick(event);
             }
-
-            updateMobileJoystick(event);
-        });
+        );
 
         function releaseMobileJoystick(event) {
 
@@ -1183,18 +1137,24 @@
             releaseMobileJoystick
         );
 
-        // SECTION 10F // SPRINT BUTTON
+        // SECTION 10G // SPRINT BUTTON
 
-        mobileSprint.addEventListener("pointerdown", (event) => {
+        mobileSprint.addEventListener(
+            "pointerdown",
+            (event) => {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            mobileSprint.setPointerCapture(event.pointerId);
+                mobileSprint.setPointerCapture(
+                    event.pointerId
+                );
 
-            window.hexcoreMobileInput.sprint = true;
-        });
+                window.hexcoreMobileInput.sprint = true;
+            }
+        );
 
         function releaseMobileSprint() {
+
             window.hexcoreMobileInput.sprint = false;
         }
 
@@ -1208,7 +1168,7 @@
             releaseMobileSprint
         );
 
-        // SECTION 10G // INTERACT BUTTON
+        // SECTION 10H // INTERACT BUTTON
 
         mobileInteract.addEventListener("click", () => {
 
@@ -1216,13 +1176,22 @@
                 return;
             }
 
-            window.dispatchEvent(
-                new KeyboardEvent("keydown", {
-                    code: "KeyE",
-                    key: "e",
-                    bubbles: true
-                })
-            );
+            if (typeof window.hexcoreInteract === "function") {
+
+                window.hexcoreInteract();
+            }
+
+        });
+
+        // SECTION 10I // RESET MOBILE INPUT
+
+        window.addEventListener("blur", () => {
+
+            resetMobileJoystick();
+            releaseMobileSprint();
         });
 
     </script>
+
+</body>
+</html>

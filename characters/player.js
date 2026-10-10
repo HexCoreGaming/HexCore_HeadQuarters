@@ -81,6 +81,94 @@ export function createPlayer(camera, renderer) {
     });
 
     // =====================================================
+    // SECTION 04A // MOBILE TOUCH CAMERA
+    // =====================================================
+
+    let cameraTouchPointer = null;
+    let cameraTouchX = 0;
+    let cameraTouchY = 0;
+
+    renderer.domElement.addEventListener(
+        "pointerdown",
+        (event) => {
+
+            if (event.pointerType !== "touch") {
+                return;
+            }
+
+            if (window.hexcoreDialogueOpen === true) {
+                return;
+            }
+
+            // Right half of the screen controls the camera.
+
+            if (event.clientX < window.innerWidth * 0.5) {
+                return;
+            }
+
+            if (cameraTouchPointer !== null) {
+                return;
+            }
+
+            event.preventDefault();
+
+            cameraTouchPointer = event.pointerId;
+            cameraTouchX = event.clientX;
+            cameraTouchY = event.clientY;
+
+            renderer.domElement.setPointerCapture(
+                event.pointerId
+            );
+        }
+    );
+
+    renderer.domElement.addEventListener(
+        "pointermove",
+        (event) => {
+
+            if (event.pointerId !== cameraTouchPointer) {
+                return;
+            }
+
+            if (window.hexcoreDialogueOpen === true) {
+                return;
+            }
+
+            const deltaX = event.clientX - cameraTouchX;
+            const deltaY = event.clientY - cameraTouchY;
+
+            cameraTouchX = event.clientX;
+            cameraTouchY = event.clientY;
+
+            player.yaw -= deltaX * 0.004;
+            player.pitch -= deltaY * 0.004;
+
+            player.pitch = THREE.MathUtils.clamp(
+                player.pitch,
+                -Math.PI / 2 + 0.1,
+                Math.PI / 2 - 0.1
+            );
+        }
+    );
+
+    function releaseCameraTouch(event) {
+
+        if (event.pointerId === cameraTouchPointer) {
+            cameraTouchPointer = null;
+        }
+    }
+
+    renderer.domElement.addEventListener(
+        "pointerup",
+        releaseCameraTouch
+    );
+
+    renderer.domElement.addEventListener(
+        "pointercancel",
+        releaseCameraTouch
+    );
+
+    // =====================================================
     // SECTION 04B // PLAYER COLLISION
     // =====================================================
 
@@ -186,23 +274,48 @@ export function createPlayer(camera, renderer) {
 
         // SECTION 05A // PAUSE DURING DIALOGUE
 
+       
         if (window.hexcoreDialogueOpen === true) {
 
             for (const key in keys) {
                 keys[key] = false;
             }
 
+            // Prevent the mobile joystick from continuing
+            // to move the player during conversations.
+
+            if (window.hexcoreMobileInput) {
+                window.hexcoreMobileInput.x = 0;
+                window.hexcoreMobileInput.z = 0;
+                window.hexcoreMobileInput.sprint = false;
+            }
+
             return;
         }
 
-        // SECTION 05B // MOVEMENT INPUT
+
+      
+        // =====================================================
+        // SECTION 05B // DESKTOP AND MOBILE MOVEMENT INPUT
+        // =====================================================
 
         const movement = new THREE.Vector3();
+
+        // Desktop keyboard controls
 
         if (keys["KeyW"]) movement.z -= 1;
         if (keys["KeyS"]) movement.z += 1;
         if (keys["KeyA"]) movement.x -= 1;
         if (keys["KeyD"]) movement.x += 1;
+
+        // Mobile joystick controls
+
+        const mobileInput = window.hexcoreMobileInput;
+
+        if (mobileInput) {
+            movement.x += mobileInput.x;
+            movement.z += mobileInput.z;
+        }
 
         // SECTION 05C // COLLISION-AWARE MOVEMENT
 
@@ -215,10 +328,19 @@ export function createPlayer(camera, renderer) {
                 player.yaw
             );
 
+           
+            // SECTION 05C-0 // DESKTOP AND MOBILE SPRINT
+
+            const sprinting =
+                keys["ShiftLeft"] ||
+                keys["ShiftRight"] ||
+                window.hexcoreMobileInput?.sprint === true;
+
             const speed =
-                keys["ShiftLeft"] || keys["ShiftRight"]
+                sprinting
                     ? player.sprintSpeed
                     : player.speed;
+
 
             const stepX = movement.x * speed * delta;
             const stepZ = movement.z * speed * delta;

@@ -100,6 +100,12 @@
             createPlayer
         } from "./characters/player.js";
 
+        // SECTION 02A // NPC SYSTEM IMPORT
+
+        import {
+            createNPCs
+        } from "./npcs/npcs.js";
+
 
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
@@ -118,6 +124,12 @@
 
 
         // ==========================================
+        // SECTION 04A // CREATE HEADQUARTERS NPCS
+        // ==========================================
+
+        const updateNPCs = createNPCs(scene);
+
+        // ==========================================
         // SECTION 05 // START GAME LOOP
         // ==========================================
 
@@ -128,6 +140,9 @@
 
             // Update animated headquarters objects
             animateHeadquarters();
+
+            // Update NPC character animations
+            updateNPCs();
 
             // Render the headquarters
             renderer.render(scene, camera);

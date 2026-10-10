@@ -656,15 +656,30 @@
     </script>
 
 
+   
     <!-- ========================================== -->
-    <!-- SECTION 09 // CITY ACCESS KEY DISPLAY     -->
+    <!-- SECTION 09 // CYBER KEY INVENTORY DISPLAY  -->
     <!-- ========================================== -->
 
     <div id="hexcore-key-display">
-        ◆ HEXCORE CITY ACCESS KEY // ACQUIRED
+
+        <div class="cyber-key-icon">
+            <icon>◆</icon>
+        </div>
+
+        <div class="cyber-key-information">
+            <div class="cyber-key-title">
+                CYBER KEY
+            </div>
+
+            <div class="cyber-key-status">
+                HEXCORE CITY ACCESS // READY
+            </div>
+        </div>
+
     </div>
 
-    <!-- SECTION 09A // KEY DISPLAY APPEARANCE -->
+    <!-- SECTION 09A // CYBER KEY APPEARANCE -->
 
     <style>
 
@@ -673,38 +688,71 @@
             position: fixed;
             top: 215px;
             right: 20px;
-            max-width: calc(100vw - 40px);
-            box-sizing: border-box;
-            padding: 12px 16px;
+            padding: 12px 18px;
             background: rgba(8, 7, 17, 0.94);
-            border: 1px solid #8CD6FD;
-            border-left: 3px solid #8650E8;
-            color: #8CD6FD;
+            border: 1px solid #8650E8;
+            border-left: 3px solid #8CD6FD;
+            box-shadow: 0 0 18px rgba(134, 80, 232, 0.3);
             font-family: Consolas, monospace;
-            font-size: 12px;
+            color: #EAE8FF;
             z-index: 90;
             pointer-events: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cyber-key-icon {
+            color: #8CD6FD;
+            font-size: 29px;
+            text-shadow: 0 0 12px #8650E8;
+        }
+
+        .cyber-key-title {
+            color: #D9C5FF;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .cyber-key-status {
+            color: #8CD6FD;
+            font-size: 10px;
+            margin-top: 5px;
         }
 
     </style>
 
-    <!-- SECTION 09B // KEY ACQUISITION EVENT -->
+    <!-- SECTION 09B // CYBER KEY INVENTORY LOGIC -->
 
     <script>
+
+        const cyberKeyDisplay =
+            document.getElementById("hexcore-key-display");
+
+        window.hexcoreHasCyberKey = false;
+
+        // The receptionist gives the player a Cyber Key.
 
         window.addEventListener(
             "hexcore-city-key-granted",
             () => {
 
-                document.getElementById(
-                    "hexcore-key-display"
-                ).style.display = "block";
+                window.hexcoreHasCyberKey = true;
 
+                cyberKeyDisplay.style.display = "flex";
+            }
+        );
+
+        // The Cyber Key disappears after being used.
+
+        window.addEventListener(
+            "hexcore-cyber-key-used",
+            () => {
+
+                window.hexcoreHasCyberKey = false;
+
+                cyberKeyDisplay.style.display = "none";
             }
         );
 
     </script>
-
-</body>
-</html>
-

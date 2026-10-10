@@ -276,4 +276,127 @@ export function createHeadquarters(scene) {
         upperBeam.position.set(x, 19, 0);
         scene.add(upperBeam);
     }
+
+    
+    // =====================================================
+    // SECTION 23 // GRAND LOBBY SUPPORT PILLARS
+    // =====================================================
+
+    const pillarMaterial = new THREE.MeshStandardMaterial({
+        color: 0x151124,
+        metalness: 0.75,
+        roughness: 0.25
+    });
+
+    const pillarGlow = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    for (const x of [-20, 20]) {
+
+        for (const z of [-18, 18]) {
+
+            // MAIN PILLAR
+
+            const pillar = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 19, 2),
+                pillarMaterial
+            );
+
+            pillar.position.set(x, 9.5, z);
+            scene.add(pillar);
+
+            // FRONT-FACING PURPLE LIGHT STRIP
+
+            const glowStrip = new THREE.Mesh(
+                new THREE.BoxGeometry(0.12, 17, 0.08),
+                pillarGlow
+            );
+
+            glowStrip.position.set(x, 9.5, z + 1.05);
+            scene.add(glowStrip);
+
+            // PILLAR BASE
+
+            const base = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 0.6, 3),
+                pillarMaterial
+            );
+
+            base.position.set(x, 0.3, z);
+            scene.add(base);
+        }
+    }
+
+    // =====================================================
+    // SECTION 24 // CEILING CROSSBEAMS
+    // =====================================================
+
+    const ceilingBeamMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x151124,
+            metalness: 0.8,
+            roughness: 0.25
+        });
+
+    for (const z of [-20, 0, 20]) {
+
+        const crossbeam = new THREE.Mesh(
+            new THREE.BoxGeometry(58, 1, 1.5),
+            ceilingBeamMaterial
+        );
+
+        crossbeam.position.set(0, 19.5, z);
+        scene.add(crossbeam);
+    }
+
+    // =====================================================
+    // SECTION 25 // CEILING LIGHT STRIPS
+    // =====================================================
+
+    const ceilingGlow = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    for (const z of [-20, 0, 20]) {
+
+        const lightBeam = new THREE.Mesh(
+            new THREE.BoxGeometry(56, 0.12, 0.2),
+            ceilingGlow
+        );
+
+        lightBeam.position.set(0, 18.9, z);
+        scene.add(lightBeam);
+    }
+
+    // =====================================================
+    // SECTION 26 // CENTRAL HOLOGRAPHIC ENERGY CORE
+    // =====================================================
+
+    const energyCore = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(2, 2),
+        new THREE.MeshStandardMaterial({
+            color: 0x8650E8,
+            emissive: 0x5F1DDA,
+            emissiveIntensity: 0.8,
+            metalness: 0.4,
+            roughness: 0.15,
+            flatShading: true
+        })
+    );
+
+    energyCore.position.set(0, 5, 0);
+    scene.add(energyCore);
+
+    // SECTION 27 // ENERGY CORE LIGHT
+
+    const coreLight = new THREE.PointLight(
+        0x8650E8,
+        45,
+        18
+    );
+
+    coreLight.position.set(0, 5, 0);
+    scene.add(coreLight);
+
 }

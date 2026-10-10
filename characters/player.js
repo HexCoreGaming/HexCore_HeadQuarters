@@ -80,94 +80,7 @@ export function createPlayer(camera, renderer) {
         );
     });
 
-    // =====================================================
-    // SECTION 04A // MOBILE TOUCH CAMERA
-    // =====================================================
-
-    let cameraTouchPointer = null;
-    let cameraTouchX = 0;
-    let cameraTouchY = 0;
-
-    renderer.domElement.addEventListener(
-        "pointerdown",
-        (event) => {
-
-            if (event.pointerType !== "touch") {
-                return;
-            }
-
-            if (window.hexcoreDialogueOpen === true) {
-                return;
-            }
-
-            // Right half of the screen controls the camera.
-
-            if (event.clientX < window.innerWidth * 0.5) {
-                return;
-            }
-
-            if (cameraTouchPointer !== null) {
-                return;
-            }
-
-            event.preventDefault();
-
-            cameraTouchPointer = event.pointerId;
-            cameraTouchX = event.clientX;
-            cameraTouchY = event.clientY;
-
-            renderer.domElement.setPointerCapture(
-                event.pointerId
-            );
-        }
-    );
-
-    renderer.domElement.addEventListener(
-        "pointermove",
-        (event) => {
-
-            if (event.pointerId !== cameraTouchPointer) {
-                return;
-            }
-
-            if (window.hexcoreDialogueOpen === true) {
-                return;
-            }
-
-            const deltaX = event.clientX - cameraTouchX;
-            const deltaY = event.clientY - cameraTouchY;
-
-            cameraTouchX = event.clientX;
-            cameraTouchY = event.clientY;
-
-            player.yaw -= deltaX * 0.004;
-            player.pitch -= deltaY * 0.004;
-
-            player.pitch = THREE.MathUtils.clamp(
-                player.pitch,
-                -Math.PI / 2 + 0.1,
-                Math.PI / 2 - 0.1
-            );
-        }
-    );
-
-    function releaseCameraTouch(event) {
-
-        if (event.pointerId === cameraTouchPointer) {
-            cameraTouchPointer = null;
-        }
-    }
-
-    renderer.domElement.addEventListener(
-        "pointerup",
-        releaseCameraTouch
-    );
-
-    renderer.domElement.addEventListener(
-        "pointercancel",
-        releaseCameraTouch
-    );
-
+   
     // =====================================================
     // SECTION 04B // PLAYER COLLISION
     // =====================================================
@@ -271,14 +184,43 @@ export function createPlayer(camera, renderer) {
     function updatePlayer() {
 
         const delta = Math.min(clock.getDelta(), 0.05);
+    
         // =====================================================
         // SECTION 05A-1 // MOBILE LOOK JOYSTICK CAMERA
         // =====================================================
 
-        if (window.hexcoreMobileLook) {
+        if (
+            window.hexcoreDialogueOpen !== true &&
+            window.hexcoreMobileLook
+        ) {
 
-            player.yaw -= window.hexcoreMobileLook.x * 0.06;
-            player.pitch -= window.hexcoreMobileLook.y * 0.045;
+            // Camera sensitivity.
+            // Lower these numbers for slower movement.
+
+            const horizontalSensitivity = 1.0;
+            const verticalSensitivity = 0.7;
+
+            // Small movements near joystick center
+            // should not rotate the camera.
+
+            const deadzone = 0.12;
+
+            const lookX = window.hexcoreMobileLook.x;
+            const lookY = window.hexcoreMobileLook.y;
+
+            const adjustedX =
+                Math.abs(lookX) > deadzone ? lookX : 0;
+
+            const adjustedY =
+                Math.abs(lookY) > deadzone ? lookY : 0;
+
+            // Frame-rate-independent camera movement.
+
+            player.yaw -=
+                adjustedX * horizontalSensitivity * delta;
+
+            player.pitch -=
+                adjustedY * verticalSensitivity * delta;
 
             player.pitch = THREE.MathUtils.clamp(
                 player.pitch,
@@ -286,6 +228,7 @@ export function createPlayer(camera, renderer) {
                 Math.PI / 2 - 0.1
             );
         }
+
               // SECTION 05A // PAUSE DURING DIALOGUE
 
         if (window.hexcoreDialogueOpen === true) {

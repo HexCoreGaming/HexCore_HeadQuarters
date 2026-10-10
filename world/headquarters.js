@@ -1179,7 +1179,287 @@ export function createHeadquarters(scene) {
     }
 
     // =====================================================
-    // SECTION 33 // ENVIRONMENT ANIMATION
+    // SECTION 33 // LUXURY LOBBY LOUNGES
+    // =====================================================
+
+    // Two symmetrical seating areas:
+    // left lounge at X = -20
+    // right lounge at X = 20
+    // both centered around Z = 7
+
+    // SECTION 33A // LOUNGE MATERIALS
+
+    const loungeSofaMaterial = new THREE.MeshStandardMaterial({
+        color: 0x11111C,
+        metalness: 0.25,
+        roughness: 0.55
+    });
+
+    const loungeFrameMaterial = new THREE.MeshStandardMaterial({
+        color: 0x242035,
+        metalness: 0.85,
+        roughness: 0.22
+    });
+
+    const loungeTableMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x181627,
+        metalness: 0.75,
+        roughness: 0.12,
+        clearcoat: 0.8
+    });
+
+    const loungePurpleGlow = new THREE.MeshBasicMaterial({
+        color: 0x8650E8
+    });
+
+    const loungeCyanGlow = new THREE.MeshBasicMaterial({
+        color: 0x8CD6FD
+    });
+
+    // SECTION 33B // FURNITURE HELPER
+
+    function addLoungeBox(
+        width,
+        height,
+        depth,
+        material,
+        x,
+        y,
+        z,
+        parent
+    ) {
+
+        const part = new THREE.Mesh(
+            new THREE.BoxGeometry(width, height, depth),
+            material
+        );
+
+        part.position.set(x, y, z);
+        parent.add(part);
+
+        return part;
+    }
+
+    // SECTION 33C // BUILD SOFA
+
+    function createLoungeSofa(parent, x, z, rotation) {
+
+        const sofa = new THREE.Group();
+
+        sofa.position.set(x, 0, z);
+        sofa.rotation.y = rotation;
+
+        // Base
+        addLoungeBox(
+            5.2, 0.55, 1.8,
+            loungeFrameMaterial,
+            0, 0.45, 0,
+            sofa
+        );
+
+        // Seat cushions
+        for (const cushionX of [-1.65, 0, 1.65]) {
+
+            addLoungeBox(
+                1.58, 0.34, 1.45,
+                loungeSofaMaterial,
+                cushionX, 0.9, 0.1,
+                sofa
+            );
+        }
+
+        // Backrest
+        addLoungeBox(
+            5.2, 1.25, 0.4,
+            loungeSofaMaterial,
+            0, 1.35, -0.85,
+            sofa
+        );
+
+        // Armrests
+        for (const armX of [-2.45, 2.45]) {
+
+            addLoungeBox(
+                0.35, 0.85, 1.8,
+                loungeSofaMaterial,
+                armX, 1.05, 0,
+                sofa
+            );
+        }
+
+        // Purple illuminated lower trim
+        addLoungeBox(
+            4.8, 0.07, 0.08,
+            loungePurpleGlow,
+            0, 0.24, 0.93,
+            sofa
+        );
+
+        parent.add(sofa);
+    }
+
+    // SECTION 33D // LOUNGE TABLE
+
+    function createLoungeTable(parent, x, z) {
+
+        const table = new THREE.Group();
+        table.position.set(x, 0, z);
+
+        // Table surface
+        addLoungeBox(
+            3.2, 0.16, 1.6,
+            loungeTableMaterial,
+            0, 0.65, 0,
+            table
+        );
+
+        // Central support
+        addLoungeBox(
+            1.15, 0.55, 0.75,
+            loungeFrameMaterial,
+            0, 0.32, 0,
+            table
+        );
+
+        // Illuminated table trim
+        addLoungeBox(
+            3.1, 0.045, 0.08,
+            loungeCyanGlow,
+            0, 0.73, 0.81,
+            table
+        );
+
+        parent.add(table);
+    }
+
+    // SECTION 33E // FUTURISTIC PLANTER
+
+    function createLoungePlanter(parent, x, z) {
+
+        const planter = new THREE.Group();
+        planter.position.set(x, 0, z);
+
+        const planterMaterial = new THREE.MeshStandardMaterial({
+            color: 0x171523,
+            metalness: 0.7,
+            roughness: 0.3
+        });
+
+        const foliageMaterial = new THREE.MeshStandardMaterial({
+            color: 0x244F49,
+            emissive: 0x092A29,
+            emissiveIntensity: 0.45,
+            roughness: 0.8
+        });
+
+        const pot = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.55, 0.42, 1.0, 8
+            ),
+            planterMaterial
+        );
+
+        pot.position.y = 0.5;
+        planter.add(pot);
+
+        const planterRing = new THREE.Mesh(
+            new THREE.TorusGeometry(0.54, 0.04, 8, 32),
+            loungePurpleGlow
+        );
+
+        planterRing.rotation.x = Math.PI / 2;
+        planterRing.position.y = 1.0;
+        planter.add(planterRing);
+
+        // Stylized foliage
+        for (let i = 0; i < 7; i++) {
+
+            const leaf = new THREE.Mesh(
+                new THREE.ConeGeometry(0.25, 1.5, 5),
+                foliageMaterial
+            );
+
+            const angle = i * Math.PI * 2 / 7;
+
+            leaf.position.set(
+                Math.cos(angle) * 0.22,
+                1.55 + (i % 3) * 0.17,
+                Math.sin(angle) * 0.22
+            );
+
+            leaf.rotation.z = Math.cos(angle) * 0.3;
+            leaf.rotation.x = Math.sin(angle) * 0.3;
+
+            planter.add(leaf);
+        }
+
+        parent.add(planter);
+    }
+
+    // SECTION 33F // ASSEMBLE LEFT AND RIGHT LOUNGES
+
+    function createLobbyLounge(centerX) {
+
+        const lounge = new THREE.Group();
+
+        // Matching sofas face the center table.
+        // All coordinates below are relative to
+        // the center of each lounge.
+
+        createLoungeSofa(
+            lounge,
+            0,
+            -3.2,
+            0
+        );
+
+        createLoungeSofa(
+            lounge,
+            0,
+            3.2,
+            Math.PI
+        );
+
+        createLoungeTable(
+            lounge,
+            0,
+            0
+        );
+
+        createLoungePlanter(
+            lounge,
+            -4.3,
+            -4.2
+        );
+
+        createLoungePlanter(
+            lounge,
+            4.3,
+            4.2
+        );
+
+        // Subtle illuminated lounge boundary.
+        // No raised floor or platform is added.
+
+        for (const edgeX of [-5.3, 5.3]) {
+
+            addLoungeBox(
+                0.07, 0.035, 11,
+                loungePurpleGlow,
+                edgeX, 0.04, 0,
+                lounge
+            );
+        }
+
+        lounge.position.set(centerX, 0, 7);
+        scene.add(lounge);
+    }
+
+    createLobbyLounge(-20);
+    createLobbyLounge(20);
+
+    // =====================================================
+    // SECTION 34 // ENVIRONMENT ANIMATION
     // =====================================================
 
     // ANIMATION 01 // ROTATING AND FLOATING ENERGY CORE
@@ -1248,7 +1528,7 @@ export function createHeadquarters(scene) {
 
 
     // =====================================================
-    // SECTION 34 // REGISTER ANIMATION
+    // SECTION 35 // REGISTER ANIMATION
     // =====================================================
 
     return animateHeadquarters;

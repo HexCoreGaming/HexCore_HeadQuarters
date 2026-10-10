@@ -737,17 +737,425 @@ export function createCityPlaza(scene) {
     );
 
     // =====================================================
+    // SECTION 15A // HEXCORE PLAZA VIOLINIST
+    // =====================================================
+
+    const violinist = new THREE.Group();
+
+    violinist.name = "HEXCORE_VIOLINIST";
+
+    // Opposite side of the plaza from the food cart.
+    // Local position: X = 10, Z = 0.
+
+    violinist.position.set(10, 0.15, 0);
+
+    // Face toward the center of the plaza.
+
+    violinist.rotation.y = -Math.PI / 2;
+
+    plaza.add(violinist);
+
+    // =====================================================
+    // SECTION 15B // VIOLINIST MATERIALS
+    // =====================================================
+
+    const violinSkin = new THREE.MeshStandardMaterial({
+        color: 0xB9856A,
+        roughness: 0.85
+    });
+
+    const violinSuit = new THREE.MeshStandardMaterial({
+        color: 0x171325,
+        metalness: 0.2,
+        roughness: 0.65
+    });
+
+    const violinPants = new THREE.MeshStandardMaterial({
+        color: 0x10121D,
+        roughness: 0.75
+    });
+
+    const violinHair = new THREE.MeshStandardMaterial({
+        color: 0x171015,
+        roughness: 0.9
+    });
+
+    const violinWood = new THREE.MeshStandardMaterial({
+        color: 0x8C492B,
+        metalness: 0.1,
+        roughness: 0.35
+    });
+
+    const violinDarkWood = new THREE.MeshStandardMaterial({
+        color: 0x351B16,
+        roughness: 0.4
+    });
+
+    const violinSilver = new THREE.MeshStandardMaterial({
+        color: 0xC5C8D8,
+        metalness: 0.85,
+        roughness: 0.25
+    });
+
+    // =====================================================
+    // SECTION 15C // VIOLINIST BODY
+    // =====================================================
+
+    // Legs
+
+    for (const x of [-0.19, 0.19]) {
+
+        makeCylinder(
+            violinist,
+            0.13, 0.15, 0.95,
+            x, 0.54, 0,
+            violinPants, 10
+        );
+
+        makeBox(
+            violinist,
+            0.28, 0.2, 0.47,
+            x, 0.12, 0.12,
+            violinPants
+        );
+    }
+
+    // Formal jacket
+
+    makeCylinder(
+        violinist,
+        0.34, 0.28, 0.9,
+        0, 1.46, 0,
+        violinSuit, 12
+    );
+
+    // Shirt detail
+
+    makeBox(
+        violinist,
+        0.17, 0.65, 0.04,
+        0, 1.55, 0.32,
+        violinSilver
+    );
+
+    // Neck
+
+    makeCylinder(
+        violinist,
+        0.13, 0.13, 0.22,
+        0, 2.01, 0,
+        violinSkin
+    );
+
+    // Head
+
+    const violinHead = new THREE.Mesh(
+        new THREE.SphereGeometry(0.29, 16, 12),
+        violinSkin
+    );
+
+    violinHead.position.set(0, 2.3, 0);
+    violinist.add(violinHead);
+
+    // Hair
+
+    const violinHairCap = new THREE.Mesh(
+        new THREE.SphereGeometry(
+            0.3,
+            16,
+            12,
+            0,
+            Math.PI * 2,
+            0,
+            Math.PI / 2
+        ),
+        violinHair
+    );
+
+    violinHairCap.position.set(0, 2.36, 0);
+    violinist.add(violinHairCap);
+
+    // =====================================================
+    // SECTION 15D // LEFT ARM HOLDING THE VIOLIN
+    // =====================================================
+
+    const violinLeftArm = new THREE.Group();
+
+    violinLeftArm.position.set(-0.33, 1.83, 0);
+    violinist.add(violinLeftArm);
+
+    const leftSleeve = makeCylinder(
+        violinLeftArm,
+        0.115, 0.105, 0.65,
+        -0.28, -0.1, 0.24,
+        violinSuit, 10
+    );
+
+    leftSleeve.rotation.z = -1.1;
+    leftSleeve.rotation.x = 0.4;
+
+    makeCylinder(
+        violinLeftArm,
+        0.095, 0.09, 0.38,
+        -0.52, -0.01, 0.44,
+        violinSkin, 10
+    ).rotation.z = -1.35;
+
+    // =====================================================
+    // SECTION 15E // VIOLIN INSTRUMENT
+    // =====================================================
+
+    const violinInstrument = new THREE.Group();
+
+    violinInstrument.position.set(
+        -0.34,
+        1.99,
+        0.52
+    );
+
+    violinInstrument.rotation.y = 0.18;
+
+    violinist.add(violinInstrument);
+
+    // Two rounded wooden body sections
+
+    const violinLowerBody = new THREE.Mesh(
+        new THREE.SphereGeometry(0.25, 16, 12),
+        violinWood
+    );
+
+    violinLowerBody.scale.set(0.8, 0.38, 1.18);
+    violinLowerBody.position.set(0, 0, 0.07);
+
+    violinInstrument.add(violinLowerBody);
+
+    const violinUpperBody = new THREE.Mesh(
+        new THREE.SphereGeometry(0.20, 16, 12),
+        violinWood
+    );
+
+    violinUpperBody.scale.set(0.8, 0.38, 0.9);
+    violinUpperBody.position.set(0, 0, -0.22);
+
+    violinInstrument.add(violinUpperBody);
+
+    // Neck and fingerboard
+
+    makeBox(
+        violinInstrument,
+        0.11, 0.07, 0.68,
+        0, 0.05, -0.55,
+        violinDarkWood
+    );
+
+    // Scroll
+
+    const violinScroll = new THREE.Mesh(
+        new THREE.SphereGeometry(0.09, 10, 8),
+        violinDarkWood
+    );
+
+    violinScroll.position.set(0, 0.05, -0.91);
+    violinInstrument.add(violinScroll);
+
+    // Bridge
+
+    makeBox(
+        violinInstrument,
+        0.26, 0.09, 0.04,
+        0, 0.12, 0.08,
+        violinDarkWood
+    );
+
+    // Four violin strings
+
+    for (let i = 0; i < 4; i++) {
+
+        makeBox(
+            violinInstrument,
+            0.009, 0.009, 0.88,
+            (i - 1.5) * 0.034,
+            0.165,
+            -0.26,
+            violinSilver
+        );
+    }
+
+    // =====================================================
+    // SECTION 15F // ANIMATED BOW AND RIGHT ARM
+    // =====================================================
+
+    const violinBowArm = new THREE.Group();
+
+    violinBowArm.position.set(
+        0.35,
+        1.78,
+        0.05
+    );
+
+    violinist.add(violinBowArm);
+
+    // Arm in front of the body
+
+    const bowSleeve = makeCylinder(
+        violinBowArm,
+        0.11, 0.105, 0.66,
+        0.22, -0.14, 0.32,
+        violinSuit, 10
+    );
+
+    bowSleeve.rotation.z = 0.85;
+    bowSleeve.rotation.x = -0.35;
+
+    const bowHand = new THREE.Mesh(
+        new THREE.SphereGeometry(0.12, 10, 8),
+        violinSkin
+    );
+
+    bowHand.position.set(
+        0.48,
+        -0.28,
+        0.58
+    );
+
+    violinBowArm.add(bowHand);
+
+    // Violin bow
+
+    const violinBow = new THREE.Group();
+
+    violinBow.position.set(
+        0.48,
+        -0.26,
+        0.58
+    );
+
+    violinBowArm.add(violinBow);
+
+    // Dark wooden bow stick
+
+    makeBox(
+        violinBow,
+        1.15, 0.027, 0.027,
+        -0.15, 0, 0,
+        violinDarkWood
+    );
+
+    // Light bow hair
+
+    makeBox(
+        violinBow,
+        1.08, 0.008, 0.009,
+        -0.15, -0.055, 0,
+        violinSilver
+    );
+
+    // Bow tip
+
+    makeBox(
+        violinBow,
+        0.06, 0.085, 0.05,
+        -0.71, -0.02, 0,
+        violinDarkWood
+    );
+
+    // =====================================================
+    // SECTION 15G // PERFORMANCE SPOTLIGHT
+    // =====================================================
+
+    const violinSpotlight = new THREE.PointLight(
+        0x8650E8,
+        3,
+        8
+    );
+
+    violinSpotlight.position.set(
+        0,
+        3,
+        0
+    );
+
+    violinist.add(violinSpotlight);
+
+    // Small illuminated circle under the musician
+
+    const violinStageRing = new THREE.Mesh(
+        new THREE.TorusGeometry(
+            1.1,
+            0.055,
+            6,
+            32
+        ),
+        cyan
+    );
+
+    violinStageRing.rotation.x = Math.PI / 2;
+    violinStageRing.position.y = 0.025;
+
+    violinist.add(violinStageRing);
+
+    // =====================================================
+    // SECTION 15H // VIOLINIST ANIMATION STATE
+    // =====================================================
+
+    const violinClock = new THREE.Clock();
+
+    let violinPerformanceTime = 0;
+
+    function animateViolinist() {
+
+        const delta = Math.min(
+            violinClock.getDelta(),
+            0.05
+        );
+
+        violinPerformanceTime += delta;
+
+        const t = violinPerformanceTime;
+
+        // Bowing motion, back and forth.
+
+        violinBowArm.rotation.y =
+            Math.sin(t * 3.4) * 0.34;
+
+        violinBowArm.rotation.z =
+            Math.sin(t * 3.4) * 0.12;
+
+        violinBow.position.x =
+            0.48 + Math.sin(t * 3.4) * 0.16;
+
+        // Slight movement in the left hand.
+
+        violinLeftArm.rotation.y =
+            Math.sin(t * 2.2) * 0.04;
+
+        // Subtle musician body sway.
+
+        violinist.rotation.z =
+            Math.sin(t * 1.2) * 0.012;
+
+        // Very slight head movement.
+
+        violinHead.rotation.z =
+            Math.sin(t * 1.4) * 0.035;
+    }
+
+    // =====================================================
     // SECTION 16 // PLAZA ANIMATION
     // =====================================================
 
     function animateCityPlaza() {
 
+        // Animate the plaza violinist.
+
+        animateViolinist();
+
         // Future additions:
-        // Violinist animations
         // Dancing couple
         // Fountain water
         // Fireworks
     }
+
 
     // =====================================================
     // SECTION 17 // OUTPUT

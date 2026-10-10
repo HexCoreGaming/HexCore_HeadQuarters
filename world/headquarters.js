@@ -1674,7 +1674,7 @@ export function createHeadquarters(scene) {
     // SECTION 34C // EXTERIOR GROUND PLANE
 
     const exteriorGround = new THREE.Mesh(
-        new THREE.BoxGeometry(200, 2, 220),
+        new THREE.BoxGeometry(300, 2, 300),
         new THREE.MeshStandardMaterial({
             color: 0x05070B,
             metalness: 0.55,
@@ -1684,7 +1684,7 @@ export function createHeadquarters(scene) {
         })
     );
 
-    exteriorGround.position.set(0, -1.2, 110);
+    exteriorGround.position.set(0, -1.2, 130);
     exteriorRealm.add(exteriorGround);
 
     // SECTION 34D // GLOWING EXTERIOR PATHWAYS

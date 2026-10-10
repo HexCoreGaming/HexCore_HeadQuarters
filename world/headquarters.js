@@ -1707,67 +1707,22 @@ export function createHeadquarters(scene) {
         addExteriorPathway(0.12, 150, laneX, 112, exteriorPurpleGlow);
     }
 
-    // SECTION 34E // DISTANT TOWERS
+ 
+    // SECTION 34E-1 // OUTER CITY SKYLINE
 
-    function createExteriorTower(x, y, z, width, height, depth) {
-
-        const tower = new THREE.Group();
-
-        const body = new THREE.Mesh(
-            new THREE.BoxGeometry(width, height, depth),
-            exteriorTowerMaterial
-        );
-
-        body.position.y = height / 2;
-        tower.add(body);
-
-        // Vertical edge glows
-        for (const edgeX of [-width / 2 + 0.18, width / 2 - 0.18]) {
-
-            const edgeGlow = new THREE.Mesh(
-                new THREE.BoxGeometry(0.14, height * 0.92, 0.12),
-                exteriorPurpleGlow
-            );
-
-            edgeGlow.position.set(edgeX, height / 2, depth / 2 + 0.08);
-            tower.add(edgeGlow);
-        }
-
-        // Top cyan trim
-        const topTrim = new THREE.Mesh(
-            new THREE.BoxGeometry(width * 0.94, 0.12, 0.12),
-            exteriorCyanGlow
-        );
-
-        topTrim.position.set(0, height - 0.35, depth / 2 + 0.08);
-        tower.add(topTrim);
-
-        // Mid panel
-        const midPanel = new THREE.Mesh(
-            new THREE.BoxGeometry(width * 0.72, height * 0.28, 0.18),
-            exteriorPanelMaterial
-        );
-
-        midPanel.position.set(0, height * 0.58, depth / 2 + 0.09);
-        tower.add(midPanel);
-
-        tower.position.set(x, y, z);
-        exteriorRealm.add(tower);
-
-        return tower;
-    }
-
-    const exteriorTowers = [];
+    // Place decorative towers along the far edges
+    // instead of among the department buildings.
 
     exteriorTowers.push(
-        createExteriorTower(-52, 0, 78, 10, 34, 10),
-        createExteriorTower(-32, 0, 68, 8, 26, 8),
-        createExteriorTower(-12, 0, 58, 7, 22, 7),
-        createExteriorTower(14, 0, 60, 8, 25, 8),
-        createExteriorTower(34, 0, 72, 10, 30, 10),
-        createExteriorTower(56, 0, 84, 12, 38, 12),
-        createExteriorTower(-68, 0, 98, 12, 46, 12),
-        createExteriorTower(74, 0, 102, 13, 50, 13)
+        createExteriorTower(-132, 0, 55, 10, 42, 10),
+        createExteriorTower(-138, 0, 105, 12, 55, 12),
+        createExteriorTower(-128, 0, 160, 11, 48, 11),
+        createExteriorTower(-137, 0, 215, 13, 62, 13),
+
+        createExteriorTower(132, 0, 65, 10, 45, 10),
+        createExteriorTower(138, 0, 115, 12, 58, 12),
+        createExteriorTower(128, 0, 175, 11, 51, 11),
+        createExteriorTower(137, 0, 225, 13, 65, 13)
     );
 
     // SECTION 34F // FLOATING PLATFORMS / RINGS

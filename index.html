@@ -14,6 +14,154 @@
 
     <style>
 
+    <!-- ========================================== -->
+    <!-- SECTION 00A // MOBILE SCREEN SUPPORT       -->
+    <!-- ========================================== -->
+
+    <style>
+
+        /* Prevent mobile browsers from scrolling
+           or zooming the game during gameplay. */
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+
+        /* ========================================== */
+        /* SECTION 00B // RESPONSIVE MOBILE INTERFACE */
+        /* ========================================== */
+
+        @media (max-width: 768px) {
+
+            #status {
+                top: max(10px, env(safe-area-inset-top));
+                left: max(10px, env(safe-area-inset-left));
+                font-size: 10px;
+                max-width: 55vw;
+            }
+
+            /* Hide desktop keyboard instructions
+               when using the mobile layout. */
+
+            #controls {
+                display: none;
+            }
+
+            /* Quest tracker */
+
+            #hexcore-quest-tracker {
+                top: max(44px, calc(env(safe-area-inset-top) + 38px));
+                right: max(8px, env(safe-area-inset-right));
+                width: min(205px, 48vw);
+                padding: 10px;
+            }
+
+            .quest-header {
+                font-size: 9px;
+                letter-spacing: 0;
+            }
+
+            .quest-title {
+                font-size: 11px;
+            }
+
+            .quest-description {
+                font-size: 10px;
+            }
+
+            .quest-footer {
+                font-size: 9px;
+            }
+
+            /* Cyber Key indicator */
+
+            #hexcore-key-display {
+                top: auto;
+                bottom: max(135px, calc(env(safe-area-inset-bottom) + 125px));
+                right: 8px;
+                padding: 9px;
+                max-width: 165px;
+            }
+
+            .cyber-key-title {
+                font-size: 11px;
+            }
+
+            .cyber-key-status {
+                font-size: 9px;
+            }
+
+            /* Reception dialogue */
+
+            #reception-dialogue {
+                width: min(440px, 92vw);
+                max-height: 65dvh;
+                overflow-y: auto;
+                bottom: max(12px, env(safe-area-inset-bottom));
+                padding: 16px;
+                box-sizing: border-box;
+            }
+
+            #reception-dialogue-text {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            #reception-dialogue-button {
+                min-height: 44px;
+                width: 100%;
+            }
+
+            /* Interaction prompts */
+
+            #reception-prompt,
+            #exit-notification {
+                bottom: max(100px, calc(env(safe-area-inset-bottom) + 90px));
+                max-width: 85vw;
+                font-size: 11px;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+
+        }
+
+        /* ========================================== */
+        /* SECTION 00C // LANDSCAPE PHONE SUPPORT    */
+        /* ========================================== */
+
+        @media (max-width: 900px) and (orientation: landscape) {
+
+            #hexcore-quest-tracker {
+                top: 8px;
+                right: max(8px, env(safe-area-inset-right));
+                width: 200px;
+                padding: 8px;
+            }
+
+            #hexcore-key-display {
+                bottom: 8px;
+            }
+
+            #reception-dialogue {
+                max-height: 85dvh;
+                bottom: 8px;
+            }
+
+        }
+
+    </style>
+
         /* ========================================== */
         /* HEXCORE // WEBSITE APPEARANCE             */
         /* ========================================== */

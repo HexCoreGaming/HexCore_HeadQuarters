@@ -255,8 +255,10 @@ export function createPlayer(camera, renderer) {
             // Camera sensitivity.
             // Lower these numbers for slower movement.
 
-            const horizontalSensitivity = 1.0;
-            const verticalSensitivity = 0.7;
+            
+            const horizontalSensitivity = 1.4;
+            const verticalSensitivity = 0.85;
+
 
             // Small movements near joystick center
             // should not rotate the camera.

@@ -5,8 +5,10 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+    >
 
     <title>HexCore Gaming | Headquarters</title>
 
@@ -18,6 +20,7 @@
 
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
@@ -30,52 +33,57 @@
             background: #080711;
             color: #8CD6FD;
             font-family: Consolas, monospace;
+            touch-action: none;
+        }
+
+        body {
+            position: fixed;
+            inset: 0;
         }
 
         canvas {
             display: block;
+            width: 100vw;
+            height: 100vh;
             touch-action: none;
         }
 
         #status {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 16px;
+            left: 16px;
             z-index: 10;
             color: #B863ED;
             text-shadow: 0 0 12px #8650E8;
             pointer-events: none;
-            font-size: 14px;
+            font-size: 12px;
+            max-width: 60vw;
         }
 
         #controls {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: 16px;
+            left: 16px;
             z-index: 10;
-            padding: 12px;
-            background: rgba(8, 7, 17, 0.8);
+            padding: 10px;
+            background: rgba(8, 7, 17, 0.82);
             border: 1px solid #8650E8;
-            font-size: 12px;
-            line-height: 1.8;
+            font-size: 11px;
+            line-height: 1.6;
             pointer-events: none;
         }
 
-    </style>
-
-    <!-- ========================================== -->
-    <!-- SECTION 00A // MOBILE SCREEN SUPPORT      -->
-    <!-- ========================================== -->
-
-    <style>
+        /* ========================================== */
+        /* SECTION 00A // MOBILE SCREEN SUPPORT      */
+        /* ========================================== */
 
         @media (max-width: 768px) {
 
             #status {
-                top: max(10px, env(safe-area-inset-top));
+                top: max(8px, env(safe-area-inset-top));
                 left: 10px;
-                font-size: 10px;
-                max-width: 45vw;
+                font-size: 9px;
+                max-width: 48vw;
             }
 
             #controls {
@@ -83,71 +91,82 @@
             }
 
             #hexcore-quest-tracker {
-                top: max(45px, calc(env(safe-area-inset-top) + 35px));
+                top: max(34px, calc(env(safe-area-inset-top) + 24px));
                 right: 8px;
-                width: min(205px, 48vw);
-                padding: 10px;
+                width: 165px;
+                padding: 8px;
             }
 
             .quest-header {
-                font-size: 9px;
-                letter-spacing: 0;
+                font-size: 8px;
+                margin-bottom: 8px;
+                padding-bottom: 6px;
             }
 
             .quest-title {
-                font-size: 11px;
+                font-size: 10px;
+                margin-bottom: 6px;
             }
 
             .quest-description {
-                font-size: 10px;
+                font-size: 9px;
+                line-height: 1.35;
+                margin-bottom: 10px;
             }
 
             .quest-footer {
-                font-size: 9px;
+                font-size: 8px;
+                gap: 6px;
             }
 
             #hexcore-key-display {
                 top: auto;
-                bottom: 165px;
+                bottom: 132px;
                 right: 8px;
-                max-width: 170px;
-                padding: 9px;
+                max-width: 145px;
+                padding: 8px 10px;
+                gap: 8px;
+            }
+
+            .cyber-key-icon {
+                font-size: 22px;
             }
 
             .cyber-key-title {
-                font-size: 11px;
+                font-size: 10px;
+                letter-spacing: 1px;
             }
 
             .cyber-key-status {
-                font-size: 9px;
+                font-size: 8px;
+                margin-top: 3px;
             }
 
             #reception-dialogue {
-                width: min(440px, 92vw);
-                max-height: 72dvh;
+                width: min(420px, 92vw);
+                max-height: 60dvh;
                 overflow-y: auto;
-                bottom: max(12px, env(safe-area-inset-bottom));
-                padding: 16px;
+                bottom: max(10px, env(safe-area-inset-bottom));
+                padding: 14px;
             }
 
             #reception-dialogue-text {
                 font-size: 12px;
-                line-height: 1.5;
+                line-height: 1.45;
             }
 
             #reception-dialogue-button {
                 width: 100%;
-                min-height: 44px;
+                min-height: 42px;
             }
 
             #reception-prompt,
             #exit-notification {
-                bottom: 160px;
-                max-width: 85vw;
-                font-size: 11px;
-                padding: 10px;
+                bottom: 120px;
+                max-width: 84vw;
+                font-size: 10px;
+                padding: 9px 10px;
             }
-
         }
 
         /* ========================================== */
@@ -157,10 +176,10 @@
         @media (max-width: 900px) and (orientation: landscape) {
 
             #hexcore-quest-tracker {
-                top: 8px;
-                right: max(8px, env(safe-area-inset-right));
-                width: 200px;
-                padding: 8px;
+                top: 6px;
+                right: 6px;
+                width: 150px;
+                padding: 7px;
             }
 
             #hexcore-key-display {
@@ -168,21 +187,18 @@
             }
 
             #reception-dialogue {
-                max-height: 85dvh;
+                max-height: 82dvh;
                 bottom: 8px;
             }
 
             #reception-prompt,
             #exit-notification {
-                bottom: 85px;
+                bottom: 76px;
             }
-
         }
 
     </style>
-
 </head>
-
 <body>
 
     <!-- ========================================== -->

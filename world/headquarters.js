@@ -96,9 +96,10 @@ export function createHeadquarters(scene) {
     // SECTION 09 // HEADQUARTERS ARCHITECTURE
     // =====================================================
 
-    const wallMaterial = new THREE.MeshBasicMaterial({
-    color: 0xFF00FF,
-    side: THREE.DoubleSide
+    const wallMaterial = new THREE.MeshStandardMaterial({
+    color: 0x101020,
+    metalness: 0.8,
+    roughness: 0.25
 });
 
     const frameMaterial = new THREE.MeshStandardMaterial({

@@ -127,8 +127,8 @@ export function createHexcoreTower(scene, renderer) {
     Object.assign(hint.style,{position:'fixed',bottom:'110px',left:'50%',transform:'translateX(-50%)',border:'1px solid #8c50e8',background:'#110e20',color:'#8cdbfd',padding:'12px',zIndex:175,cursor:'pointer',fontFamily:'Consolas,monospace',display:'none'});
     document.body.appendChild(hint);
     const button=(label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;Object.assign(b.style,{display:'block',width:'100%',margin:'8px 0',padding:'12px',color:'#eee6ff',background:'#25163e',border:'1px solid #7549bc',cursor:'pointer',textAlign:'left',fontFamily:'Consolas,monospace',touchAction:'manipulation'});b.onclick=fn;panel.appendChild(b);};
-    function close(){overlay.style.display='none';dialogueOpen=false;elevatorOpen=false;window.hexcoreDialogueOpen=false;}
-    function openElevator(){if(dialogueOpen||window.hexcoreDialogueOpen===true)return;dialogueOpen=true;elevatorOpen=true;window.hexcoreDialogueOpen=true;overlay.style.display='flex';hint.style.display='none';panel.replaceChildren();
+    function close(){overlay.style.display='none';dialogueOpen=false;elevatorOpen=false;if(window.hexcoreUIFocus)window.hexcoreUIFocus.close();else window.hexcoreDialogueOpen=false;}
+    function openElevator(){if(dialogueOpen||window.hexcoreDialogueOpen===true)return;dialogueOpen=true;elevatorOpen=true;if(window.hexcoreUIFocus)window.hexcoreUIFocus.open();else window.hexcoreDialogueOpen=true;overlay.style.display='flex';hint.style.display='none';panel.replaceChildren();
         const h=document.createElement('h2');h.textContent='HEXCORE // TOWER ELEVATOR';h.style.color='#8cdbfd';panel.appendChild(h);
         button('01 // ADMINISTRATION & LEGAL',()=>{close();travel('floor');});
         for(const name of ['02 // CUSTOMER SUPPORT','03 // COMMUNITY','04 // BUSINESS & PARTNERSHIPS','05 // DEVELOPMENT','06 // HARDWARE','B1 // FUTURE MMORPG WORLD']){

@@ -208,6 +208,14 @@
         }
 
     </style>
+
+<style id="hexcore-interface-polish">
+#hexcore-experience-ui section,#hexcore-department-panel section {border-radius:18px!important;backdrop-filter:blur(20px);box-shadow:0 30px 110px rgba(0,0,0,.8),0 0 50px rgba(128,80,232,.3)!important;}
+#hexcore-experience-ui button,#hexcore-department-panel button {border-radius:9px;transition:background .2s ease,transform .2s ease;}
+#hexcore-experience-ui button:hover,#hexcore-department-panel button:hover {background:#41306a!important;transform:translateY(-1px)}
+#hexcore-experience-ui input,#hexcore-department-panel input,#hexcore-department-panel textarea {border-radius:7px;}
+@media(max-width:600px){#hexcore-experience-ui section,#hexcore-department-panel section{padding:14px!important;max-height:78dvh!important}}
+</style>
 </head>
 <body>
 
@@ -296,6 +304,8 @@
         // SECTION 02G // HEXCORE TOWER SYSTEM
         import { createHexcoreTower } from "./world/hexcoreTower.js";
         import { createTowerDepartments } from "./world/towerDepartments.js";
+        import { installInteractionFocus } from "./core/interactionFocus.js";
+        import { createTowerArtDirection } from "./world/towerArtDirection.js";
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
 
         // ==========================================
@@ -335,6 +345,7 @@
 
         const updatePlayer =
             createPlayer(camera, renderer);
+        installInteractionFocus(renderer);
         // ==========================================
         // SECTION 04A // CREATE HEADQUARTERS NPCS
         // ==========================================
@@ -377,6 +388,7 @@
 
         const animateTowerDepartments = createTowerDepartments(scene);
         const animateVisitorExperiences = createVisitorExperiences(scene);
+        const animateTowerArtDirection = createTowerArtDirection(scene);
         const updateNPCs = createNPCs(scene);
 
         // SECTION 04B // CREATE CITYWIDE NPCS
@@ -421,6 +433,7 @@
 
             animateTowerDepartments();
             animateVisitorExperiences();
+            animateTowerArtDirection();
             updateNPCs();
 
             // SECTION 05E // ANIMATE CITYWIDE NPCS

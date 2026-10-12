@@ -1,0 +1,15 @@
+HEXCORE CITY // VISUAL AND INTERACTION UPDATE
+
+FULL PROJECT PACKAGE: extract contents into GitHub Desktop repository; never delete your existing folders. Review changes; exclude any accidental source ZIP.
+
+Changes:
+- New world/towerArtDirection.js: detailed atrium, kinetic hologram, interior architecture, decorative furniture and signage, lighting, tower exterior accents.
+- New core/interactionFocus.js: unified pointer lock release on UI open, recapture attempt on close, click-to-resume fallback on desktop.
+- Updated index.html: initializes visual and input systems; interface polish.
+- Updated towerDepartments.js, visitorExperiences.js, hexcoreTower.js: shared input focus for modal controls.
+- Existing movement, reception, original Admin interior and NPC conversations preserved.
+
+GitHub Pages: static. Ticket submission and staff authentication still require a secure backend.
+Graphics: procedural enhancement, not photorealistic AAA assets.
+
+Browser test: (1) HQ access (2) bridge to tower (3) elevator menu can click (4) close restores mouse look or prompts click (5) department desk interactions (6) arcade menus.

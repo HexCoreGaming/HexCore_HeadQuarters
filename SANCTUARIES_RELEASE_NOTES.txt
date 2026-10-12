@@ -1,0 +1,5 @@
+HEXCORE CITY — Bioluminescent Sanctuaries Pass
+
+Adds ten dispersed nature sanctuaries in the existing digital elven city, glowing canopy clusters, shallow luminous ponds, organic roots and restrained later human electric trims. Keeps tower, hub, game entrances and site coordinates fixed. Instanced foliage and no additional real-time lights.
+
+Remaining release plan after this: 3 planned packages — architectural asset replacement, destination/interior fidelity, and optimization/QA. These are development milestones, not a guarantee of AAA graphics or zero issues.

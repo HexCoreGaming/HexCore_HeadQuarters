@@ -1,5 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 import { HEXCORE_WORLD } from './worldLayout.js';
+import { createVisualAtmosphere } from './visualAtmosphere.js';
 
 // HEXCORE CITY / ORIGINAL DIGITAL WORLD (not the old city-grid geometry).
 // Single coordinate contract: tower (0,300), headquarters (0,0), site doors site.z+29.
@@ -160,6 +161,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
    torus(far,x,h+3,z,5.5,.12,i%2?glows[0]:glows[1],Math.PI/2);
  }
  yield;
+ yield* createVisualAtmosphere(scene);
  // Static scene plus a limited number of gentle animated monumental rings.
  return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}};
 }

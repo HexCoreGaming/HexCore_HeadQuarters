@@ -1,0 +1,16 @@
+HEXCORE CITY // NEXT ZIP — DIGITAL ARCHITECTURE GRAPHICS PASS
+
+Built from the last delivered complete exterior-rebuild project, not the older grid city.
+
+Adds a standalone progressive visual-atmosphere stage without changing the coordinates
+of HexCore Tower, headquarters, or the site's real interaction positions.
+
+- Central ceremonial tower ring and eight radial sculpted digital supports
+- Illuminated elven-futurist approach from the headquarters
+- A destination-specific decorative pass for each of the 16 existing attractions
+- A unique motif for each of the four main game pavilions
+- Abstract distant digital monoliths, not office-tower city blocks
+- Retains existing loading screen, player, NPCs and interior system code
+
+This is still procedural Three.js architecture, not a final asset-modeled AAA environment.
+Browser frame rate, alignment and navigation require testing on your machine.

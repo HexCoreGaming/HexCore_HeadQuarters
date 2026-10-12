@@ -1,0 +1,18 @@
+HEXCORE CITY // WELCOME LOADING SCREEN
+
+Adds the exact welcome message requested:
+"Welcome to HexCore Gamings interactive website!"
+
+Loads the headquarters and NPCs, then shows progress as the world initializer
+runs. The player cannot move until the required startup jobs have finished.
+The old 5-second idle delay is removed because the loading screen now owns
+startup. If a boot job fails, an explicit error and ENTER button appear rather
+than silently hiding the problem.
+
+IMPORTANT: This is a loading / reliability update, NOT the final world layout.
+The world still uses radial paths and generic district structures. Those are
+known limitations and require a separate proper architectural redesign.
+
+The loading bar measures scene startup stages, not remote network transfer.
+Browser shader compilation and GPU limitations can still cause a pause after
+entry. Live performance has not been tested on your machine.

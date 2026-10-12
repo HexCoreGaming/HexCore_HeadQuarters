@@ -216,8 +216,32 @@
 #hexcore-experience-ui input,#hexcore-department-panel input,#hexcore-department-panel textarea {border-radius:7px;}
 @media(max-width:600px){#hexcore-experience-ui section,#hexcore-department-panel section{padding:14px!important;max-height:78dvh!important}}
 </style>
+
+<style id="hexcore-welcome-loading-style">
+#hexcore-welcome-loading{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 36%,#21113d 0%,#0d0b1d 48%,#04060c 100%);color:#e9e8ff;font:14px Consolas,monospace;pointer-events:auto;transition:opacity .7s ease} 
+#hexcore-welcome-loading.done{opacity:0;pointer-events:none}
+#hexcore-welcome-loading .inner{width:min(540px,88vw);text-align:center}
+#hexcore-welcome-loading h1{font-size:clamp(22px,4vw,39px);letter-spacing:2px;line-height:1.3;font-weight:700;margin:0 0 16px;text-shadow:0 0 30px #8158ff}
+#hexcore-welcome-loading .sub{color:#9ce9ff;font-size:13px;letter-spacing:2px;margin-bottom:26px}
+#hexcore-welcome-loading .track{height:5px;border-radius:12px;background:#17182d;overflow:hidden;border:1px solid #544080}
+#hexcore-welcome-loading .bar{width:0;height:100%;background:linear-gradient(90deg,#884cf1,#69deff,#d464ff);transition:width .18s ease}
+#hexcore-welcome-loading .step{color:#b2a9d7;margin-top:16px;min-height:20px;font-size:12px}
+#hexcore-welcome-loading .errors{display:none;margin-top:16px;color:#ffbdcd;font-size:12px;line-height:1.6}
+#hexcore-welcome-loading .continue{display:none;margin:20px auto 0;min-height:44px;padding:10px 20px;background:#271849;border:1px solid #a978ff;color:#e5f5ff;font:inherit;cursor:pointer}
+</style>
 </head>
 <body>
+<div id="hexcore-welcome-loading" role="status" aria-live="polite">
+ <div class="inner">
+  <h1>Welcome to HexCore Gamings interactive website!</h1>
+  <div class="sub">HEXCORE CITY // PREPARING YOUR WORLD</div>
+  <div class="track"><div class="bar" id="hexcore-welcome-progress"></div></div>
+  <div class="step" id="hexcore-welcome-step">Initializing headquarters...</div>
+  <div class="errors" id="hexcore-welcome-errors"></div>
+  <button type="button" class="continue" id="hexcore-welcome-continue">ENTER HEXCORE CITY</button>
+ </div>
+</div>
+
 
     <!-- ========================================== -->
     <!-- SECTION 01 // STATUS DISPLAY              -->
@@ -368,8 +392,9 @@
             ['Tower architectural effects', () => createTowerArtDirection(scene)]
         ];
         let bootStart=0, nextJobAt=0, activeGenerator=null, activeName='';
-        const bootDelay=5000;
-        const bootGap=180;
+        // Welcome loading screen owns startup: no artificial five-second idle period.
+        const bootDelay=0;
+        const bootGap=55;
         function doOneBootStep(now){
             if(now<bootStart+bootDelay || now<nextJobAt)return;
             if(activeGenerator){
@@ -379,7 +404,7 @@
                         if(typeof result.value==='function')systems.set(activeName,result.value);
                         activeGenerator=null;bootState.ready++;activeName='';
                     }
-                }catch(error){console.error('HEXCORE STAGE',activeName,error);activeGenerator=null;bootState.ready++;}
+                }catch(error){console.error('HEXCORE STAGE',activeName,error);failedJobs.push(activeName);activeGenerator=null;bootState.ready++;}
                 nextJobAt=performance.now()+bootGap;
                 return;
             }
@@ -389,7 +414,7 @@
                 const result=build();
                 if(result && typeof result.next==='function'){activeGenerator=result;activeName=name;}
                 else{if(typeof result==='function')systems.set(name,result);bootState.ready++;}
-            }catch(error){console.error('HEXCORE STARTUP // '+name,error);bootState.ready++;}
+            }catch(error){console.error('HEXCORE STARTUP // '+name,error);failedJobs.push(name);bootState.ready++;}
             nextJobAt=performance.now()+bootGap;
         }
         // Runtime diagnostics: report failed stages once, without repeated freezes.
@@ -401,12 +426,44 @@
             window.hexcorePerformance.lastError = String(event.reason || 'unhandled rejection');
         });
         let frameTime = performance.now();
+        const loadingScreen=document.getElementById('hexcore-welcome-loading');
+        const loadingBar=document.getElementById('hexcore-welcome-progress');
+        const loadingStep=document.getElementById('hexcore-welcome-step');
+        const loadingErrors=document.getElementById('hexcore-welcome-errors');
+        const loadingContinue=document.getElementById('hexcore-welcome-continue');
+        let loadingDismissed=false;
+        let loadedAt=0;
+        const failedJobs=[];
+        function dismissWelcome(){
+            if(loadingDismissed)return;
+            loadingDismissed=true;
+            loadingScreen.classList.add('done');
+            loadingScreen.setAttribute('aria-hidden','true');
+            setTimeout(()=>loadingScreen.remove(),800);
+        }
+        loadingContinue.addEventListener('click',dismissWelcome);
+        function updateWelcome(now){
+            if(loadingDismissed)return;
+            const value=Math.round(100*Math.min(1,bootState.ready/bootState.total));
+            loadingBar.style.width=value+'%';
+            loadingStep.textContent=bootState.ready<bootState.total
+                ? 'Preparing '+bootState.phase+'  //  '+value+'%'
+                : 'World ready  //  100%';
+            if(bootState.ready>=bootState.total){
+                if(!loadedAt)loadedAt=now;
+                if(failedJobs.length){
+                    loadingErrors.style.display='block';
+                    loadingErrors.textContent=failedJobs.length+' system(s) failed to initialize: '+failedJobs.join(', ')+'. Open developer console for details.';
+                    loadingContinue.style.display='block';
+                }else if(now-loadedAt>=350){dismissWelcome();}
+            }
+        }
         // Hub plus its NPCs are constructed before player spawn; world waits five seconds.
         renderer.setAnimationLoop(()=>{
             const now=performance.now();
             window.hexcorePerformance.frameMs = Math.round(now - frameTime);
             frameTime = now;
-            updatePlayer();
+            if(loadingDismissed)updatePlayer();
             animateHeadquarters();
             updateHeadquartersNPCs();
             updateInitialCityNPCs();
@@ -417,6 +474,7 @@
             if(!bootStart){bootStart=performance.now();bootState.startedAt=bootStart;}
             // Executed after rendering, so the hub remains responsive while loading.
             doOneBootStep(performance.now());
+            updateWelcome(performance.now());
         });
 
     </script>

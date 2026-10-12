@@ -1,0 +1,47 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+
+// HEXCORE // Interactive welcome galleries, demonstration arcade, event terminal.
+export function createVisitorExperiences(scene) {
+  const lobby={x:800,z:800};let player={x:0,z:0},current=null,active=false;
+  const items=[
+    {id:'gallery',x:800-22,z:800+7,title:'FUTURE WORLDS',color:0xd87bff},
+    {id:'arcade',x:800+22,z:800+7,title:'HEXCORE ARCADE',color:0x73ecff},
+    {id:'events',x:800+22,z:800-14,title:'CITY EVENTS',color:0xffbf75},
+    {id:'hardware',x:800-22,z:800-14,title:'HARDWARE SHOWCASE',color:0x84ffc9}
+  ];
+  const world= new THREE.Group(); world.position.set(lobby.x,0,lobby.z);scene.add(world);
+  const material=new THREE.MeshStandardMaterial({color:0x11182e,metalness:.7,roughness:.25});
+  function label(text,width,color){const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#0b1022';ctx.fillRect(0,0,1024,256);ctx.strokeStyle=color;ctx.lineWidth=12;ctx.strokeRect(8,8,1008,240);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';let size=83;do{ctx.font=`bold ${size--}px Arial`}while(ctx.measureText(text).width>945&&size>18);ctx.fillText(text,512,130);const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;return new THREE.Mesh(new THREE.PlaneGeometry(width,2.5),new THREE.MeshBasicMaterial({map:t,side:THREE.DoubleSide}));}
+  for(const it of items){const x=it.x-lobby.x,z=it.z-lobby.z;let base=new THREE.Mesh(new THREE.CylinderGeometry(2.9,3.5,.9,8),material);base.position.set(x,.45,z);world.add(base);let sphere=new THREE.Mesh(new THREE.OctahedronGeometry(1.1),new THREE.MeshStandardMaterial({color:it.color,emissive:it.color,emissiveIntensity:.8,roughness:.2}));sphere.position.set(x,2.55,z);world.add(sphere);it.sphere=sphere;let sign=label(it.title,14,it.color);sign.position.set(x,5.2,z);world.add(sign);}
+  const overlay=document.createElement('div');overlay.id='hexcore-experience-ui';overlay.style.cssText='display:none;position:fixed;inset:0;background:rgba(4,7,20,.91);z-index:415;align-items:center;justify-content:center;padding:14px;font:14px Consolas,monospace;color:#f1ebff';
+  const content=document.createElement('section');content.style.cssText='box-sizing:border-box;width:min(730px,96vw);max-height:88dvh;overflow-y:auto;padding:22px;background:#10142e;border:1px solid #a66efa;box-shadow:0 0 40px #55298e';overlay.appendChild(content);document.body.appendChild(overlay);
+  const hint=document.createElement('button');hint.style.cssText='display:none;position:fixed;bottom:112px;left:50%;transform:translateX(-50%);z-index:180;background:#100c24;border:1px solid #8cdbfd;color:#8cdbfd;padding:11px;font:12px Consolas,monospace;cursor:pointer';document.body.appendChild(hint);
+  function button(text,fn){let b=document.createElement('button');b.textContent=text;b.style.cssText='display:block;width:100%;min-height:44px;margin:9px 0;padding:12px;background:#251c47;border:1px solid #8454bc;color:#fff;cursor:pointer;font:13px Consolas,monospace;text-align:left';b.onclick=fn;content.appendChild(b);}
+  function page(title,description){content.replaceChildren();let h=document.createElement('h2');h.textContent=title;h.style.color='#8cdbfd';content.appendChild(h);let p=document.createElement('p');p.textContent=description;p.style.lineHeight='1.7';content.appendChild(p);}
+  function close(){active=false;overlay.style.display='none';window.hexcoreDialogueOpen=false;}
+  function openUI(){if(!current||active||window.hexcoreDialogueOpen)return;active=true;window.hexcoreDialogueOpen=true;overlay.style.display='flex';hint.style.display='none';if(document.pointerLockElement)document.exitPointerLock();draw(current.id);}
+  function draw(id){if(id==='gallery'){page('HEXCORE // FUTURE WORLDS','A first look at games being created for the HexCore universe. These are project descriptions, not release promises.');for(const [title,description] of [
+      ['CYBER_ARENA HEX//BREAK','A high-speed arena FPS where any surface can become the floor, with shifting gravity, gadgets, and objective combat.'],
+      ['WHERE LIGHT DIES','A haunting Amazon-inspired survival experience, with a bioluminescent jungle, vast night skies, and wilderness threats.'],
+      ['UNTAMED HORIZON','Open-world riding, racing, and exploring across spectacular landscapes with dirt bikes, ATVs, and more.'],
+      ['THE FORGOTTEN ASHES / CITY OF THIEVES','An immersive stealth story in a dark Victorian city where choices and consequences reshape the world.'],
+      ['THE ACADEMY','A vast fantasy-meets-cyberpunk learning world centered on exploration, education, and simulated experiences.']])button(title,()=>{page(title,description);button('BACK TO FUTURE WORLDS',()=>draw('gallery'));button('CLOSE',close);});}
+    if(id==='arcade'){page('HEXCORE // ARCADE','Playable micro-games built for the website. These are standalone browser experiences and not copies of upcoming game demos.');button('PLAY // NEON REFLEX',reaction);button('PLAY // MEMORY MATRIX',memory);}
+    if(id==='events'){page('HEXCORE // COMMUNITY EVENTS','This terminal is a preview of events that will take place in the city. No dates are scheduled here until confirmed.');button('MIDNIGHT GAME LAUNCHES',()=>{page('MIDNIGHT LAUNCHES','Future planned in-world queues, campers, celebratory effects, countdowns, and release-night NPC dialogue.');button('BACK',()=>draw('events'));});button('COMMUNITY SPACES',()=>{page('COMMUNITY SPACES','Planned city gathering spaces include LAN parties, public plaza celebrations, and player-created entertainment.');button('BACK',()=>draw('events'));});}
+    if(id==='hardware'){page('HEXCORE // HARDWARE SHOWCASE','Explore the concepts behind HexCore Gaming hardware. No systems or controllers are on sale through this website yet.');button('HEXCORE SYSTEM',()=>{page('HEXCORE SYSTEM','A concept for a hybrid PC and console with a native 3D hub, generous storage, independent game storefront, and solid-state physical game media.');button('BACK',()=>draw('hardware'));});button('HEXCORE CONTROLLER',()=>{page('HEXCORE CONTROLLER','A specialized controller concept with additional buttons and triggers, designed for PC compatibility and HexCore games.');button('BACK',()=>draw('hardware'));});}
+    button('EXIT TERMINAL',close);
+  }
+  function reaction(){page('NEON REFLEX // READY','Hit the target after it appears. Early clicks reset the attempt. Your score is measured in milliseconds.');let alive=true,start=0,state='wait';const b=document.createElement('button');b.textContent='START ROUND';b.style.cssText='width:100%;height:150px;background:#20163c;color:white;border:2px solid #8cdbfd;font:20px Consolas,monospace;cursor:pointer';content.appendChild(b);
+    let timeout=null;b.onclick=()=>{if(state==='ready'){const t=Math.round(performance.now()-start);state='done';b.textContent=`${t} ms // PLAY AGAIN`;b.style.background='#194238';return;}if(state==='armed'){clearTimeout(timeout);state='done';b.textContent='TOO EARLY // TRY AGAIN';return;}state='armed';b.textContent='WAIT FOR CYAN...';b.style.background='#4b1948';timeout=setTimeout(()=>{if(!alive)return;state='ready';start=performance.now();b.textContent='CLICK NOW';b.style.background='#136377';},950+Math.random()*2050);};
+    const back=()=>{alive=false;clearTimeout(timeout);draw('arcade');};button('BACK TO ARCADE',back);
+  }
+  function memory(){page('MEMORY MATRIX // MATCH THE SYMBOLS','Turn over two tiles at a time. Match all four pairs to win.');let values=['◆','◆','✦','✦','⬢','⬢','☼','☼'];for(let i=values.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[values[i],values[j]]=[values[j],values[i]];}let selected=[],solved=new Set(),moves=0,locked=false;const board=document.createElement('div');board.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:16px 0';let buttons=values.map((symbol,i)=>{let b=document.createElement('button');b.textContent='?';b.style.cssText='height:72px;border:1px solid #8853c3;background:#231d42;color:#8cdbfd;font-size:30px;cursor:pointer';b.onclick=()=>{if(locked||selected.includes(i)||solved.has(i))return;b.textContent=symbol;selected.push(i);if(selected.length===2){moves++;const [a,c]=selected;if(values[a]===values[c]){solved.add(a);solved.add(c);selected=[];if(solved.size===8)status.textContent=`ALL PAIRS MATCHED // ${moves} MOVES`;}else{locked=true;setTimeout(()=>{buttons[a].textContent='?';buttons[c].textContent='?';selected=[];locked=false;},650);}}};board.appendChild(b);return b;});content.appendChild(board);let status=document.createElement('p');status.textContent='FIND THE FOUR PAIRS';content.appendChild(status);button('NEW GAME',memory);button('BACK TO ARCADE',()=>draw('arcade'));}
+  window.addEventListener('hexcore-player-position',e=>{player=e.detail||player;});
+  window.hexcoreExperienceInteract=()=>{if(current&&!active)openUI();};
+  hint.onclick=openUI;
+  window.addEventListener('keydown',e=>{if(e.code==='KeyE'&&!e.repeat&&current&&!active)openUI();if(e.code==='Escape'&&active)close();});
+  let elapsed=0;return function(dt=1/60){elapsed+=dt;for(const it of items){it.sphere.rotation.y+=dt*.6;it.sphere.position.y=2.55+Math.sin(elapsed*1.6+it.x)*.22;}
+    current=!active&&window.hexcoreInteriorActive===true?items.find(it=>Math.hypot(player.x-it.x,player.z-it.z)<5):null;
+    hint.style.display=current&&!active?'block':'none';if(current)hint.textContent=`E / TAP // ${current.title}`;
+  };
+}

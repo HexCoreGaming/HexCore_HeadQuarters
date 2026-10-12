@@ -132,7 +132,11 @@ export function createHexcoreTower(scene, renderer) {
         const h=document.createElement('h2');h.textContent='HEXCORE // TOWER ELEVATOR';h.style.color='#8cdbfd';panel.appendChild(h);
         button('01 // ADMINISTRATION & LEGAL',()=>{close();travel('floor');});
         for(const name of ['02 // CUSTOMER SUPPORT','03 // COMMUNITY','04 // BUSINESS & PARTNERSHIPS','05 // DEVELOPMENT','06 // HARDWARE','B1 // FUTURE MMORPG WORLD']){
-            button(name+' // COMING LATER',()=>{const info=document.getElementById('hexcore-floor-message');if(info)info.textContent='This destination is being developed.';});
+            button(name,()=>{
+                const id=name.slice(0,2);
+                if(id==='B1'){const info=document.getElementById('hexcore-floor-message');if(info)info.textContent='The MMORPG gateway is reserved for future development.';return;}
+                close();if(typeof window.hexcoreVisitTowerDepartment==='function'){mode='department';window.hexcoreVisitTowerDepartment(id);}else{const info=document.getElementById('hexcore-floor-message');if(info)info.textContent='This department is initializing.';}
+            });
         }
         const note=document.createElement('p');note.id='hexcore-floor-message';note.style.color='#cdb4ff';panel.appendChild(note);
         button('GROUND // RETURN TO LOBBY',()=>{close();travel('lobby');});
@@ -146,8 +150,9 @@ export function createHexcoreTower(scene, renderer) {
         if(destination==='floor'){window.hexcoreInteriorActive=true;window.hexcoreInteriorBounds={minX:875,maxX:925,minZ:875,maxZ:925};window.hexcoreTeleportPlayer(900,913,0);}
     }
     // Tower and staff interfaces are additive; don't overwrite receptionist binding.
+    window.hexcoreTowerReturnToLobby = () => {close();travel('lobby');};
     const oldInteract=window.hexcoreInteract;
-    window.hexcoreInteract=function(){if(mode==='lobby'||mode==='floor'){if(hint.style.display!=='none')interact();}else if(typeof oldInteract==='function')oldInteract();};
+    window.hexcoreInteract=function(){if(mode==='lobby'||mode==='floor'){if(hint.style.display!=='none')interact();else if(mode==='lobby'&&typeof window.hexcoreExperienceInteract==='function')window.hexcoreExperienceInteract();}else if(mode==='department' && typeof window.hexcoreDepartmentInteract==='function'){window.hexcoreDepartmentInteract();}else if(typeof oldInteract==='function')oldInteract();};
     function interact(){if(window.hexcoreDialogueOpen===true)return;
         if(mode==='lobby' && Math.hypot(player.x-800,player.z-772)<10)openElevator();
         else if(mode==='floor' && player.z>911)openElevator();

@@ -295,6 +295,8 @@
 
         // SECTION 02G // HEXCORE TOWER SYSTEM
         import { createHexcoreTower } from "./world/hexcoreTower.js";
+        import { createTowerDepartments } from "./world/towerDepartments.js";
+        import { createVisitorExperiences } from "./world/visitorExperiences.js";
 
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
@@ -373,6 +375,8 @@
             console.error("HEXCORE TOWER INITIALIZATION ERROR",error);
         }
 
+        const animateTowerDepartments = createTowerDepartments(scene);
+        const animateVisitorExperiences = createVisitorExperiences(scene);
         const updateNPCs = createNPCs(scene);
 
         // SECTION 04B // CREATE CITYWIDE NPCS
@@ -415,6 +419,8 @@
                 animateHexcoreTower = () => {};
             }
 
+            animateTowerDepartments();
+            animateVisitorExperiences();
             updateNPCs();
 
             // SECTION 05E // ANIMATE CITYWIDE NPCS

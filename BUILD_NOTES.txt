@@ -1,0 +1,28 @@
+HEXCORE CITY // INTEGRATED VISITOR BUILD
+
+WHAT IS FUNCTIONAL IN THIS BUILD
+- Original headquarters, introduction, reception, cyber key, original city, NPCs, city plaza, and Administration & Legal source files preserved.
+- Expanded outdoor movement boundaries to ±4000 (city after exit unlock). Enclosed rooms retain independent bounds and original collisions remain.
+- HexCore Tower exterior, skybridge, lobby, elevator and connected Administration floor retained.
+- Five additional elevator departments with original, navigable rooms, interactive public topics and return to tower elevator:
+  02 Customer Support; 03 Community & Events; 04 Business & Partnerships; 05 Game Development; 06 Hardware Lab.
+- Four visitor attractions in the Tower lobby: Future Worlds, Arcade, City Events and Hardware Showcase.
+- Arcade features two actual standalone browser micro-games: Neon Reflex and Memory Matrix.
+- Responsive popup UI with desktop E and touch INTERACT access, with no account needed.
+- Customer Support draft form and clipboard copy; NO REAL SUBMISSION to a backend.
+
+NOT YET FUNCTIONAL (REQUIRES FUTURE INTEGRATION / ASSETS)
+- Real support ticket delivery, staff logins, encrypted access, private admin dashboards and payment checkout.
+- RuneScape-inspired MMO; elevator B1 is intentionally informational only.
+- High fidelity licensed models, character animation, audio, full arcade demos, large-scale NPC schedules, live events.
+- Browser-level end-to-end visual/performance testing should be done after GitHub Pages publishes.
+
+INSTALL SAFELY
+1. Copy the existing repository to a backup location first.
+2. Open the folder inside this ZIP; copy its contents into the GitHub Desktop repository root, MERGE folders and REPLACE matching files.
+3. Do not delete your local .git folder. This archive does not contain .git.
+4. Examine the GitHub Desktop change list before committing. Verify no unexpected deletions.
+5. Commit and Push origin; wait for GitHub Pages to publish.
+6. Test: HQ reception/key; city; bridge/tower; ground elevator; 01 admin; floors 02-06; lobby kiosks; arcade; mobile controls.
+
+SECURITY: No server-side infrastructure exists on a static GitHub Pages site. Never store real staff passwords or secrets in this repository.

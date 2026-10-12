@@ -593,13 +593,13 @@ export function createPlayer(camera, renderer) {
                 // Preserve the current city limits to the west.
                 // The east bridge leads to HexCore Tower Island.
                 player.position.x = THREE.MathUtils.clamp(
-                    player.position.x, -98, cityAccessEnabled ? 285 : 98
+                    player.position.x, -4000, cityAccessEnabled ? 4000 : 98
                 );
             }
 
             player.position.z = THREE.MathUtils.clamp(
                 player.position.z, -28,
-                cityAccessEnabled ? 245 : 28
+                cityAccessEnabled ? 4000 : 28
             );
         }
 

@@ -1,0 +1,22 @@
+HEXCORE CITY // ZIP 3 — PHYSICAL CITY LAYOUT CORRECTION
+
+This is a full-project, cumulative ZIP based on ZIP 2. Copy all contents into the existing GitHub Desktop repository without deleting unlisted files.
+
+CHANGED:
+- world/publicCity.js: relocates 16-building public district adjacent to HexCore Tower island; installs physical illuminated boulevard, removes the tower lobby city portal, and prevents direct entry through the remote directory.
+- Building interiors remain separate instanced rooms for performance; exiting an interior returns to its actual exterior building entrance.
+- HexCore Tower stays a corporate building; original elevator, corporate departments, HQ, Admin dialogue, games and city remain unchanged.
+
+HOW TO EXPLORE:
+1. Exit the original Headquarters to HexCore City.
+2. Cross the existing eastern bridge to the HexCore Tower island (approximately X 224 / Z 110).
+3. Continue EAST across the illuminated boulevard to the public district (X ~287 onward, Z ~110).
+4. Walk to the door side of a public building and press E / mobile Interact to enter. Walk inside to its info representative; exit back to its doorway.
+5. The district directory shows information; it does not teleport visitors from the tower.
+
+LIMITATIONS:
+- Procedural building exteriors still share much of the same construction. The distinctive architectural/asset pass remains upcoming.
+- Not a verified browser playtest. Real checkout, secure staff access and live tickets require backend services.
+- The 16-building layout includes some general corporate information annexes and attractions, but HexCore Tower itself retains the corporate offices. Further district redesign will separate and polish these uses more distinctly.
+
+VALIDATION: JavaScript syntax and local import paths are checked at package creation; physical traversal still needs an in-browser playtest.

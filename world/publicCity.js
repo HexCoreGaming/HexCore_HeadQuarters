@@ -3,7 +3,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 // HEXCORE // PUBLIC WEBSITE CITY. All copy is informational; no fictitious live services.
 // Reusable independent buildings, visitor navigation, featured games, support and hardware.
 export function createPublicCity(scene) {
-  const HUB={x:2400,z:2400}, LOBBY={x:800,z:800};
+  const HUB={x:448,z:110}; // The public district is physically next to the tower island.
   const themes={violet:0x9b62ff,cyan:0x64deff,gold:0xffcd83,pink:0xff6ec8,green:0x83edb8};
   const sites=[
     {id:'cyber',title:'CYBER_ARENA HEX//BREAK',tag:'FEATURED GAME',theme:'violet',subject:'Skill-based arena FPS',desc:'An extreme movement arena shooter where every surface is walkable. Local gravity, skill-based combat, movement gadgets, and HEX//BREAK objective play define the experience.',facts:['Offline demo in development','Gravity-shifting arena maps','HEX//BREAK and Team Deathmatch','Human and elf character customization'],staff:'Arena Guide'},
@@ -46,7 +46,7 @@ export function createPublicCity(scene) {
   for(let x=-149;x<=149;x+=14) cube(district,x,.077,0,.12,.05,317,x%28===0?colMats.violet:colMats.cyan);
   for(let x of [-74,0,74]){cube(district,x,.1,0,11,.1,326,stone);cube(district,x-5,.15,0,.17,.14,326,colMats.cyan);cube(district,x+5,.15,0,.17,.14,326,colMats.violet);}
   for(let z of [-76,0,76]){cube(district,0,.1,z,310,.1,11,stone);cube(district,0,.16,z-5,310,.09,.16,colMats.pink);}
-  // Four rows of four themed independent buildings, each a separate teleportable interior.
+  // Sixteen separate exterior buildings. Only doorway transitions use instanced interiors.
   for(const [i,site] of sites.entries()){
     const gx=anchorX[i%4],gz=anchorZ[Math.floor(i/4)];site.x=HUB.x+gx;site.z=HUB.z+gz;
     let group=new THREE.Group();group.position.set(gx,0,gz);district.add(group);
@@ -126,11 +126,14 @@ export function createPublicCity(scene) {
     sign(g,'VISITOR INFORMATION',0,3,-10,19,2.3,hex);
     g.add(new THREE.HemisphereLight(0xa4bfff,0x151123,1));let l=new THREE.PointLight(cc,13,78);l.position.set(0,15,-7);g.add(l);
   }
-  // Visitors can enter from the existing tower's lobby, which is always kept intact.
-  const portal=new THREE.Group();portal.position.set(800,0,800);scene.add(portal);
-  cube(portal,0,.4,20,13,.8,8,dark);cube(portal,0,4,20,11,7,.45,colMats.violet);
-  cube(portal,0,4,20.3,9,5.5,.3,dark);sign(portal,'EXPLORE HEXCORE CITY',0,6.5,20.6,17,2.8,'#97ebff');
-  sign(portal,'E / INTERACT TO TRAVEL',0,3.6,20.65,15,2,'#edbdff');
+  // PUBLIC DISTRICT // physically connected to the existing city, NOT inside HexCore Tower.
+  // Westward boulevard reaches the eastern shore of the original tower island.
+  const approach=new THREE.Group();scene.add(approach);
+  cube(approach,279,-.32,110,57,.55,15,dark);
+  for(let zz of [102.6,117.4])cube(approach,279,.05,zz,57,.22,.24,colMats.cyan);
+  for(let xx=254;xx<=303;xx+=6)cube(approach,xx,.08,110,.2,.09,14,colMats.violet);
+  sign(approach,'HEXCORE CITY // GAME & COMMERCE DISTRICT',299,8,110,48,3.5,'#97ebff');
+  // No tower portal: all public buildings are approached through their physical city entrances.
   const display=document.createElement('div');display.id='hexcore-fullcity-panel';display.style.cssText='display:none;position:fixed;inset:0;background:rgba(3,6,17,.94);z-index:490;align-items:center;justify-content:center;padding:14px;box-sizing:border-box;color:#eaf0ff;font:14px Consolas,monospace';document.body.appendChild(display);
   const panel=document.createElement('section');panel.style.cssText='background:linear-gradient(140deg,#101a32,#1a1036);border:1px solid #8558d8;box-shadow:0 0 50px #37165a;width:min(850px,98vw);max-height:90dvh;overflow:auto;padding:22px;box-sizing:border-box';display.appendChild(panel);
   const prompt=document.createElement('button');prompt.style.cssText='display:none;position:fixed;bottom:115px;left:50%;transform:translateX(-50%);z-index:195;background:#130d2c;border:1px solid #a9eaff;color:#d1eeff;font:12px Consolas,monospace;padding:12px 16px;cursor:pointer';document.body.appendChild(prompt);
@@ -141,17 +144,22 @@ export function createPublicCity(scene) {
   function close(){state.open=false;display.style.display='none';if(window.hexcoreUIFocus)window.hexcoreUIFocus.close();else window.hexcoreDialogueOpen=false;}
   function modal(render){if(state.open||window.hexcoreDialogueOpen)return;state.open=true;if(window.hexcoreUIFocus)window.hexcoreUIFocus.open();else window.hexcoreDialogueOpen=true;display.style.display='flex';if(document.pointerLockElement)document.exitPointerLock();render();}
   function teleport(x,z,bounds){close();state.cooldown=performance.now()+700;window.hexcoreInteriorActive=true;window.hexcoreInteriorBounds=bounds;window.hexcoreTeleportPlayer(x,z,0);}
-  function goDistrict(){state.zone='district';state.site=null;teleport(HUB.x,HUB.z+151,{minX:HUB.x-152,maxX:HUB.x+152,minZ:HUB.z-162,maxZ:HUB.z+162});}
+  function goDistrict(site=null){
+    // Return the visitor to the exterior doorway rather than a remote teleport hub.
+    state.zone='district';state.site=null;close();state.cooldown=performance.now()+650;
+    window.hexcoreInteriorActive=false;window.hexcoreInteriorBounds=null;
+    window.hexcoreTeleportPlayer(site?site.x:HUB.x-144,site?site.z+32:HUB.z,0);
+  }
   function goLobby(){state.zone='other';state.site=null;if(typeof window.hexcoreTowerReturnToLobby==='function'){close();window.hexcoreTowerReturnToLobby();}else teleport(800,800+24,{minX:800-36,maxX:800+36,minZ:800-33,maxZ:800+33});}
   function goSite(site){state.zone='site';state.site=site;let p=site.interior;teleport(p.x,p.z+26,{minX:p.x-39,maxX:p.x+39,minZ:p.z-34,maxZ:p.z+34});}
-  function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','Explore the public city district and its dedicated buildings. Browse the departments and worlds listed below. No account is needed to explore.');button('ENTER THE CITY DISTRICT',goDistrict);
+  function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','The public game and commerce district is EAST of HexCore Tower across the illuminated boulevard. Walk to each building and enter through its own doorway. This directory provides information only.');
     for(let s of sites){button(`${s.title}  //  ${s.tag}`,()=>showSiteInfo(s,true));}button('CLOSE DIRECTORY',close);
   }
   function showSiteInfo(site,fromDirectory=false){header(site.title,site.desc);element('p',site.subject+'  //  '+site.tag,'color:#a5ddfb');for(let f of site.facts)element('p','◆  '+f,'margin:9px 0;color:#e3dcff');
-    button('ENTER '+site.title,()=>goSite(site));
+    if(!fromDirectory && state.near && state.near.type==='building' && state.near.site===site)button('ENTER '+site.title,()=>goSite(site));
     if(site.legacy)button('EXISTING ADMINISTRATION & LEGAL OFFICE',()=>{close();if(typeof window.hexcoreEnterAdminInterior==='function')window.hexcoreEnterAdminInterior();else{header('ADMINISTRATION','The original Administration entrance remains available in the city. This new district is an informational annex.');button('BACK',()=>showSiteInfo(site,fromDirectory));}});
     if(site.support)button('DRAFT A SUPPORT REQUEST',supportComposer);
-    if(site.arcade)button('GO TO TOWER LOBBY ARCADE',goLobby);
+    if(site.arcade)element('p','The arcade is its own destination in this city district.','color:#a5ddfb');
     button(fromDirectory?'BACK TO DIRECTORY':'BACK TO INFORMATION',()=>fromDirectory?showDirectory():showDesk(site));
     button('CLOSE',close);
   }
@@ -159,14 +167,14 @@ export function createPublicCity(scene) {
     button('ABOUT THIS DEPARTMENT',()=>showSiteInfo(site));
     if(site.support)button('SUPPORT MESSAGE COMPOSER',supportComposer);
     if(site.legacy)button('ADMINISTRATION AND LEGAL REPRESENTATIVES',()=>{header('ADMINISTRATION & LEGAL','The existing Administration office contains the four established representatives and their detailed topic menus. It remains accessible in the original city.');button('BACK',()=>showDesk(site));});
-    button('EXPLORE ANOTHER BUILDING',()=>{close();goDistrict();});button('CLOSE',close);
+    button('EXPLORE ANOTHER BUILDING',()=>goDistrict(site));button('CLOSE',close);
   }
   function supportComposer(){header('CUSTOMER SUPPORT // REQUEST DRAFT','This form creates a text draft to copy. It is not transmitted or submitted; no live ticket backend is connected.');const entries=[];
     for(let [title,type] of [['Email for reply','email'],['Game or subject','text'],['Issue details','textarea']]){const lab=element('label',title,'display:block;margin:12px 0;color:#bcceff');const input=document.createElement(type==='textarea'?'textarea':'input');if(type!=='textarea')input.type=type;input.style.cssText='display:block;width:100%;box-sizing:border-box;padding:12px;margin:7px 0;background:#0a0e1e;border:1px solid #6f569e;color:white;font:14px Consolas,monospace';if(type==='textarea')input.rows=5;lab.appendChild(input);entries.push(input);}
     button('COPY REQUEST DRAFT',async()=>{const text=`HexCore Gaming support request\nEmail: ${entries[0].value}\nSubject: ${entries[1].value}\nDetails: ${entries[2].value}`;try{await navigator.clipboard.writeText(text);alert('Copied. This has NOT been submitted.');}catch{alert('Clipboard unavailable. You can select and copy the fields manually.');}});button('BACK TO SUPPORT',()=>showDesk(sites.find(s=>s.id==='support')));button('CLOSE',close);
   }
   prompt.onclick=()=>interact();
-  function interact(){if(state.open||window.hexcoreDialogueOpen)return;if(state.near==='portal')modal(showDirectory);else if(state.near==='exit')modal(()=>{header('EXIT THE PUBLIC DISTRICT','Return to the HexCore Tower lobby or remain in the city.');button('RETURN TO HEXCORE TOWER',goLobby);button('STAY IN CITY',close);});else if(state.near&&state.near.type==='building')modal(()=>showSiteInfo(state.near.site));else if(state.near&&state.near.type==='desk')modal(()=>showDesk(state.near.site));else if(state.near==='roomExit')modal(()=>{header('RETURN TO THE CITY','Leave the department and continue exploring the public district.');button('EXIT BUILDING',goDistrict);button('STAY HERE',close);});}
+  function interact(){if(state.open||window.hexcoreDialogueOpen)return;if(state.near&&state.near.type==='building')modal(()=>showSiteInfo(state.near.site));else if(state.near&&state.near.type==='desk')modal(()=>showDesk(state.near.site));else if(state.near==='roomExit')modal(()=>{header('RETURN TO THE CITY','Leave the department and continue exploring the public district.');button('EXIT BUILDING',()=>goDistrict(state.site));button('STAY HERE',close);});}
   window.addEventListener('keydown',ev=>{if(ev.code==='KeyE'&&!ev.repeat)interact();if(ev.code==='Escape'&&state.open)close();});
   window.addEventListener('hexcore-player-position',ev=>{if(ev.detail)state.pos=ev.detail;});
   // Optimized decorative animation: only centerpiece and limited exterior details.
@@ -176,11 +184,12 @@ export function createPublicCity(scene) {
     for(const walker of walkers){if(!walker.moving)continue;walker.person.position.z=walker.baseZ+Math.sin(frames*.006+walker.phase)*8;walker.person.rotation.y=Math.cos(frames*.006+walker.phase)>0?0:Math.PI;}
     if(state.open){prompt.style.display='none';return;}
     let nearest=null,label='';
-    const towerDist=Math.hypot(x-LOBBY.x,z-(LOBBY.z+20));
-    if(towerDist<8){nearest='portal';label='E / TAP // EXPLORE FULL CITY';}
-    else if(state.zone==='district'){
-      if(Math.hypot(x-HUB.x,z-(HUB.z+151))<8){nearest='exit';label='E / TAP // RETURN TO TOWER';}
-      else for(let site of sites){const d=Math.hypot(x-site.x,z-(site.z+29));if(d<13){nearest={type:'building',site};label=`E / TAP // ENTER ${site.title}`;break;}}
+    // Detect the district from real world coordinates; no teleporter or tower lobby required.
+    const inDistrict=Math.abs(x-HUB.x)<162&&Math.abs(z-HUB.z)<171;
+    if(inDistrict && state.zone!=='site')state.zone='district';
+    if(!inDistrict && state.zone==='district')state.zone='other';
+    if(state.zone==='district'){
+      for(let site of sites){const d=Math.hypot(x-site.x,z-(site.z+29));if(d<13){nearest={type:'building',site};label=`E / TAP // ENTER ${site.title}`;break;}}
     }else if(state.zone==='site'&&state.site){const s=state.site,p=s.interior;
       if(Math.hypot(x-p.x,z-(p.z-16))<14){nearest={type:'desk',site:s};label=`E / TAP // SPEAK TO ${s.staff.toUpperCase()}`;}
       else if(z>p.z+29&&Math.abs(x-p.x)<13){nearest='roomExit';label='E / TAP // EXIT BUILDING';}

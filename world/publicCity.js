@@ -46,7 +46,7 @@ export function createPublicCity(scene) {
   for(const [i,site] of sites.entries()){
     site.x=HUB.x+anchorX[i%4]; site.z=HUB.z+anchorZ[Math.floor(i/4)];
     site.interior={x:3500+i*145,z:3500};
-    makeInterior(site,i);
+    // Interior is built on demand, or one at a time after the public city loads.
   }
   const centerpiece={rotation:{y:0},position:{y:10}};
   const walkers=[];
@@ -105,7 +105,7 @@ export function createPublicCity(scene) {
     window.hexcoreTeleportPlayer(site?site.x:HUB.x-144,site?site.z+32:HUB.z,0);
   }
   function goLobby(){state.zone='other';state.site=null;if(typeof window.hexcoreTowerReturnToLobby==='function'){close();window.hexcoreTowerReturnToLobby();}else teleport(800,800+24,{minX:800-36,maxX:800+36,minZ:800-33,maxZ:800+33});}
-  function goSite(site){state.zone='site';state.site=site;let p=site.interior;teleport(p.x,p.z+26,{minX:p.x-39,maxX:p.x+39,minZ:p.z-34,maxZ:p.z+34});}
+  function goSite(site){if(!site.room)makeInterior(site,sites.indexOf(site));state.zone='site';state.site=site;let p=site.interior;teleport(p.x,p.z+26,{minX:p.x-39,maxX:p.x+39,minZ:p.z-34,maxZ:p.z+34});}
   function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','The public game and commerce district is EAST of HexCore Tower across the illuminated boulevard. Walk to each building and enter through its own doorway. This directory provides information only.');
     for(let s of sites){button(`${s.title}  //  ${s.tag}`,()=>showSiteInfo(s,true));}button('CLOSE DIRECTORY',close);
   }
@@ -132,8 +132,9 @@ export function createPublicCity(scene) {
   window.addEventListener('keydown',ev=>{if(ev.code==='KeyE'&&!ev.repeat)interact();if(ev.code==='Escape'&&state.open)close();});
   window.addEventListener('hexcore-player-position',ev=>{if(ev.detail)state.pos=ev.detail;});
   // Optimized decorative animation: only centerpiece and limited exterior details.
-  let frames=0;
-  function update(){const {x,z}=state.pos;frames++;
+  let frames=0;let nextInterior=0;
+  function update(){
+    if(frames%18===0 && nextInterior<sites.length){const site=sites[nextInterior++];if(!site.room)makeInterior(site,nextInterior-1);}const {x,z}=state.pos;frames++;
     centerpiece.rotation.y+=.003;centerpiece.position.y=10+Math.sin(frames*.02)*.5;
     for(const walker of walkers){if(!walker.moving)continue;walker.person.position.z=walker.baseZ+Math.sin(frames*.006+walker.phase)*8;walker.person.rotation.y=Math.cos(frames*.006+walker.phase)>0?0:Math.PI;}
     if(state.open){prompt.style.display='none';return;}

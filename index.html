@@ -297,7 +297,7 @@
         import { createTowerArtDirection } from "./world/towerArtDirection.js";
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
         import { createPublicCity } from "./world/publicCity.js";
-        import { createRemadeWorld } from "./world/remadeWorld.js";
+        import { createRemadeWorldProgressive } from "./world/remadeWorld.js";
         import { createInteriorFinishes } from "./world/interiorFinishes.js";
 
         // ==========================================
@@ -309,8 +309,7 @@
        
         // SECTION 03A // BUILD FLOATING CITY
 
-        const animateCityFoundation =
-            createCityFoundation(scene);
+        // City foundation is staged after the hub has been playable for five seconds.
 
         // SECTION 03B // CREATE CITY DEPARTMENT BUILDINGS
 
@@ -338,86 +337,64 @@
         // SECTION 04A-1 // SAFE ADMINISTRATION INITIALIZATION
         // =====================================================
 
-        let animateAdminInterior = () => {};
-
-        try {
-
-            animateAdminInterior =
-                createAdminInterior(scene, renderer);
-
-            console.log(
-                "HEXCORE ADMINISTRATION // INITIALIZED"
-            );
-
-        } catch (error) {
-
-            console.error(
-                "HEXCORE ADMINISTRATION ERROR:",
-                error
-            );
-
-            alert(
-                "ADMINISTRATION ERROR:\n" +
-                error.message
-            );
-        }
-
-        // ZIP 02 // Nonblocking entry. The original implementation created every
-        // building and all the offscreen interiors before the first rendered frame.
-        // Stagger the one-time construction and let the browser draw between jobs.
+        // ZIP 03 // HQ and player are interactive immediately.
+        // Exactly five seconds after the first drawn frame, begin nearby world
+        // construction. Each world stage advances only once per animation frame.
         const systems = new Map();
-        const bootJobs = [
-            ["Tower", () => createHexcoreTower(scene, renderer)],
-            ["World", () => createRemadeWorld(scene, camera)],
-            ["City exhibits", () => createPublicCity(scene)],
-            ["Interior finishes", () => createInteriorFinishes(scene)],
-            ["Tower departments", () => createTowerDepartments(scene)],
-            ["Visitor experiences", () => createVisitorExperiences(scene)],
-            ["Tower art", () => createTowerArtDirection(scene)],
-            ["City visitors", () => createCityNPCs(scene)],
-        ];
-        // Start AFTER the first visible frame. No forced loading overlay.
-        let nextJobTime = 0;
-        let bootStarted = false;
-        let lastFrame = performance.now();
-        const bootState = { ready: 0, total: bootJobs.length };
+        const bootState = {ready:0,total:10,phase:'HEADQUARTERS',startedAt:0};
         window.hexcoreBootState = bootState;
-        function runBootJob(now) {
-            if (!bootStarted || !bootJobs.length || now < nextJobTime) return;
-            const [name, build] = bootJobs.shift();
-            try {
-                const update = build();
-                if (typeof update === "function") systems.set(name, update);
-                bootState.ready++;
-            } catch (error) {
-                console.error("HEXCORE STARTUP // " + name, error);
-                // Crucial: one optional system cannot prevent all other systems from loading.
+        const bootJobs = [
+            ['Nearby city foundation', () => createCityFoundation(scene)],
+            ['New city geometry', () => createRemadeWorldProgressive(scene, camera)],
+            ['Tower exterior and lobby', () => createHexcoreTower(scene, renderer)],
+            ['Headquarters NPCs', () => createNPCs(scene)],
+            ['Public city and exhibits', () => createPublicCity(scene)],
+            ['Tower departments', () => createTowerDepartments(scene)],
+            ['Administration office', () => createAdminInterior(scene, renderer)],
+            ['Visitor experiences', () => createVisitorExperiences(scene)],
+            ['Interior finishes', () => createInteriorFinishes(scene)],
+            ['Tower art and city visitors', () => {
+                const art=createTowerArtDirection(scene),visitors=createCityNPCs(scene);
+                return ()=>{if(typeof art==='function')art();if(typeof visitors==='function')visitors();};
+            }]
+        ];
+        let bootStart=0, nextJobAt=0, activeGenerator=null, activeName='';
+        const bootDelay=5000;
+        const bootGap=180;
+        function doOneBootStep(now){
+            if(now<bootStart+bootDelay || now<nextJobAt)return;
+            if(activeGenerator){
+                try{
+                    const result=activeGenerator.next();
+                    if(result.done){
+                        if(typeof result.value==='function')systems.set(activeName,result.value);
+                        activeGenerator=null;bootState.ready++;activeName='';
+                    }
+                }catch(error){console.error('HEXCORE STAGE',activeName,error);activeGenerator=null;bootState.ready++;}
+                nextJobAt=performance.now()+bootGap;
+                return;
             }
-            nextJobTime = performance.now() + 140;
+            if(!bootJobs.length){bootState.phase='READY';return;}
+            const [name,build]=bootJobs.shift();bootState.phase=name;
+            try{
+                const result=build();
+                if(result && typeof result.next==='function'){activeGenerator=result;activeName=name;}
+                else{if(typeof result==='function')systems.set(name,result);bootState.ready++;}
+            }catch(error){console.error('HEXCORE STARTUP // '+name,error);bootState.ready++;}
+            nextJobAt=performance.now()+bootGap;
         }
-        const updateNPCs = createNPCs(scene);
-
-        // ==========================================
-        // SECTION 05 // START GAME LOOP
-        // ==========================================
-
-        renderer.setAnimationLoop(() => {
-            const now = performance.now();
+        // The only synchronous 3D scene constructed on initial load is the hub.
+        renderer.setAnimationLoop(()=>{
+            const now=performance.now();
             updatePlayer();
             animateHeadquarters();
-            animateCityFoundation();
-            animateAdminInterior();
-            updateNPCs();
-            for (const [name, update] of systems) {
-                try { update(); }
-                catch (error) { console.error("HEXCORE UPDATE // " + name, error); systems.delete(name); }
+            for(const [name,update] of systems){
+                try{update();}catch(error){console.error('HEXCORE UPDATE // '+name,error);systems.delete(name);}
             }
-            renderer.render(scene, camera);
-            if (!bootStarted) {
-                bootStarted = true;
-                nextJobTime = now + 180;
-            } else runBootJob(now);
-            lastFrame = now;
+            renderer.render(scene,camera);
+            if(!bootStart){bootStart=performance.now();bootState.startedAt=bootStart;}
+            // Executed after rendering, so the hub remains responsive while loading.
+            doOneBootStep(performance.now());
         });
 
     </script>

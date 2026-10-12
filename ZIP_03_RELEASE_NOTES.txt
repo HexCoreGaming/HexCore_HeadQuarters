@@ -1,0 +1,14 @@
+HEXCORE CITY // ZIP 03 — WEBSITE & STARTUP REBUILD
+
+Startup behavior:
+1. Build and render only Headquarters and player first.
+2. Wait FIVE SECONDS after the first rendered frame.
+3. Build the city in stages, beginning with nearby roads and proceeding outward.
+4. Yield between the replacement-world stages, instanced mesh batches, and interior rooms.
+5. Build public interiors gradually (one per 18 frames), or on entry if needed.
+
+Website features preserved: company dialogue, city directory, elevator, game exhibits, support draft, visitor info, NPCs, mobile input, focus control.
+
+IMPORTANT: Deferred setup may still produce small pauses because GPU uploads and some existing tower/department generators remain synchronous. This version is not a measured no-stutter guarantee.
+
+GitHub Pages: copy the entire ZIP contents into your repository, merge and replace matching files. Review changed files.

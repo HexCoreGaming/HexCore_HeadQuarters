@@ -1,0 +1,15 @@
+HEXCORE CITY // NEXT CUMULATIVE ZIP
+
+The Academy destination is unchanged.
+The existing loading screen opens with:
+Welcome to HexCore Gamings interactive website!
+
+When the existing world build stages report completion, it shows:
+Thank you for visiting HexCore Gaming
+then:
+Hope u have a good time
+
+Each message remains visible about 2.3 seconds before entering the world.
+The player remains locked until messages finish; the render loop continues.
+Failed initializations continue to show the existing manual Enter control and error text.
+Everything else comes from the last Destination Identity Graphics release.

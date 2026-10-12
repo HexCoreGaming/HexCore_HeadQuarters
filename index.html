@@ -222,6 +222,9 @@
 #hexcore-welcome-loading.done{opacity:0;pointer-events:none}
 #hexcore-welcome-loading .inner{width:min(540px,88vw);text-align:center}
 #hexcore-welcome-loading h1{font-size:clamp(22px,4vw,39px);letter-spacing:2px;line-height:1.3;font-weight:700;margin:0 0 16px;text-shadow:0 0 30px #8158ff}
+#hexcore-welcome-loading .inner{min-height:220px}
+#hexcore-welcome-heading{transition:opacity .34s ease,transform .34s ease}
+#hexcore-welcome-heading.changing{opacity:0;transform:translateY(10px)}
 #hexcore-welcome-loading .sub{color:#9ce9ff;font-size:13px;letter-spacing:2px;margin-bottom:26px}
 #hexcore-welcome-loading .track{height:5px;border-radius:12px;background:#17182d;overflow:hidden;border:1px solid #544080}
 #hexcore-welcome-loading .bar{width:0;height:100%;background:linear-gradient(90deg,#884cf1,#69deff,#d464ff);transition:width .18s ease}
@@ -233,7 +236,7 @@
 <body>
 <div id="hexcore-welcome-loading" role="status" aria-live="polite">
  <div class="inner">
-  <h1>Welcome to HexCore Gamings interactive website!</h1>
+  <h1 id="hexcore-welcome-heading">Welcome to HexCore Gamings interactive website!</h1>
   <div class="sub">HEXCORE CITY // PREPARING YOUR WORLD</div>
   <div class="track"><div class="bar" id="hexcore-welcome-progress"></div></div>
   <div class="step" id="hexcore-welcome-step">Initializing headquarters...</div>
@@ -428,11 +431,21 @@
         let frameTime = performance.now();
         const loadingScreen=document.getElementById('hexcore-welcome-loading');
         const loadingBar=document.getElementById('hexcore-welcome-progress');
+        const loadingHeading=document.getElementById('hexcore-welcome-heading');
         const loadingStep=document.getElementById('hexcore-welcome-step');
         const loadingErrors=document.getElementById('hexcore-welcome-errors');
         const loadingContinue=document.getElementById('hexcore-welcome-continue');
         let loadingDismissed=false;
         let loadedAt=0;
+        let loadingMessagePhase=0;
+        // Show both visitor messages AFTER all world build stages, giving the
+        // browser additional rendering frames before gameplay unlocks.
+        const visitorMessages=[
+            'Thank you for visiting HexCore Gaming',
+            'Hope u have a good time'
+        ];
+        const visitorMessageDuration=2300;
+        let lastMessagePhase=-1;
         const failedJobs=[];
         function dismissWelcome(){
             if(loadingDismissed)return;
@@ -455,7 +468,22 @@
                     loadingErrors.style.display='block';
                     loadingErrors.textContent=failedJobs.length+' system(s) failed to initialize: '+failedJobs.join(', ')+'. Open developer console for details.';
                     loadingContinue.style.display='block';
-                }else if(now-loadedAt>=350){dismissWelcome();}
+                    return;
+                }
+                // Message 1 appears immediately after loading, message 2 follows.
+                // Keep the player stationary while these messages are presented.
+                loadingMessagePhase=Math.min(2,Math.floor((now-loadedAt)/visitorMessageDuration));
+                if(loadingMessagePhase<2){
+                    if(loadingMessagePhase!==lastMessagePhase){
+                        lastMessagePhase=loadingMessagePhase;
+                        loadingHeading.classList.add('changing');
+                        loadingHeading.textContent=visitorMessages[loadingMessagePhase];
+                        requestAnimationFrame(()=>loadingHeading.classList.remove('changing'));
+                    }
+                    loadingStep.textContent='World ready  //  100%';
+                }else{
+                    dismissWelcome();
+                }
             }
         }
         // Hub plus its NPCs are constructed before player spawn; world waits five seconds.

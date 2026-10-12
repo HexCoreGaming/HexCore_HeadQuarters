@@ -1,0 +1,9 @@
+HEXCORE CITY // Sculpted Architecture Pass
+
+Adds organic swept elven supporting fins and curved canopy architecture for the central tower, ceremonial approach, and all existing visitor destinations.
+
+This is a procedural art direction improvement, not imported AAA production meshes. Existing site coordinates and usable entrance anchors are untouched. Uses instanced shared geometries where possible, no new real-time lights, and progressive generator steps.
+
+The Academy has been left unchanged as requested.
+
+No live graphics benchmark has been performed.

@@ -309,6 +309,7 @@
         import { createTowerArtDirection } from "./world/towerArtDirection.js";
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
         import { createPublicCity } from "./world/publicCity.js";
+        import { createCivicLife } from "./world/civicLife.js";
 
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
@@ -393,6 +394,7 @@
         const animateVisitorExperiences = createVisitorExperiences(scene);
         const animateTowerArtDirection = createTowerArtDirection(scene);
         const animatePublicCity = createPublicCity(scene);
+        const animateCivicLife = createCivicLife(scene);
         const updateNPCs = createNPCs(scene);
 
         // SECTION 04B // CREATE CITYWIDE NPCS
@@ -439,6 +441,7 @@
             animateVisitorExperiences();
             animateTowerArtDirection();
             animatePublicCity();
+            animateCivicLife();
             updateNPCs();
 
             // SECTION 05E // ANIMATE CITYWIDE NPCS

@@ -1,0 +1,10 @@
+HEXCORE CITY // WEBSITE REBUILD FROM CURRENT UPLOAD
+
+- Removed duplicative corporate departments from physical city district; they remain in HexCore Tower.
+- Kept four named featured game pavilions in dedicated buildings.
+- Distinct architectural massing for survival forest, racing arena, dark Victorian stealth, FPS, academy, museum, arcade, hardware, merchandise, residences and coming-soon exhibit.
+- Added public district civic streets, trees, benches, overhead decorative trams, lamps and sculptural details.
+- Kept existing NPCs, headquarters, tower elevator, administration, public information menus and browser services.
+- Entire 33-file project included, with changed files and new civicLife.js.
+- Services without server-side infrastructure remain informational.
+- Browser runtime verification still required.

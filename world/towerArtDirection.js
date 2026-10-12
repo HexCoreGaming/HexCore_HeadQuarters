@@ -65,11 +65,6 @@ export function createTowerArtDirection(scene) {
   for(let x of [-21,21])for(let z of [-21,21]){C(A,.6,.85,12,x,6,z,metal,8);C(A,.13,.13,11.5,x,6,z,violet,8);}
   for(let z=-18;z<=18;z+=9){B(A,44,.1,.14,0,.13,z,cyan);B(A,44,.12,.5,0,12.5,z,metal);}
   glyph(A,'ADMINISTRATION & LEGAL',32,3.2,0,11,-24.5,'#d6a9ff');
-  // High-tech tower exterior entrance island (no collision changes).
-  const T=new THREE.Group();T.position.set(0,0,300);scene.add(T);
-  for(let x of [-23,23])for(let z of [-22,22]){C(T,.5,.85,12,x,6,z,metal,8);R(T,1,.18,x,12,z,violet,Math.PI/2);}
-  for(let y=10;y<104;y+=12){R(T,23-(y/104)*11,.16,0,y,0,y%24===10?cyan:violet,Math.PI/2);}
-  for(let i=0;i<16;i++){const a=i*Math.PI/8;const h=13+i%4*2;C(T,.28,.5,h,Math.cos(a)*27,h/2,Math.sin(a)*27,metal,7);C(T,.4,.4,.3,Math.cos(a)*27,h+.1,Math.sin(a)*27,i%2?cyan:violet,8);}
-  glyph(T,'HEXCORE GAMING // ENTER THE FUTURE',30,3.5,-25,12,0,'#a9dfff',-Math.PI/2);
+  // Landmark exterior is owned exclusively by remadeWorld.js.
   let time=0;return ()=>{time+=.016;for(const f of anim)f(time,.016);};
 }

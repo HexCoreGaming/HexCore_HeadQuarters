@@ -1,607 +1,165 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 import { HEXCORE_WORLD } from './worldLayout.js';
 
-// =====================================================
-// HEXCORE GAMING // VISUAL FOUNDATION WORLD REMAKE
-// =====================================================
-
-export function* createRemadeWorldProgressive(scene, camera) {
-    const root = new THREE.Group();
-    root.name = 'HEXCORE_VISUAL_FOUNDATION';
-    scene.add(root);
-
-    const palette = {
-        bg: 0x070b18,
-        deep: 0x0c1324,
-        steel: 0x17253f,
-        steel2: 0x223354,
-        glass: 0x224169,
-        purple: 0x8c54ff,
-        magenta: 0xd75fff,
-        cyan: 0x75e0ff,
-        blue: 0x6887ff,
-        teal: 0x67ffd7
-    };
-
-    const darkMetal = new THREE.MeshStandardMaterial({
-        color: palette.deep,
-        metalness: 0.88,
-        roughness: 0.2
-    });
-
-    const steel = new THREE.MeshStandardMaterial({
-        color: palette.steel,
-        metalness: 0.78,
-        roughness: 0.24
-    });
-
-    const steel2 = new THREE.MeshStandardMaterial({
-        color: palette.steel2,
-        metalness: 0.76,
-        roughness: 0.22
-    });
-
-    const glass = new THREE.MeshPhysicalMaterial({
-        color: palette.glass,
-        metalness: 0.22,
-        roughness: 0.08,
-        transparent: true,
-        opacity: 0.64,
-        transmission: 0,
-        side: THREE.DoubleSide,
-        depthWrite: false
-    });
-
-    const obsidian = new THREE.MeshPhysicalMaterial({
-        color: 0x0a0e18,
-        metalness: 0.72,
-        roughness: 0.14,
-        clearcoat: 1,
-        clearcoatRoughness: 0.08
-    });
-
-    const purpleGlow = new THREE.MeshStandardMaterial({
-        color: 0x22173e,
-        emissive: palette.purple,
-        emissiveIntensity: 0.95,
-        metalness: 0.65,
-        roughness: 0.25
-    });
-
-    const magentaGlow = new THREE.MeshStandardMaterial({
-        color: 0x2f173a,
-        emissive: palette.magenta,
-        emissiveIntensity: 0.9,
-        metalness: 0.65,
-        roughness: 0.25
-    });
-
-    const cyanGlow = new THREE.MeshStandardMaterial({
-        color: 0x132539,
-        emissive: palette.cyan,
-        emissiveIntensity: 1.0,
-        metalness: 0.64,
-        roughness: 0.2
-    });
-
-    const blueGlow = new THREE.MeshStandardMaterial({
-        color: 0x152041,
-        emissive: palette.blue,
-        emissiveIntensity: 0.95,
-        metalness: 0.64,
-        roughness: 0.22
-    });
-
-    const tealGlow = new THREE.MeshStandardMaterial({
-        color: 0x113332,
-        emissive: palette.teal,
-        emissiveIntensity: 0.85,
-        metalness: 0.55,
-        roughness: 0.26
-    });
-
-    const lightMaterials = [purpleGlow, cyanGlow, magentaGlow, blueGlow, tealGlow];
-
-    const geoms = {
-        box: new THREE.BoxGeometry(1, 1, 1),
-        oct: new THREE.CylinderGeometry(1, 1, 1, 8),
-        cone: new THREE.ConeGeometry(1, 1, 6),
-        slab: new THREE.BoxGeometry(1, 1, 1),
-        cap: new THREE.CylinderGeometry(1, 1, 1, 12)
-    };
-
-    const batches = new Map();
-    const temp = new THREE.Object3D();
-    let stageCount = 0;
-
-    function queue(type, material, x, y, z, sx, sy, sz, ry = 0) {
-        const key = type + ':' + material.uuid;
-        if (!batches.has(key)) {
-            batches.set(key, {
-                geometry: geoms[type],
-                material,
-                items: []
-            });
-        }
-        batches.get(key).items.push([x, y, z, sx, sy, sz, ry]);
-    }
-
-    function box(x, y, z, w, h, d, material = steel, ry = 0) {
-        queue('box', material, x, y, z, w, h, d, ry);
-    }
-
-    function octColumn(x, y, z, radius, h, material = steel) {
-        queue('oct', material, x, y, z, radius, h, radius, 0);
-    }
-
-    function cone(x, y, z, radius, h, material = steel, ry = 0) {
-        queue('cone', material, x, y, z, radius, h, radius, ry);
-    }
-
-    function cap(x, y, z, radius, h, material = steel) {
-        queue('cap', material, x, y, z, radius, h, radius, 0);
-    }
-
-    function flush() {
-        for (const bundle of batches.values()) {
-            if (!bundle.items.length) continue;
-            const mesh = new THREE.InstancedMesh(
-                bundle.geometry,
-                bundle.material,
-                bundle.items.length
-            );
-            mesh.frustumCulled = true;
-            bundle.items.forEach((item, index) => {
-                const [x, y, z, sx, sy, sz, ry] = item;
-                temp.position.set(x, y, z);
-                temp.rotation.set(0, ry, 0);
-                temp.scale.set(sx, sy, sz);
-                temp.updateMatrix();
-                mesh.setMatrixAt(index, temp.matrix);
-            });
-            mesh.instanceMatrix.needsUpdate = true;
-            mesh.computeBoundingSphere();
-            mesh.name = 'HEXCORE_STAGE_' + stageCount++;
-            root.add(mesh);
-            bundle.items.length = 0;
-        }
-    }
-
-    function makeCanvasSign(text, width, height, accent = '#8cd6fd') {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1024;
-        canvas.height = 220;
-        const ctx = canvas.getContext('2d');
-        const g = ctx.createLinearGradient(0, 0, 1024, 220);
-        g.addColorStop(0, 'rgba(7,11,24,0.85)');
-        g.addColorStop(1, 'rgba(21,28,48,0.85)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, 1024, 220);
-        ctx.strokeStyle = accent;
-        ctx.lineWidth = 6;
-        ctx.strokeRect(8, 8, 1008, 204);
-        ctx.shadowColor = accent;
-        ctx.shadowBlur = 28;
-        ctx.fillStyle = '#ecf7ff';
-        let size = 76;
-        do {
-            ctx.font = `700 ${size--}px system-ui`;
-        } while (ctx.measureText(text).width > 940 && size > 20);
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, 512, 110);
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        return new THREE.Mesh(
-            new THREE.PlaneGeometry(width, height),
-            new THREE.MeshBasicMaterial({
-                map: texture,
-                transparent: true,
-                side: THREE.DoubleSide,
-                depthWrite: false
-            })
-        );
-    }
-
-    function ring(x, y, z, radius, tube, material, rx = Math.PI / 2, ry = 0) {
-        const mesh = new THREE.Mesh(
-            new THREE.TorusGeometry(radius, tube, 8, 72),
-            material
-        );
-        mesh.position.set(x, y, z);
-        mesh.rotation.set(rx, ry, 0);
-        root.add(mesh);
-        return mesh;
-    }
-
-    function holoBillboard(x, y, z, w, h, text, accent, ry = 0) {
-        const sign = makeCanvasSign(text, w, h, accent);
-        sign.position.set(x, y, z);
-        sign.rotation.y = ry;
-        root.add(sign);
-        return sign;
-    }
-
-    function makeSky() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1024;
-        canvas.height = 1024;
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 0, 1024);
-        grad.addColorStop(0, '#050812');
-        grad.addColorStop(0.4, '#0c1224');
-        grad.addColorStop(0.75, '#120c25');
-        grad.addColorStop(1, '#05060d');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 1024, 1024);
-
-        ctx.globalAlpha = 0.35;
-        for (let i = 0; i < 180; i++) {
-            const x = Math.random() * 1024;
-            const y = Math.random() * 1024;
-            const r = Math.random() * 2.4 + 0.2;
-            ctx.beginPath();
-            ctx.fillStyle = i % 5 === 0 ? '#d770ff' : i % 3 === 0 ? '#84e6ff' : '#dfe8ff';
-            ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        ctx.globalAlpha = 0.12;
-        ctx.strokeStyle = '#8b58ff';
-        for (let i = 0; i < 18; i++) {
-            const y = 90 + i * 44;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(1024, y + Math.sin(i) * 16);
-            ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        const dome = new THREE.Mesh(
-            new THREE.SphereGeometry(950, 20, 12),
-            new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide })
-        );
-        root.add(dome);
-
-        const starCount = 450;
-        const positions = new Float32Array(starCount * 3);
-        for (let i = 0; i < starCount; i++) {
-            const r = 680 + Math.random() * 160;
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.random() * Math.PI * 0.55;
-            positions[i * 3] = Math.cos(theta) * Math.sin(phi) * r;
-            positions[i * 3 + 1] = 180 + Math.cos(phi) * r * 0.7;
-            positions[i * 3 + 2] = Math.sin(theta) * Math.sin(phi) * r;
-        }
-        const stars = new THREE.BufferGeometry();
-        stars.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const points = new THREE.Points(stars, new THREE.PointsMaterial({
-            color: 0xc7e0ff,
-            size: 1.8,
-            sizeAttenuation: true,
-            transparent: true,
-            opacity: 0.9
-        }));
-        root.add(points);
-
-        const fogFloor = new THREE.Mesh(
-            new THREE.CircleGeometry(420, 64),
-            new THREE.MeshBasicMaterial({
-                color: 0x40126e,
-                transparent: true,
-                opacity: 0.08,
-                side: THREE.DoubleSide,
-                depthWrite: false
-            })
-        );
-        fogFloor.rotation.x = -Math.PI / 2;
-        fogFloor.position.y = -3.8;
-        fogFloor.position.z = 110;
-        root.add(fogFloor);
-    }
-
-    function makeVoidDecor() {
-        for (let i = 0; i < 18; i++) {
-            const x = -230 + i * 28;
-            const strip = new THREE.Mesh(
-                new THREE.PlaneGeometry(5, 110),
-                new THREE.MeshBasicMaterial({
-                    color: i % 2 ? 0x8c54ff : 0x75e0ff,
-                    transparent: true,
-                    opacity: 0.11,
-                    side: THREE.DoubleSide,
-                    depthWrite: false
-                })
-            );
-            strip.position.set(x, -48, 460);
-            root.add(strip);
-        }
-    }
-
-    function road(x, z, w, d, accentA = cyanGlow, accentB = purpleGlow) {
-        box(x, -0.28, z, w, 0.65, d, darkMetal);
-        box(x, -0.01, z, w * 0.98, 0.05, d * 0.98, obsidian);
-        box(x - w / 2 + 0.28, 0.09, z, 0.18, 0.08, d, accentA);
-        box(x + w / 2 - 0.28, 0.09, z, 0.18, 0.08, d, accentB);
-        box(x, 0.02, z - d / 2 + 0.28, w, 0.05, 0.18, blueGlow);
-        box(x, 0.02, z + d / 2 - 0.28, w, 0.05, 0.18, magentaGlow);
-    }
-
-    function bridgeLampLine(x1, x2, z, step, material) {
-        for (let x = x1; x <= x2; x += step) {
-            octColumn(x, 1.1, z, 0.12, 2.1, material);
-        }
-    }
-
-    function makeFloatingLantern(x, y, z, c1, c2) {
-        cap(x, y, z, 0.8, 0.32, steel2);
-        cone(x, y + 0.92, z, 0.8, 1.4, c1);
-        ring(x, y + 0.7, z, 0.85, 0.08, c2, Math.PI / 2);
-    }
-
-    function towerBase(x, z) {
-        box(x, 2.5, z, 54, 5, 54, obsidian);
-        box(x, 5.2, z, 40, 0.35, 40, cyanGlow);
-        for (const sx of [-1, 1]) {
-            for (const sz of [-1, 1]) {
-                octColumn(x + sx * 22, 8, z + sz * 22, 2.2, 16, steel2);
-                cone(x + sx * 22, 19.5, z + sz * 22, 2.8, 11, purpleGlow, Math.PI / 4);
-            }
-        }
-    }
-
-    function tower(x, z) {
-        towerBase(x, z);
-        const tiers = [
-            [42, 44, steel],
-            [96, 31, steel2],
-            [150, 22, darkMetal],
-            [194, 12, steel]
-        ];
-        for (const [height, width, mat] of tiers) {
-            box(x, height / 2 + 5, z, width, height, width, mat);
-            box(x, height / 2 + 5, z, width * 0.82, height * 0.96, width * 0.82, glass);
-            for (let y = 12; y < height; y += 10) {
-                box(x, y + 5, z + width * 0.51, width * 0.96, 0.18, 0.18, y % 20 ? cyanGlow : magentaGlow);
-                box(x, y + 5, z - width * 0.51, width * 0.96, 0.18, 0.18, y % 20 ? purpleGlow : blueGlow);
-                box(x + width * 0.51, y + 5, z, 0.18, 0.18, width * 0.96, cyanGlow);
-                box(x - width * 0.51, y + 5, z, 0.18, 0.18, width * 0.96, magentaGlow);
-            }
-        }
-        for (let i = 0; i < 8; i++) {
-            const a = i / 8 * Math.PI * 2;
-            const px = x + Math.cos(a) * 28;
-            const pz = z + Math.sin(a) * 28;
-            octColumn(px, 46, pz, 1.4, 92, steel2);
-            cone(px, 105, pz, 2.2, 22, i % 2 ? cyanGlow : purpleGlow);
-        }
-        const crownRings = [];
-        crownRings.push(ring(x, 187, z, 18, 0.16, cyanGlow, 0.24));
-        crownRings.push(ring(x, 193, z, 22, 0.16, magentaGlow, 0.5));
-        crownRings.push(ring(x, 200, z, 26, 0.18, purpleGlow, 0.82));
-        cone(x, 230, z, 7, 58, steel2);
-        octColumn(x, 258, z, 1.1, 18, cyanGlow);
-        const sign1 = holoBillboard(x, 142, z + 24, 52, 8.2, 'HEXCORE', '#d9b2ff');
-        const sign2 = holoBillboard(x, 33, z + 30, 34, 4.5, 'HEXCORE TOWER', '#8ce1ff');
-        return [...crownRings, sign1, sign2];
-    }
-
-    function decorativeSkyscraper(x, z, w, d, h, variant) {
-        const body = variant % 2 ? steel : steel2;
-        const accentA = lightMaterials[variant % lightMaterials.length];
-        const accentB = lightMaterials[(variant + 1) % lightMaterials.length];
-        box(x, h / 2, z, w, h, d, body);
-        box(x, h / 2 + 1, z, w * 0.82, h * 0.95, d * 0.82, glass);
-        for (let y = 4; y < h; y += 8) {
-            box(x, y, z + d * 0.5, w * 0.78, 0.14, 0.14, accentA);
-            box(x, y, z - d * 0.5, w * 0.78, 0.14, 0.14, accentB);
-        }
-        box(x + w * 0.5, h / 2, z, 0.2, h * 0.95, d * 0.9, accentA);
-        box(x - w * 0.5, h / 2, z, 0.2, h * 0.95, d * 0.9, accentB);
-        box(x, h + 2.2, z, w * 1.08, 0.35, d * 1.08, accentA);
-        if (variant % 3 === 0) {
-            cone(x, h + 11, z, w * 0.22, 16, accentB);
-        }
-    }
-
-    function districtMonument(x, z) {
-        cap(x, 1.8, z, 10, 3.2, steel2);
-        cap(x, 3.3, z, 7.6, 0.32, cyanGlow);
-        cone(x, 10.2, z, 2.6, 14, glass);
-        const inner = ring(x, 13.2, z, 9.4, 0.14, purpleGlow, 0.9);
-        const outer = ring(x, 15.8, z, 12.4, 0.16, cyanGlow, 0.65);
-        return [inner, outer];
-    }
-
-    const names = [
-        'CYBER_ARENA HEX//BREAK',
-        'WHERE LIGHT DIES',
-        'UNTAMED HORIZON',
-        'THE FORGOTTEN ASHES',
-        'THE ACADEMY',
-        'FUTURE GAME WORLDS',
-        'ADMINISTRATION & LEGAL',
-        'CUSTOMER SUPPORT',
-        'COMMUNITY & EVENTS',
-        'BUSINESS & PARTNERSHIPS',
-        'GAME DEVELOPMENT',
-        'HEXCORE HARDWARE LAB',
-        'HEXCORE MERCHANDISE',
-        'FUTURE WORLDS MUSEUM',
-        'HEXCORE ARCADE',
-        'GAMER RESIDENCES'
-    ];
-
-    const offsetsX = [-111, -37, 37, 111];
-    const offsetsZ = [-114, -38, 38, 114];
-
-    function themedShowcase(x, z, i) {
-        const accent = lightMaterials[i % lightMaterials.length];
-        const accentColor = ['#d69cff', '#89e6ff', '#ff87ef', '#8e9fff', '#80ffd3'][i % 5];
-        const w = 46;
-        const d = 40;
-        const h = 20 + (i % 4) * 4;
-
-        box(x, 2, z, 54, 4, 48, obsidian);
-        box(x, h / 2 + 2, z - 2, w, h, d, steel);
-        box(x, h / 2 + 3, z - 2, w * 0.84, h * 0.88, d * 0.84, glass);
-        box(x, h + 4, z - 2, w + 6, 0.45, d + 6, accent);
-        for (const sx of [-1, 1]) {
-            octColumn(x + sx * 24, h / 2 + 3, z + 18, 1.7, h + 5, steel2);
-            cone(x + sx * 24, h + 12, z + 18, 2.4, 10, accent);
-        }
-        box(x, 7, z + 20.8, 12, 14, 0.8, darkMetal);
-        box(x - 5.2, 7, z + 20.2, 0.2, 13.5, 0.18, cyanGlow);
-        box(x + 5.2, 7, z + 20.2, 0.2, 13.5, 0.18, purpleGlow);
-        box(x, 14.2, z + 20.2, 12.4, 0.18, 0.18, magentaGlow);
-        for (let y = 6; y < h; y += 6) {
-            box(x, y, z + 20.1, w * 0.78, 0.16, 0.16, accent);
-            box(x, y, z - 24.2, w * 0.78, 0.16, 0.16, accent);
-        }
-        const sign = holoBillboard(x, h + 7, z + 21.4, 42, 4.6, names[i], accentColor);
-
-        if (i === 0) {
-            for (let k = 0; k < 4; k++) {
-                ring(x, h + 10 + k * 3, z - 2, 4.8 + k * 1.6, 0.1, k % 2 ? cyanGlow : magentaGlow, 0.38 + k * 0.22);
-            }
-        }
-        if (i === 1) {
-            for (let k = 0; k < 8; k++) {
-                const a = k / 8 * Math.PI * 2;
-                octColumn(x + Math.cos(a) * 18, 9, z + Math.sin(a) * 15, 0.45, 17, tealGlow);
-                cone(x + Math.cos(a) * 18, 18, z + Math.sin(a) * 15, 3, 10, tealGlow);
-            }
-        }
-        if (i === 2) {
-            for (let k = 0; k < 4; k++) {
-                const xx = x - 15 + k * 10;
-                box(xx, 3.2, z + 22, 7, 0.7, 2, steel2);
-                ring(xx, 3.4, z + 24.4, 2.6, 0.1, cyanGlow);
-            }
-        }
-        if (i === 3) {
-            for (let k = 0; k < 3; k++) {
-                const xx = x - 14 + k * 14;
-                cone(xx, h + 17, z - 5, 4.2, 22, steel2);
-                cone(xx, h + 24, z - 5, 2.1, 12, purpleGlow);
-            }
-        }
-        if (i === 12) {
-            ring(x, h + 8, z - 2, 10, 0.14, magentaGlow, 0.8);
-        }
-        if (i === 13) {
-            for (let k = 0; k < 4; k++) {
-                octColumn(x + (k - 1.5) * 10, 17, z - 2, 1.5, 30, steel2);
-            }
-            ring(x, 26, z - 2, 12, 0.16, cyanGlow, 1.1);
-        }
-        return sign;
-    }
-
-    // Visual setup
-    makeSky();
-    makeVoidDecor();
-    scene.background = new THREE.Color(palette.bg);
-    scene.fog = new THREE.FogExp2(0x090d1b, 0.00105);
-
-    const ambient = new THREE.HemisphereLight(0x92a7ff, 0x110e1d, 1.4);
-    root.add(ambient);
-    const key = new THREE.DirectionalLight(0xbecbff, 1.35);
-    key.position.set(-140, 190, -120);
-    root.add(key);
-    const purpleFill = new THREE.PointLight(0x8c54ff, 1.6, 180);
-    purpleFill.position.set(180, 95, 130);
-    root.add(purpleFill);
-    const cyanFill = new THREE.PointLight(0x75e0ff, 1.5, 180);
-    cyanFill.position.set(440, 120, 80);
-    root.add(cyanFill);
-
-    // STAGE 1 // A monumental approach, immediately legible from headquarters.
-    // Tower sits on world centerline beyond the long approach.
-    road(0, 145, 34, 300, cyanGlow, purpleGlow);
-    road(0, 300, 86, 86, magentaGlow, cyanGlow);
-    road(0, 490, 28, 160, purpleGlow, cyanGlow);
-    flush(); yield;
-
-    // STAGE 2 // The center is an original, layered circular digital citadel.
-    // Curvilinear promenades connect landmarks; avoid conventional block grids.
-    const animated=[];
-    for (const radius of [94, 156, 242, 326]) {
-        animated.push(ring(0, 0.1, 300, radius, 0.38, radius%2===0?cyanGlow:purpleGlow));
-        animated.push(ring(0, 0.35, 300, radius+2.2, 0.12, magentaGlow));
-    }
-    for (let i=0;i<20;i++) {
-        const a=i*Math.PI/10;
-        const r=92;
-        const x=Math.cos(a)*r,z=300+Math.sin(a)*r;
-        octColumn(x,5.5,z,1.1,11,steel2);
-        cone(x,14,z,2.2,7,i%3===0?cyanGlow:purpleGlow);
-    }
-    holoBillboard(0,12,65,46,5,'HEXCORE // THE WORLD OF GAMING','#c5a2ff');
-    flush(); yield;
-
-    // STAGE 3 // Majestic central tower. There is no backdrop of office blocks
-    // between visitors and the actual company/game destinations.
-    const towerAnimObjects=tower(0,300);
-    flush(); yield;
-
-    // STAGE 4 // Public landmarks are distributed all around the central tower.
-    // Each building exterior and its interactive entrance use one canonical point.
-    const signs=[];
-    for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
-        const pos=HEXCORE_WORLD.sites[i];
-        signs.push(themedShowcase(pos.x,pos.z,i));
-        // broad illuminated promenades link every physical building to the citadel.
-        const dx=pos.x,dz=pos.z-300;
-        const angle=Math.atan2(dx,dz);
-        const length=Math.hypot(dx,dz);
-        const midpoint=length/2;
-        const cx=Math.sin(angle)*midpoint,cz=300+Math.cos(angle)*midpoint;
-        box(cx,-.24,cz,11,.4,length,obsidian,angle);
-        box(cx-5*Math.cos(angle),.05,cz+5*Math.sin(angle),.19,.08,length,cyanGlow,angle);
-        box(cx+5*Math.cos(angle),.05,cz-5*Math.sin(angle),.19,.08,length,purpleGlow,angle);
-        if(i%2===1){flush();yield;}
-    }
-    flush(); yield;
-
-    // STAGE 5 // Dramatic elven/digital outer skyline beyond the attractions,
-    // rather than a New York-like downtown blocking the interactive buildings.
-    for(let i=0;i<28;i++){
-        const a=i/28*Math.PI*2;
-        const r=410+(i%4)*28;
-        const x=Math.sin(a)*r,z=300+Math.cos(a)*r;
-        const height=48+(i*17)%88;
-        decorativeSkyscraper(x,z,12+(i%3)*4,12+(i%2)*6,height,i);
-        if(i%5===4){flush();yield;}
-    }
-    flush(); yield;
-
-    // STAGE 6 // Ceremonial gateway, sculptural fountains and soft digital skyline.
-    const streetRings=[];
-    for(const [x,z] of [[0,120],[-92,300],[92,300],[0,475]]){
-        streetRings.push(ring(x,12,z,9,.18,cyanGlow,.7));
-        streetRings.push(ring(x,16,z,13,.12,magentaGlow,1.05));
-    }
-    for(let i=0;i<24;i++){
-        const z=35+i*9;
-        for(const side of [-1,1]){
-            octColumn(side*19,4.5,z,.68,9,steel2);
-            cone(side*19,10,z,1.4,4,i%2?cyanGlow:purpleGlow);
-        }
-        if(i%8===7){flush();yield;}
-    }
-    holoBillboard(0,35,260,34,4.5,'HEXCORE TOWER','#ebc0ff');
-    flush();
-
-    const pulseTargets=[...towerAnimObjects,...animated,...streetRings,...signs];
-    let t=0;
-    return ()=>{
-      t+=0.016;
-      for(let i=0;i<pulseTargets.length;i++){
-        const obj=pulseTargets[i];
-        if(obj&&obj.rotation)obj.rotation.y+=.0004*(i%2?-1:1);
-      }
-    };
+// HEXCORE CITY / ORIGINAL DIGITAL WORLD (not the old city-grid geometry).
+// Single coordinate contract: tower (0,300), headquarters (0,0), site doors site.z+29.
+// Progressive: a stage per landmark, while the welcome loader owns visibility.
+export function* createRemadeWorldProgressive(scene,camera) {
+ const root=new THREE.Group();root.name='HEXCORE_ORIGINAL_DIGITAL_CIVILIZATION';scene.add(root);
+ const C={void:0x050611,night:0x090d19,basalt:0x111626,metal:0x1a2339,edge:0x313d59,
+   violet:0x9c6dff,cyan:0x74edff,blue:0x568dff,pink:0xf076ed,teal:0x67efdb,gold:0xffca8f};
+ const body=new THREE.MeshStandardMaterial({color:C.night,metalness:.79,roughness:.24});
+ const outer=new THREE.MeshStandardMaterial({color:C.basalt,metalness:.77,roughness:.25});
+ const accentMetal=new THREE.MeshStandardMaterial({color:C.edge,metalness:.75,roughness:.25});
+ const glass=new THREE.MeshStandardMaterial({color:0x173459,emissive:0x101b3c,emissiveIntensity:.2,metalness:.55,roughness:.24,side:THREE.DoubleSide});
+ const darkFloor=new THREE.MeshStandardMaterial({color:0x101526,metalness:.78,roughness:.28});
+ const glows=[C.violet,C.cyan,C.pink,C.blue,C.teal,C.gold].map(color=>new THREE.MeshStandardMaterial({color:0x101424,emissive:color,emissiveIntensity:1.35,metalness:.5,roughness:.25}));
+ const commonBox=new THREE.BoxGeometry(1,1,1), commonColumn=new THREE.CylinderGeometry(1,1,1,8);
+ const signs=new Map(), animated=[];
+ const box=(g,x,y,z,w,h,d,m=body)=>{const o=new THREE.Mesh(commonBox,m);o.position.set(x,y,z);o.scale.set(w,h,d);g.add(o);return o;};
+ const cyl=(g,x,y,z,r,h,m=outer,sides=8)=>{const o=new THREE.Mesh(sides===8?commonColumn:new THREE.CylinderGeometry(1,1,1,sides),m);o.position.set(x,y,z);o.scale.set(r,h,r);g.add(o);return o;};
+ const torus=(g,x,y,z,r,t,m,rotX=0,rotY=0)=>{const o=new THREE.Mesh(new THREE.TorusGeometry(r,t,7,64),m);o.position.set(x,y,z);o.rotation.set(rotX,rotY,0);g.add(o);return o;};
+ function sign(g,t,x,y,z,w=30,h=4,color='#9eefff',ry=0){
+   let texture=signs.get(t+color);
+   if(!texture){const c=document.createElement('canvas');c.width=1024;c.height=196;const p=c.getContext('2d');
+    p.fillStyle='rgba(5,7,21,.88)';p.fillRect(0,0,1024,196);p.strokeStyle=color;p.lineWidth=5;p.strokeRect(5,5,1014,186);
+    p.fillStyle='#f1f5ff';p.textAlign='center';p.textBaseline='middle';let f=77;do{p.font=`700 ${f--}px system-ui`;}while(p.measureText(t).width>951 && f>18);p.fillText(t,512,100);
+    texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;signs.set(t+color,texture);
+   }
+   const o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide,transparent:true,depthWrite:false}));o.position.set(x,y,z);o.rotation.y=ry;g.add(o);return o;
+ }
+ // Walkable ground is exactly y=0, consistent with player movement.
+ function circularPlate(g,x,z,r){
+   const disk=new THREE.Mesh(new THREE.CylinderGeometry(r,r,1.25,64),darkFloor);disk.position.set(x,-.7,z);g.add(disk);
+   const border=torus(g,x,.07,z,r-.5,.19,glows[1],-Math.PI/2);
+   torus(g,x,.08,z,r-7,.09,glows[0],-Math.PI/2);
+   return border;
+ }
+ function ribbon(g,pts,width=12,mat=darkFloor){
+   const curve=new THREE.CatmullRomCurve3(pts.map(([x,z])=>new THREE.Vector3(x,0,z)),false,'centripetal');
+   const count=Math.max(12,pts.length*16),verts=[],uvs=[],ids=[],left=[],right=[];
+   for(let i=0;i<=count;i++){
+    const t=i/count,p=curve.getPoint(t),d=curve.getTangent(t);let nx=-d.z,nz=d.x;
+    const len=Math.hypot(nx,nz)||1;nx/=len;nz/=len;
+    verts.push(p.x+nx*width/2,.06,p.z+nz*width/2,p.x-nx*width/2,.06,p.z-nz*width/2);
+    uvs.push(0,t*6,1,t*6);left.push(new THREE.Vector3(p.x+nx*(width/2-.55),.14,p.z+nz*(width/2-.55)));
+    right.push(new THREE.Vector3(p.x-nx*(width/2-.55),.14,p.z-nz*(width/2-.55)));
+    if(i<count){let j=i*2;ids.push(j,j+2,j+1,j+1,j+2,j+3);}
+   }
+   const geom=new THREE.BufferGeometry();geom.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geom.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geom.setIndex(ids);geom.computeVertexNormals();
+   const path=new THREE.Mesh(geom,mat);path.material.side=THREE.DoubleSide;g.add(path);
+   for(const [line,m] of [[left,glows[1]],[right,glows[0]]]){
+    let geometry=new THREE.BufferGeometry().setFromPoints(line);
+    const strip=new THREE.Line(geometry,new THREE.LineBasicMaterial({color:m.emissive,transparent:true,opacity:.85}));g.add(strip);
+   }
+ }
+ function arch(g,x,z,r,h,material){
+   // Distinctive pointed elven digital-arch silhouette with no box towers.
+   const curve=new THREE.CatmullRomCurve3([
+    new THREE.Vector3(x-r,0,z),new THREE.Vector3(x-r*.82,h*.57,z),
+    new THREE.Vector3(x-r*.34,h*.92,z),new THREE.Vector3(x,h*1.1,z),
+    new THREE.Vector3(x+r*.34,h*.92,z),new THREE.Vector3(x+r*.82,h*.57,z),
+    new THREE.Vector3(x+r,0,z)
+   ]);
+   g.add(new THREE.Mesh(new THREE.TubeGeometry(curve,36,.28,6,false),material));
+ }
+ function petal(g,x,z,r,baseH,mat,ry=0){
+   const o=new THREE.Mesh(new THREE.ConeGeometry(r,baseH,5),mat);o.position.set(x,baseH/2,z);o.rotation.y=ry;g.add(o);return o;
+ }
+ // Ambient digital universe, not an ordinary earthlike city skyline.
+ scene.background=new THREE.Color(C.void);scene.fog=new THREE.FogExp2(0x080b19,.00088);
+ root.add(new THREE.HemisphereLight(0xb6c6ff,0x171124,1.85));
+ const sun=new THREE.DirectionalLight(0xb6caff,1.2);sun.position.set(-140,240,-130);root.add(sun);
+ const sky=new THREE.Mesh(new THREE.SphereGeometry(1040,32,16),new THREE.MeshBasicMaterial({color:0x050715,side:THREE.BackSide}));root.add(sky);
+ const starPos=[];for(let i=0;i<1150;i++){const a=i*2.39996,p=0.15+((i*0.618033)%1)*1.12,r=790;starPos.push(Math.cos(a)*Math.sin(p)*r,Math.cos(p)*r+180,Math.sin(a)*Math.sin(p)*r+300);}
+ const stars=new THREE.BufferGeometry();stars.setAttribute('position',new THREE.Float32BufferAttribute(starPos,3));root.add(new THREE.Points(stars,new THREE.PointsMaterial({color:0xd3dcff,size:2.6,sizeAttenuation:true})));
+ // A single continuous ceremonial route from the old hub exit to tower foreground.
+ const first=new THREE.Group();first.name='01_HUB_TO_HEXCORE_CENTRAL_AXIS';root.add(first);
+ ribbon(first,[[0,28],[0,80],[-18,128],[0,181],[0,232],[0,268]],24);
+ arch(first,0,68,18,37,glows[0]);arch(first,0,120,23,45,glows[1]);arch(first,0,180,27,49,glows[3]);
+ sign(first,'HEXCORE DIGITAL WORLD',0,17,86,44,5,'#a2ddff');
+ // Interlaced floating causeways; each site path ends at its usable doorway.
+ const hub={x:0,z:300};
+ circularPlate(first,hub.x,hub.z,87);
+ for(let i=0;i<12;i++){
+   const a=i*Math.PI/6,x=hub.x+Math.sin(a)*82,z=hub.z+Math.cos(a)*82;
+   const p=petal(first,x,z,2.9,11,i%2?glows[0]:glows[1],a);
+   p.scale.set(1,.85,1);
+ }
+ yield;
+ // Tower is THE center. One coherent building, not layered conventional skyscrapers.
+ const T=new THREE.Group();T.name='02_HEXCORE_TOWER_CENTER_OF_WORLD';T.position.set(0,0,300);root.add(T);
+ circularPlate(T,0,0,48);
+ const profile=[[0,40],[18,39],[50,32],[96,25],[160,18],[220,12],[277,6]];
+ for(let i=0;i<profile.length-1;i++){
+   const [y,r]=profile[i],[topY,topR]=profile[i+1];
+   const shell=new THREE.Mesh(new THREE.CylinderGeometry(topR,r,topY-y,8,1,false),i%2?outer:body);
+   shell.position.y=(y+topY)/2;shell.rotation.y=Math.PI/8;T.add(shell);
+   const halo=torus(T,0,topY+.25,0,topR*1.04,.22,i%2?glows[0]:glows[1],-Math.PI/2);
+   animated.push([halo,.00032*(i%2?1:-1)]);
+ }
+ // Eight tapering cathedral fins, a digital crown and curving luminous tracery.
+ for(let i=0;i<8;i++){
+   const a=i*Math.PI/4,r=33,x=Math.sin(a)*r,z=Math.cos(a)*r;
+   const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(x,0,z),new THREE.Vector3(x*.98,40,z*.98),new THREE.Vector3(x*.64,116,z*.64),new THREE.Vector3(x*.28,231,z*.28),new THREE.Vector3(0,294,0)]);
+   T.add(new THREE.Mesh(new THREE.TubeGeometry(curve,48,.55,7,false),i%2?glows[1]:glows[0]));
+   petal(T,x,z,4.2,50,accentMetal,a);
+ }
+ const crown=torus(T,0,265,0,19,.32,glows[2],Math.PI/2);animated.push([crown,.00038]);
+ const crown2=torus(T,0,251,0,25,.24,glows[1],Math.PI/2,.5);animated.push([crown2,-.00028]);
+ cyl(T,0,310,0,1.1,37,glows[1]);
+ sign(T,'HEXCORE',0,126,30,42,7,'#d0a7ff');
+ // Actual interactive entrance remains near (0,268).
+ arch(T,0,-33,13,19,glows[1]);
+ box(T,0,6,-33,15,12,1.4,body);
+ sign(T,'ENTER THE TOWER',0,13.5,-34,24,3,'#82edff');
+ yield;
+ // Create site forecourts and paths in user-facing order. All 16 site coordinates are authoritative.
+ const labels=['CYBER_ARENA HEX//BREAK','WHERE LIGHT DIES','UNTAMED HORIZON','THE FORGOTTEN ASHES','THE ACADEMY','FUTURE WORLDS','ADMINISTRATION & LEGAL','CUSTOMER SUPPORT','COMMUNITY & EVENTS','BUSINESS & PARTNERSHIPS','GAME DEVELOPMENT','HEXCORE HARDWARE','HEXCORE MERCHANDISE','FUTURE WORLDS MUSEUM','HEXCORE ARCADE','GAMER RESIDENCES'];
+ function buildSanctuary(index){
+  const {x,z}=HEXCORE_WORLD.sites[index],g=new THREE.Group();g.name='LANDMARK_'+(index+1)+'_'+labels[index].replaceAll(' ','_');root.add(g);
+  const mat=glows[index%6],sx=Math.sign(x)||1;
+  // Routes curve outward from the central circular plaza; they are not streets or grids.
+  const startR=76,rad=Math.hypot(x,z-300),dirx=x/rad,dirz=(z-300)/rad;
+  const mid={x:x*.7,z:300+(z-300)*.7};
+  ribbon(g,[[dirx*startR,300+dirz*startR],[mid.x,mid.z],[x,z+45],[x,z+29]],13);
+  circularPlate(g,x,z,33);
+  // High-detail family of digital shrines, each visibly different from the others:
+  // chamfered/circular masses, floating annuli, tapered spires, translucent canopies.
+  const h=17+(index%4)*4;
+  const plinth=new THREE.Mesh(new THREE.CylinderGeometry(25,29,2,10),outer);plinth.position.set(x,1,z);g.add(plinth);
+  const core=new THREE.Mesh(new THREE.CylinderGeometry(17+(index%2)*2,23,h,6+index%3),index%2?body:glass);
+  core.position.set(x,h/2+2,z);core.rotation.y=index*.2;g.add(core);
+  for(let k=0;k<6;k++){
+    const a=k*Math.PI/3+index*.1,dx=Math.sin(a),dz=Math.cos(a);
+    petal(g,x+dx*21,z+dz*20,2.8,h+10,k%2?mat:accentMetal,a);
+  }
+  // Open-air arched entrance centered on existing interaction location z+29.
+  arch(g,x,z+24,9,16,mat);
+  box(g,x,5,z+21,14,10,1.1,body);
+  sign(g,labels[index],x,h+16,z+23,Math.max(29,labels[index].length*.9),4.3,'#9feaff');
+  const floating=torus(g,x,h+9,z,23,.22,mat,Math.PI/2,.16);animated.push([floating,.00028*(index%2?1:-1)]);
+  torus(g,x,h+3,z,20,.17,glows[(index+1)%6],-Math.PI/2);
+  // Landmark-specific sculptures, not repeating office towers.
+  if(index===0){for(let j=0;j<3;j++)torus(g,x,h+19+j*3,z,9+j*4,.2,glows[j%3],.4+j*.3);}
+  else if(index===1){for(let j=0;j<9;j++){let a=j*2*Math.PI/9;petal(g,x+Math.sin(a)*26,z+Math.cos(a)*26,2.7,14,glows[4],a);}}
+  else if(index===2){for(let j=0;j<4;j++)torus(g,x+(j-1.5)*8,5,z+27,3,.25,glows[1],0);}
+  else if(index===3){for(let j=-1;j<=1;j++)petal(g,x+j*11,z-14,5,36,outer,j*.3);}
+  else if(index===14){for(let j=0;j<5;j++)torus(g,x,h+20+j*3,z,5+j*2,.13,glows[(j+1)%6],.3+j*.2);}
+  else if(index===13){for(let j=0;j<4;j++)arch(g,x+(j-1.5)*9,z-7,4,18,glows[1]);}
+  // Entrance sign is visually close; all original site interaction/room teleports still map exactly.
+ }
+ for(let i=0;i<labels.length;i++){buildSanctuary(i);yield;}
+ // Outer rim is a collection of elegant digital monoliths and raised waveforms,
+ // not boxy, office-style skyscrapers. Kept beyond visitor attractions.
+ const far=new THREE.Group();far.name='OUTER_DIGITAL_HORIZON';root.add(far);
+ for(let i=0;i<30;i++){
+   const a=i*2*Math.PI/30,r=550+(i%3)*35,x=Math.sin(a)*r,z=300+Math.cos(a)*r;
+   const h=40+(i*13)%80;
+   const o=new THREE.Mesh(new THREE.CylinderGeometry(1.8,8,h,5),i%3?outer:accentMetal);o.position.set(x,h/2-1,z);o.rotation.y=a;far.add(o);
+   torus(far,x,h+3,z,5.5,.12,i%2?glows[0]:glows[1],Math.PI/2);
+ }
+ yield;
+ // Static scene plus a limited number of gentle animated monumental rings.
+ return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}};
 }

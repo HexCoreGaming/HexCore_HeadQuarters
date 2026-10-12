@@ -1,0 +1,12 @@
+HEXCORE CITY — EXTERIOR WORLD REBUILD
+
+New original digital-world exterior built from scratch. No conventional street grid or skyscraper boxes.
+
+Locked map: existing starting HQ (0,0); HexCore Tower (0,300); 16 landmark sites at canonical worldLayout.js coordinates.
+Each existing physical doorway is at (site.x,site.z+29), preserving publicCity.js interactions.
+
+Rebuilt: exterior geometry, sweeping ceremonial approach, central circular plaza, tower cathedral/needle, architectural sculptures, curved connections, themed public sanctuary buildings, floating dark digital horizon.
+
+Preserved: existing HQ interior, NPC-first initialization, site information/dialogue/interior handling, loading screen, gameplay controls, tower elevator and department interactions.
+
+This is a procedural stylized architecture build, not a textured AAA asset pack. Browser visual and frame-rate validation is still needed.

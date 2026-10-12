@@ -1,0 +1,13 @@
+HEXCORE CITY — FINAL PLANNED STABILITY RELEASE
+
+Built cumulatively from the Destination Interiors & Entertainment ZIP.
+
+Stability measures:
+- Skip 3D updates and rendering while the website tab is hidden.
+- Limit noninteractive decorative world animation updates to ~30 Hz, while preserving normal-rate movement, NPC logic and rendering.
+- Add slow-frame counter and WebGL context-loss status to window.hexcorePerformance for browser diagnostics.
+- Display a visible explanatory notice if the WebGL graphics context is lost and remove it upon restoration.
+- Keep the existing welcome loading stages, two closing messages, NPC initialization and current layout.
+
+IMPORTANT: This is a code-level hardening pass, not a live browser/GPU validation.
+Known limitations: performance varies by device; some whole-stage construction and highly detailed procedural meshes may still cause stalls. A real browser walkthrough on target devices is still required before declaring production readiness.

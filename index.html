@@ -430,14 +430,31 @@
             nextJobAt=performance.now()+bootGap;
         }
         // Runtime diagnostics: report failed stages once, without repeated freezes.
-        window.hexcorePerformance = {boot:bootState,frameMs:0,lastError:null};
+        window.hexcorePerformance = {boot:bootState,frameMs:0,lastError:null,slowFrames:0,webglContextLost:false};
         window.addEventListener('error', (event) => {
             window.hexcorePerformance.lastError = String(event.message || event.error || 'unknown error');
         });
         window.addEventListener('unhandledrejection', (event) => {
             window.hexcorePerformance.lastError = String(event.reason || 'unhandled rejection');
         });
+        // WebGL context loss can occur on memory-constrained devices. Report it
+        // rather than allowing a blank canvas to appear without explanation.
+        renderer.domElement.addEventListener('webglcontextlost', event=>{
+            event.preventDefault();
+            window.hexcorePerformance.webglContextLost=true;
+            window.hexcorePerformance.lastError='Graphics context lost. The device may be low on GPU memory.';
+            const notice=document.createElement('div');
+            notice.id='hexcore-gpu-notice';
+            notice.style.cssText='position:fixed;inset:auto 14px 18px;z-index:99999;margin:auto;max-width:600px;padding:18px;background:#100d22;border:1px solid #ca81ff;color:#fff;font:14px system-ui;box-shadow:0 0 30px #000a';
+            notice.textContent='HexCore City: graphics memory was interrupted. If the world does not return, reload the page or choose Performance mode in graphics settings.';
+            document.body.appendChild(notice);
+        });
+        renderer.domElement.addEventListener('webglcontextrestored',()=>{
+            window.hexcorePerformance.webglContextLost=false;
+            document.getElementById('hexcore-gpu-notice')?.remove();
+        });
         let frameTime = performance.now();
+        let lastCosmeticsAt = 0;
         const loadingScreen=document.getElementById('hexcore-welcome-loading');
         const loadingBar=document.getElementById('hexcore-welcome-progress');
         const loadingHeading=document.getElementById('hexcore-welcome-heading');
@@ -496,16 +513,26 @@
             }
         }
         // Hub plus its NPCs are constructed before player spawn; world waits five seconds.
+        // Avoid running the entire 3D simulation in an inactive browser tab.
+        // Restoring the tab resumes normal rendering and loading on the next frame.
         renderer.setAnimationLoop(()=>{
+            if(document.hidden)return;
             const now=performance.now();
             window.hexcorePerformance.frameMs = Math.round(now - frameTime);
+            if(now-frameTime>70 && !document.hidden)window.hexcorePerformance.slowFrames++;
             frameTime = now;
             if(loadingDismissed)updatePlayer();
             animateHeadquarters();
             updateHeadquartersNPCs();
             updateInitialCityNPCs();
-            for(const [name,update] of systems){
-                try{update();}catch(error){console.error('HEXCORE UPDATE // '+name,error);systems.delete(name);}
+            // World embellishment animation is cosmetic; run at 30 Hz on a 60 Hz
+            // display while keeping player movement and rendering full-rate.
+            const updateWorldCosmetics = (performance.now() - lastCosmeticsAt) >= 33;
+            if(updateWorldCosmetics)lastCosmeticsAt=performance.now();
+            if(updateWorldCosmetics){
+                for(const [name,update] of systems){
+                    try{update();}catch(error){console.error('HEXCORE UPDATE // '+name,error);systems.delete(name);}
+                }
             }
             renderer.render(scene,camera);
             if(!bootStart){bootStart=performance.now();bootState.startedAt=bootStart;}

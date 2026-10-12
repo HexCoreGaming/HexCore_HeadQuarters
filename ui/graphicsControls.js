@@ -12,7 +12,7 @@ export function installGraphicsControls(renderer, scene, camera, tools) {
  const status=document.createElement('p');status.style.color='#a6dfff';p.appendChild(status);
  const close=document.createElement('button');close.className='hc-tool';close.textContent='SAVE AND CLOSE';p.appendChild(close);
  const quality={low:.6,balanced:.85,high:1};
- function apply(){const ratio=Math.min(window.devicePixelRatio||1,1.25)*quality[select.value];renderer.setPixelRatio(ratio);renderer.setSize(window.innerWidth,window.innerHeight);renderer.toneMappingExposure=Number(range.value);status.textContent='Render scale: '+Math.round(quality[select.value]*100)+'%';try{localStorage.setItem('hexcoreGraphics',JSON.stringify({q:select.value,b:range.value}));}catch{}}
+ function apply(){const ratio=Math.max(.5,Math.min(window.devicePixelRatio||1,1.25)*quality[select.value]);renderer.setPixelRatio(ratio);renderer.setSize(window.innerWidth,window.innerHeight);renderer.toneMappingExposure=Number(range.value);status.textContent='Render scale: '+Math.round(quality[select.value]*100)+'%';try{localStorage.setItem('hexcoreGraphics',JSON.stringify({q:select.value,b:range.value}));}catch{}}
  try{const saved=JSON.parse(localStorage.getItem('hexcoreGraphics')||'null');select.value=quality[saved?.q]?saved.q:'balanced';range.value=Number(saved?.b)>0?String(saved.b):'1.08';}catch{select.value='balanced';}
  select.addEventListener('change',apply);range.addEventListener('input',apply);apply();
  let shown=false;function open(){if(shown)return;shown=true;overlay.style.display='flex';if(window.hexcoreUIFocus)window.hexcoreUIFocus.open();else window.hexcoreDialogueOpen=true;close.focus();}

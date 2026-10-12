@@ -1,0 +1,15 @@
+HEXCORE CITY // ZIP 05 // VISUAL FOUNDATION
+
+This release begins the graphics phase.
+
+Main changes:
+- New visual foundation for the city skyline and districts.
+- More dramatic HexCore Tower silhouette and crown.
+- Stronger Tron-like / cyberpunk fantasy color language.
+- Better floating-island presentation.
+- Holographic signage, glowing roads, and skyline atmosphere.
+- Tone mapping and renderer polish for a richer look.
+
+This is not the final beauty pass.
+ZIP 06 will focus on landmark uniqueness and destination quality.
+ZIP 07 will focus on FX and final polish.

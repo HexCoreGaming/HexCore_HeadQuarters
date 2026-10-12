@@ -1,0 +1,3 @@
+ZIP 05 // GRAPHICS FOUNDATION
+This package is cumulative from ZIP 04.
+It focuses on visual direction rather than new gameplay systems.

@@ -1,4 +1,3 @@
-
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 // =====================================================
@@ -16,7 +15,7 @@ export const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
     0.1,
-    1000
+    1400
 );
 
 camera.position.set(0, 2, 8);
@@ -30,8 +29,12 @@ export const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 1.4)
+    Math.min(window.devicePixelRatio, 1.35)
 );
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+renderer.sortObjects = true;
 
 document.body.appendChild(renderer.domElement);
 

@@ -1,0 +1,7 @@
+HEXCORE CITY // ARCHITECTURAL ASSET PASS
+
+Complete cumulative project based on the Bioluminescent Sanctuaries ZIP.
+
+NEW: custom lofted curved facade meshes instead of more box primitives; broad front apertures aligned to existing interaction anchors; curved glass-like canopy shells; family-specific elven buttress silhouettes for each of the 16 destinations; sculpted ribs and edge-light traces for HexCore Tower. Assets are procedurally authored as proper indexed BufferGeometry in Three.js, not externally modeled GLBs. Generated progressively within the existing welcome loading sequence.
+
+No physical building positions, doors, or NPC content intentionally changed. Existing old structural masses are still present beneath the new shells and may need removal during later art integration. Rendering/performance has not been browser-tested.

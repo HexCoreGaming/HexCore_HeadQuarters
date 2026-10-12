@@ -322,9 +322,7 @@
         
         // SECTION 03E // CREATE ADMINISTRATION INTERIOR
 
-       // TEMPORARY TEST // ADMINISTRATION DISABLED
-
-const animateAdminInterior = () => {};
+      
 
 // ==========================================
         // SECTION 04 // CREATE PLAYER
@@ -335,6 +333,34 @@ const animateAdminInterior = () => {};
         // ==========================================
         // SECTION 04A // CREATE HEADQUARTERS NPCS
         // ==========================================
+
+        // =====================================================
+        // SECTION 04A-1 // SAFE ADMINISTRATION INITIALIZATION
+        // =====================================================
+
+        let animateAdminInterior = () => {};
+
+        try {
+
+            animateAdminInterior =
+                createAdminInterior(scene, renderer);
+
+            console.log(
+                "HEXCORE ADMINISTRATION // INITIALIZED"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "HEXCORE ADMINISTRATION ERROR:",
+                error
+            );
+
+            alert(
+                "ADMINISTRATION ERROR:\n" +
+                error.message
+            );
+        }
 
         const updateNPCs = createNPCs(scene);
 

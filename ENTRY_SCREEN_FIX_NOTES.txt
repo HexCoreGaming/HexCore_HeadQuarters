@@ -1,0 +1,10 @@
+HexCore City — Entry Screen Behavior Repair
+
+- Keeps gender selection and display-name field visible on the SAME screen.
+- No automatic transition when typing a name; the visitor must click Enter HexCore City.
+- Enter button is visible but disabled until a gender, valid 2–24 character display name, and world initialization are all ready.
+- Correct greeting: “Hope you have a good time”.
+- Background world construction continues during character choice and name entry.
+- Based on the Six Public Landmarks project; no graphics-quality claims.
+
+Browser interaction and live GPU performance have NOT been validated.

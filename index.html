@@ -248,6 +248,8 @@
 #hexcore-character-help{min-height:18px;font-size:12px;color:#c5baf1;margin:9px 0 0}
 #hexcore-welcome-continue:disabled{opacity:.46;cursor:not-allowed}
 #hexcore-welcome-loading .continue{display:none;border-radius:8px;font-weight:bold;letter-spacing:1px}
+#hexcore-welcome-continue:disabled{opacity:.48;cursor:not-allowed}
+#hexcore-welcome-loading .continue:not(:disabled):hover{background:#382363;border-color:#8ce6ff}
 @media(max-height:690px){#hexcore-character-gate svg{height:160px}#hexcore-welcome-loading .inner{max-height:96dvh;overflow:auto;padding:10px 0}}
 </style>
 </head>
@@ -525,22 +527,16 @@
             return displayNameInput.value.trim().length>=2 && displayNameInput.value.trim().length<=24;
         }
         function characterReady(){return Boolean(selectedGender && validName());}
+        // Selection and name entry stay visible until the visitor deliberately clicks Enter.
+        // Loading is independent of the input events; typing can NEVER advance screens.
         function changePhase(value,now){
             phase=value;phaseBeganAt=now;
             if(value==='thanks')loadingHeading.textContent='Thank you for visiting HexCore Gaming';
             if(value==='select'){
-                loadingHeading.textContent='Choose your character';
+                loadingHeading.textContent='Hope you have a good time';
                 characterGate.style.display='block';
-            }
-            if(value==='goodtime'){
-                characterGate.style.display='none';
-                loadingHeading.textContent='Hope u have a good time';
-            }
-            if(value==='enter'){
                 loadingContinue.style.display='block';
-                loadingContinue.disabled=false;
-                loadingHeading.textContent='Your adventure awaits';
-                loadingStep.textContent='World ready  //  100%';
+                loadingContinue.disabled=true;
             }
         }
         characterChoices.forEach(choice=>choice.addEventListener('click',()=>{
@@ -548,7 +544,7 @@
             characterChoices.forEach(item=>item.setAttribute('aria-pressed',String(item===choice)));
         }));
         function dismissWelcome(){
-            if(loadingDismissed || phase!=='enter' || bootState.ready<bootState.total || !characterReady())return;
+            if(loadingDismissed || phase!=='select' || bootState.ready<bootState.total || failedJobs.length || !characterReady())return;
             savedProfile={gender:selectedGender,displayName:displayNameInput.value.trim()};
             window.hexcoreVisitorProfile=Object.freeze({...savedProfile});
             loadingDismissed=true;
@@ -562,22 +558,21 @@
             const value=Math.round(100*Math.min(1,bootState.ready/bootState.total));
             loadingBar.style.width=value+'%';
             const worldReady=bootState.ready>=bootState.total;
-            const progressText=worldReady?'World ready  //  100%':'Preparing '+bootState.phase+'  //  '+value+'%';
-            if(phase!=='enter')loadingStep.textContent=progressText;
+            loadingStep.textContent=worldReady?'World ready  //  100%':'Preparing '+bootState.phase+'  //  '+value+'%';
             if(failedJobs.length){
                 loadingErrors.style.display='block';
                 loadingErrors.textContent=failedJobs.length+' system(s) failed to initialize: '+failedJobs.join(', ')+'. See console for details.';
             }
-            // Introduce selection EARLY: construction continues while visitor decides.
             if(phase==='welcome' && now-phaseBeganAt>=1300)changePhase('thanks',now);
             else if(phase==='thanks' && now-phaseBeganAt>=1700)changePhase('select',now);
-            else if(phase==='select'){
+            if(phase==='select'){
                 if(!selectedGender)characterHelp.textContent='Choose a female or male character.';
                 else if(!validName())characterHelp.textContent='Enter a display name with 2–24 characters.';
-                else if(!worldReady)characterHelp.textContent='Character ready. Finishing your world in the background…';
-                else characterHelp.textContent='Your character and world are ready.';
-                if(characterReady() && worldReady && !failedJobs.length)changePhase('goodtime',now);
-            }else if(phase==='goodtime' && now-phaseBeganAt>=1900)changePhase('enter',now);
+                else if(failedJobs.length)characterHelp.textContent='A world system failed to load. See the error above.';
+                else if(!worldReady)characterHelp.textContent='Character selected. The world is still loading…';
+                else characterHelp.textContent='Ready. Click Enter HexCore City when you want to begin.';
+                loadingContinue.disabled=!(characterReady() && worldReady && !failedJobs.length);
+            }
         }
         // Hub plus its NPCs are constructed before player spawn; world waits five seconds.
         // Avoid running the entire 3D simulation in an inactive browser tab.

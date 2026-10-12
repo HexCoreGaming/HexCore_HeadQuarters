@@ -1,0 +1,9 @@
+HEXCORE CITY // GLB INTEGRATION & LIVING FOREST
+
+- Fixes an architectural model integration defect: the previous ZIP shipped 11 GLBs but never called its model loader from index.html.
+- Adds 12 more real GLB modeled bioluminescent trees with clustered sculptural canopies and hanging roots.
+- Loads all GLBs during existing progress-screen construction stages, and reports failures instead of silently skipping them.
+- Maintains the current world layout, public destinations, visitor interactions, and character selection.
+
+LIMITATION: Older procedural structures remain and may visually overlap loaded models. These custom low-poly GLBs are not equivalent to Unreal Engine-quality production assets.
+No live-browser GPU validation was performed.

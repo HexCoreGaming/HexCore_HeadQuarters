@@ -64,7 +64,7 @@ export function createTowerArtDirection(scene) {
   for(let z=-18;z<=18;z+=9){B(A,44,.1,.14,0,.13,z,cyan);B(A,44,.12,.5,0,12.5,z,metal);}
   glyph(A,'ADMINISTRATION & LEGAL',32,3.2,0,11,-24.5,'#d6a9ff');
   // High-tech tower exterior entrance island (no collision changes).
-  const T=new THREE.Group();T.position.set(224,0,110);scene.add(T);
+  const T=new THREE.Group();T.position.set(0,0,300);scene.add(T);
   for(let x of [-23,23])for(let z of [-22,22]){C(T,.5,.85,12,x,6,z,metal,8);R(T,1,.18,x,12,z,violet,Math.PI/2);}
   for(let y=10;y<104;y+=12){R(T,23-(y/104)*11,.16,0,y,0,y%24===10?cyan:violet,Math.PI/2);}
   for(let i=0;i<16;i++){const a=i*Math.PI/8;const h=13+i%4*2;C(T,.28,.5,h,Math.cos(a)*27,h/2,Math.sin(a)*27,metal,7);C(T,.4,.4,.3,Math.cos(a)*27,h+.1,Math.sin(a)*27,i%2?cyan:violet,8);}

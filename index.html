@@ -357,7 +357,7 @@
         const bootState = {ready:0,total:9,phase:'HEADQUARTERS + NPCS READY',startedAt:0};
         window.hexcoreBootState = bootState;
         const bootJobs = [
-            ['Nearby city foundation', () => createCityFoundation(scene)],
+            ['Nearby city foundation', () => () => {}],
             ['New city geometry', () => createRemadeWorldProgressive(scene, camera)],
             ['Tower exterior and lobby', () => createHexcoreTower(scene, renderer)],
             ['Public city and exhibits', () => createPublicCity(scene)],

@@ -1,9 +1,10 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import { HEXCORE_WORLD } from './worldLayout.js';
 
 // HEXCORE // PUBLIC WEBSITE CITY. All copy is informational; no fictitious live services.
 // Reusable independent buildings, visitor navigation, featured games, support and hardware.
 export function createPublicCity(scene) {
-  const HUB={x:448,z:110}; // The public district is physically next to the tower island.
+  const HUB={x:0,z:300}; // Tower is the heart of HexCore City.
   const themes={violet:0x9b62ff,cyan:0x64deff,gold:0xffcd83,pink:0xff6ec8,green:0x83edb8};
   const sites=[
     {id:'cyber',title:'CYBER_ARENA HEX//BREAK',tag:'FEATURED GAME',theme:'violet',subject:'Skill-based arena FPS',desc:'An extreme movement arena shooter where every surface is walkable. Local gravity, skill-based combat, movement gadgets, and HEX//BREAK objective play define the experience.',facts:['Offline demo in development','Gravity-shifting arena maps','HEX//BREAK and Team Deathmatch','Human and elf character customization'],staff:'Arena Guide'},
@@ -44,7 +45,7 @@ export function createPublicCity(scene) {
   const anchorX=[-111,-37,37,111], anchorZ=[-114,-38,38,114];
   const colMats=Object.fromEntries(Object.entries(themes).map(([key,color])=>[key,getGlow(color,.48)]));
   for(const [i,site] of sites.entries()){
-    site.x=HUB.x+anchorX[i%4]; site.z=HUB.z+anchorZ[Math.floor(i/4)];
+    site.x=HEXCORE_WORLD.sites[i].x; site.z=HEXCORE_WORLD.sites[i].z;
     site.interior={x:3500+i*145,z:3500};
     // Interior is built on demand, or one at a time after the public city loads.
   }
@@ -83,10 +84,8 @@ export function createPublicCity(scene) {
   // PUBLIC DISTRICT // physically connected to the existing city, NOT inside HexCore Tower.
   // Westward boulevard reaches the eastern shore of the original tower island.
   const approach=new THREE.Group();scene.add(approach);
-  cube(approach,279,-.32,110,57,.55,15,dark);
-  for(let zz of [102.6,117.4])cube(approach,279,.05,zz,57,.22,.24,colMats.cyan);
-  for(let xx=254;xx<=303;xx+=6)cube(approach,xx,.08,110,.2,.09,14,colMats.violet);
-  sign(approach,'HEXCORE CITY // GAME & COMMERCE DISTRICT',299,8,110,48,3.5,'#97ebff');
+  // The monumental central approach is rendered by remadeWorld.
+  sign(approach,'HEXCORE CITY // CENTRAL CIRCULAR PROMENADE',0,9,215,53,4,'#97ebff');
   // No tower portal: all public buildings are approached through their physical city entrances.
   const display=document.createElement('div');display.id='hexcore-fullcity-panel';display.style.cssText='display:none;position:fixed;inset:0;background:rgba(3,6,17,.94);z-index:490;align-items:center;justify-content:center;padding:14px;box-sizing:border-box;color:#eaf0ff;font:14px Consolas,monospace';document.body.appendChild(display);
   const panel=document.createElement('section');panel.style.cssText='background:linear-gradient(140deg,#101a32,#1a1036);border:1px solid #8558d8;box-shadow:0 0 50px #37165a;width:min(850px,98vw);max-height:90dvh;overflow:auto;padding:22px;box-sizing:border-box';display.appendChild(panel);
@@ -106,7 +105,7 @@ export function createPublicCity(scene) {
   }
   function goLobby(){state.zone='other';state.site=null;if(typeof window.hexcoreTowerReturnToLobby==='function'){close();window.hexcoreTowerReturnToLobby();}else teleport(800,800+24,{minX:800-36,maxX:800+36,minZ:800-33,maxZ:800+33});}
   function goSite(site){if(!site.room)makeInterior(site,sites.indexOf(site));state.zone='site';state.site=site;let p=site.interior;teleport(p.x,p.z+26,{minX:p.x-39,maxX:p.x+39,minZ:p.z-34,maxZ:p.z+34});}
-  function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','The public game and commerce district is EAST of HexCore Tower across the illuminated boulevard. Walk to each building and enter through its own doorway. This directory provides information only.');
+  function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','The public game, commerce, and cultural destinations encircle HexCore Tower. Follow the luminous promenades and enter each attraction through its physical doorway. This directory provides information only.');
     for(let s of sites){button(`${s.title}  //  ${s.tag}`,()=>showSiteInfo(s,true));}button('CLOSE DIRECTORY',close);
   }
   function showSiteInfo(site,fromDirectory=false){header(site.title,site.desc);element('p',site.subject+'  //  '+site.tag,'color:#a5ddfb');for(let f of site.facts)element('p','◆  '+f,'margin:9px 0;color:#e3dcff');
@@ -140,7 +139,7 @@ export function createPublicCity(scene) {
     if(state.open){prompt.style.display='none';return;}
     let nearest=null,label='';
     // Detect the district from real world coordinates; no teleporter or tower lobby required.
-    const inDistrict=Math.abs(x-HUB.x)<162&&Math.abs(z-HUB.z)<171;
+    const inDistrict=Math.hypot(x-HUB.x,z-HUB.z)<425;
     if(inDistrict && state.zone!=='site')state.zone='district';
     if(!inDistrict && state.zone==='district')state.zone='other';
     if(state.zone==='district'){

@@ -1,0 +1,21 @@
+HEXCORE // ZIP 06 // CENTRAL WORLD LAYOUT REBUILD
+
+WORLD PLAN:
+- HexCore Tower is the actual world center at (0,300).
+- Original headquarters/player start remains near (0,0), with a long ceremonial approach.
+- Game showcases, museum, arcade, hardware, merchandise and future destinations are positioned around the central tower, not behind it.
+- Public-building entrances share coordinates with the visible structures, using world/worldLayout.js.
+- Decorative skyline is now outside the useful areas rather than blocking the approaches.
+- The old street grid is no longer started by the replacement world.
+- Corporate interiors remain their separate loaded spaces; tower remains the headquarters.
+- NPC-first startup and the five-second progressive city loading are retained.
+
+LIMITATIONS:
+- Existing city NPCs use their earlier routes; their behavior is not yet re-authored for the circular map.
+- This ZIP fixes layout, not final AAA graphics. Detailed 3D assets and visual refinement follow.
+- Needs a real browser walkthrough, which could not be completed here.
+
+INSTALL:
+- Extract ZIP; copy its file contents into your local GitHub Desktop repository.
+- Choose replace/merge, do not delete preexisting repository files.
+- Verify GitHub Desktop changes; commit and push when satisfied.

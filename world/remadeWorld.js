@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import { HEXCORE_WORLD } from './worldLayout.js';
 
 // =====================================================
 // HEXCORE GAMING // VISUAL FOUNDATION WORLD REMAKE
@@ -517,117 +518,90 @@ export function* createRemadeWorldProgressive(scene, camera) {
     cyanFill.position.set(440, 120, 80);
     root.add(cyanFill);
 
-    // Stage 1 // Roads and closest approach around HQ
-    road(0, 120, 118, 196, cyanGlow, purpleGlow);
-    road(0, 255, 22, 282, cyanGlow, blueGlow);
-    road(0, 345, 150, 156, magentaGlow, cyanGlow);
-    road(140, 110, 155, 18, cyanGlow, magentaGlow);
-    road(224, 110, 130, 130, cyanGlow, purpleGlow);
-    road(281, 110, 60, 22, magentaGlow, blueGlow);
-    road(448, 110, 326, 340, blueGlow, purpleGlow);
-    road(-214, 115, 140, 130, magentaGlow, cyanGlow);
-    road(-108, 115, 92, 18, cyanGlow, blueGlow);
-    for (const x of [337, 411, 485, 559]) road(x, 110, 18, 335, cyanGlow, purpleGlow);
-    for (const z of [-4, 72, 148, 224]) road(448, z, 320, 16, magentaGlow, cyanGlow);
-    bridgeLampLine(-52, 52, 36, 8, cyanGlow);
-    bridgeLampLine(-52, 52, 235, 8, purpleGlow);
-    flush();
-    yield;
+    // STAGE 1 // A monumental approach, immediately legible from headquarters.
+    // Tower sits on world centerline beyond the long approach.
+    road(0, 145, 34, 300, cyanGlow, purpleGlow);
+    road(0, 300, 86, 86, magentaGlow, cyanGlow);
+    road(0, 490, 28, 160, purpleGlow, cyanGlow);
+    flush(); yield;
 
-    // Stage 2 // Gateway procession and close decorative pieces
-    const animated = [];
-    for (let i = 0; i < 16; i++) {
-        const z = 44 + i * 11;
-        for (const sx of [-1, 1]) {
-            const x = sx * 54;
-            octColumn(x, 3.8, z, 0.85, 7.6, steel2);
-            octColumn(x, 7.6, z, 1.25, 0.42, lightMaterials[i % lightMaterials.length]);
+    // STAGE 2 // The center is an original, layered circular digital citadel.
+    // Curvilinear promenades connect landmarks; avoid conventional block grids.
+    const animated=[];
+    for (const radius of [94, 156, 242, 326]) {
+        animated.push(ring(0, 0.1, 300, radius, 0.38, radius%2===0?cyanGlow:purpleGlow));
+        animated.push(ring(0, 0.35, 300, radius+2.2, 0.12, magentaGlow));
+    }
+    for (let i=0;i<20;i++) {
+        const a=i*Math.PI/10;
+        const r=92;
+        const x=Math.cos(a)*r,z=300+Math.sin(a)*r;
+        octColumn(x,5.5,z,1.1,11,steel2);
+        cone(x,14,z,2.2,7,i%3===0?cyanGlow:purpleGlow);
+    }
+    holoBillboard(0,12,65,46,5,'HEXCORE // THE WORLD OF GAMING','#c5a2ff');
+    flush(); yield;
+
+    // STAGE 3 // Majestic central tower. There is no backdrop of office blocks
+    // between visitors and the actual company/game destinations.
+    const towerAnimObjects=tower(0,300);
+    flush(); yield;
+
+    // STAGE 4 // Public landmarks are distributed all around the central tower.
+    // Each building exterior and its interactive entrance use one canonical point.
+    const signs=[];
+    for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+        const pos=HEXCORE_WORLD.sites[i];
+        signs.push(themedShowcase(pos.x,pos.z,i));
+        // broad illuminated promenades link every physical building to the citadel.
+        const dx=pos.x,dz=pos.z-300;
+        const angle=Math.atan2(dx,dz);
+        const length=Math.hypot(dx,dz);
+        const midpoint=length/2;
+        const cx=Math.sin(angle)*midpoint,cz=300+Math.cos(angle)*midpoint;
+        box(cx,-.24,cz,11,.4,length,obsidian,angle);
+        box(cx-5*Math.cos(angle),.05,cz+5*Math.sin(angle),.19,.08,length,cyanGlow,angle);
+        box(cx+5*Math.cos(angle),.05,cz-5*Math.sin(angle),.19,.08,length,purpleGlow,angle);
+        if(i%2===1){flush();yield;}
+    }
+    flush(); yield;
+
+    // STAGE 5 // Dramatic elven/digital outer skyline beyond the attractions,
+    // rather than a New York-like downtown blocking the interactive buildings.
+    for(let i=0;i<28;i++){
+        const a=i/28*Math.PI*2;
+        const r=410+(i%4)*28;
+        const x=Math.sin(a)*r,z=300+Math.cos(a)*r;
+        const height=48+(i*17)%88;
+        decorativeSkyscraper(x,z,12+(i%3)*4,12+(i%2)*6,height,i);
+        if(i%5===4){flush();yield;}
+    }
+    flush(); yield;
+
+    // STAGE 6 // Ceremonial gateway, sculptural fountains and soft digital skyline.
+    const streetRings=[];
+    for(const [x,z] of [[0,120],[-92,300],[92,300],[0,475]]){
+        streetRings.push(ring(x,12,z,9,.18,cyanGlow,.7));
+        streetRings.push(ring(x,16,z,13,.12,magentaGlow,1.05));
+    }
+    for(let i=0;i<24;i++){
+        const z=35+i*9;
+        for(const side of [-1,1]){
+            octColumn(side*19,4.5,z,.68,9,steel2);
+            cone(side*19,10,z,1.4,4,i%2?cyanGlow:purpleGlow);
         }
+        if(i%8===7){flush();yield;}
     }
-    for (let i = 0; i < 9; i++) {
-        makeFloatingLantern(-30 + i * 7.5, 4.2, 14, i % 2 ? cyanGlow : purpleGlow, i % 2 ? magentaGlow : blueGlow);
-    }
-    animated.push(...districtMonument(-210, 110));
-    animated.push(...districtMonument(448, 110));
-    flush();
-    yield;
-
-    // Stage 3 // Skyline districts
-    const skylineA = [
-        [-98, 56, 12, 13, 44, 0], [-122, 104, 14, 14, 58, 1], [-86, 152, 18, 15, 70, 2],
-        [101, 70, 11, 11, 46, 3], [126, 132, 13, 14, 62, 4], [89, 188, 16, 16, 78, 5],
-        [-154, 188, 14, 13, 64, 6], [154, 190, 15, 15, 72, 7], [-118, 228, 18, 14, 82, 8],
-        [120, 232, 15, 13, 74, 9], [-92, 274, 13, 14, 56, 10], [98, 286, 12, 14, 52, 11]
-    ];
-    skylineA.forEach((b, i) => decorativeSkyscraper(...b));
-    flush();
-    yield;
-
-    const skylineB = [];
-    for (let i = 0; i < 28; i++) {
-        const side = i % 2 ? 1 : -1;
-        const x = 448 + side * (168 + (i % 4) * 22);
-        const z = -48 + (i * 33) % 320;
-        skylineB.push([x, z, 10 + (i % 4) * 3, 12 + (i % 3) * 2, 36 + (i * 11) % 62, i + 3]);
-    }
-    skylineB.forEach((b) => decorativeSkyscraper(...b));
-    flush();
-    yield;
-
-    // Stage 4 // HexCore Tower
-    const towerAnimObjects = tower(224, 110);
-    flush();
-    yield;
-
-    // Stage 5 // Public game-showcase buildings
-    const signs = [];
-    for (let i = 0; i < 16; i++) {
-        const x = 448 + offsetsX[i % 4];
-        const z = 110 + offsetsZ[(i / 4) | 0];
-        signs.push(themedShowcase(x, z, i));
-        if (i % 2 === 1) {
-            flush();
-            yield;
-        }
-    }
-    flush();
-    yield;
-
-    // Stage 6 // Street furniture, fountains, holograms
-    const streetRings = [];
-    for (const [x, z] of [[448, -42], [448, 262], [305, 110], [591, 110], [0, 345]]) {
-        streetRings.push(ring(x, 14, z, 11, 0.12, cyanGlow, 0.72));
-        streetRings.push(ring(x, 17, z, 14, 0.14, magentaGlow, 1.05));
-    }
-    for (let i = 0; i < 20; i++) {
-        const x = 305 + (i % 5) * 38;
-        const z = -40 + Math.floor(i / 5) * 84;
-        box(x, 0.7, z, 6, 1.3, 2, steel2);
-        box(x, 1.42, z, 6.1, 0.09, 2.1, cyanGlow);
-        octColumn(x, 3.7, z, 0.15, 3.8, magentaGlow);
-    }
-    holoBillboard(15, 10, 80, 18, 2.4, 'WELCOME TO HEXCORE CITY', '#b98dff', 0);
-    holoBillboard(448, 20, 110, 24, 3, 'FUTURE WORLDS DISTRICT', '#82e7ff', Math.PI / 2);
-    holoBillboard(224, 22, 80, 18, 2.5, 'HEXCORE TOWER', '#f3beff', 0);
+    holoBillboard(0,35,260,34,4.5,'HEXCORE TOWER','#ebc0ff');
     flush();
 
-    const pulseTargets = [
-        ...towerAnimObjects,
-        ...streetRings,
-        ...animated,
-        ...signs
-    ];
-
-    let t = 0;
-    return () => {
-        t += 0.016;
-        for (let i = 0; i < pulseTargets.length; i++) {
-            const obj = pulseTargets[i];
-            if (!obj) continue;
-            if (obj.rotation) obj.rotation.y += 0.001 * ((i % 2) ? -1 : 1);
-            if (obj.material && obj.material.emissiveIntensity !== undefined) {
-                obj.material.emissiveIntensity = 0.8 + Math.sin(t * 1.2 + i) * 0.12;
-            }
-        }
+    const pulseTargets=[...towerAnimObjects,...animated,...streetRings,...signs];
+    let t=0;
+    return ()=>{
+      t+=0.016;
+      for(let i=0;i<pulseTargets.length;i++){
+        const obj=pulseTargets[i];
+        if(obj&&obj.rotation)obj.rotation.y+=.0004*(i%2?-1:1);
+      }
     };
 }

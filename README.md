@@ -1,3 +1,3 @@
-# HexCore City — ZIP 04
+# HexCore Gaming — ZIP 06 Central World Layout
 
-Full cumulative GitHub Pages project. See `ZIP_04_RELEASE_NOTES.txt` for implemented NPC-loading and rendering fixes.
+This is a complete cumulative website project. Open `ZIP_06_RELEASE_NOTES.txt` for changes and installation.

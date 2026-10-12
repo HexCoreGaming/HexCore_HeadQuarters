@@ -5,7 +5,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 // =====================================================
 export function createHexcoreTower(scene, renderer) {
     // SECTION 01 // LOCATIONS
-    const SITE = {x: 224, z: 110};
+    const SITE = {x: 0, z: 300};
     const LOBBY = {x: 800, z: 800};
     const FLOOR = {x: 900, z: 900};
     const player = {x: 0, z: 15};
@@ -108,7 +108,7 @@ export function createHexcoreTower(scene, renderer) {
     }
     function travel(destination){if(typeof window.hexcoreTeleportPlayer!=='function')return;
         mode=destination;cooldown=1.4;
-        if(destination==='city') {window.hexcoreInteriorActive=false;window.hexcoreInteriorBounds=null;window.hexcoreTeleportPlayer(196,110,Math.PI/2);}
+        if(destination==='city') {window.hexcoreInteriorActive=false;window.hexcoreInteriorBounds=null;window.hexcoreTeleportPlayer(0,258,Math.PI);}
         if(destination==='lobby'){window.hexcoreInteriorActive=true;window.hexcoreInteriorBounds={minX:LOBBY.x-37,maxX:LOBBY.x+37,minZ:LOBBY.z-34,maxZ:LOBBY.z+34};window.hexcoreTeleportPlayer(800,824,0);}
         if(destination==='floor'){window.hexcoreInteriorActive=true;window.hexcoreInteriorBounds={minX:875,maxX:925,minZ:875,maxZ:925};window.hexcoreTeleportPlayer(900,913,0);}
     }
@@ -132,7 +132,7 @@ export function createHexcoreTower(scene, renderer) {
         for(let i=0;i<halos.length;i++)halos[i].rotation.y+=dt*(.12+i*.06);
         // landmark illumination is now driven by remadeWorld
         let nearElevator=false;
-        if(mode==='city' && cooldown===0 && window.hexcoreDoorUnlocked===true && window.hexcoreDialogueOpen!==true && Math.abs(player.x-197)<5 && Math.abs(player.z-110)<7)travel('lobby');
+        if(mode==='city' && cooldown===0 && window.hexcoreDoorUnlocked===true && window.hexcoreDialogueOpen!==true && Math.abs(player.x)<6 && Math.abs(player.z-268)<8)travel('lobby');
         if(mode==='lobby'){
             if(cooldown===0 && Math.abs(player.x-800)<6 && player.z>831){travel('city');return;}
             nearElevator=Math.hypot(player.x-800,player.z-772)<10;

@@ -47,7 +47,7 @@ export function* createRemadeWorldProgressive(scene, camera) {
         roughness: 0.08,
         transparent: true,
         opacity: 0.64,
-        transmission: 0.06,
+        transmission: 0,
         side: THREE.DoubleSide,
         depthWrite: false
     });
@@ -260,12 +260,12 @@ export function* createRemadeWorldProgressive(scene, camera) {
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
         const dome = new THREE.Mesh(
-            new THREE.SphereGeometry(950, 32, 24),
+            new THREE.SphereGeometry(950, 20, 12),
             new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide })
         );
         root.add(dome);
 
-        const starCount = 850;
+        const starCount = 450;
         const positions = new Float32Array(starCount * 3);
         for (let i = 0; i < starCount; i++) {
             const r = 680 + Math.random() * 160;
@@ -511,10 +511,10 @@ export function* createRemadeWorldProgressive(scene, camera) {
     const key = new THREE.DirectionalLight(0xbecbff, 1.35);
     key.position.set(-140, 190, -120);
     root.add(key);
-    const purpleFill = new THREE.PointLight(0x8c54ff, 4.5, 380);
+    const purpleFill = new THREE.PointLight(0x8c54ff, 1.6, 180);
     purpleFill.position.set(180, 95, 130);
     root.add(purpleFill);
-    const cyanFill = new THREE.PointLight(0x75e0ff, 4.3, 420);
+    const cyanFill = new THREE.PointLight(0x75e0ff, 1.5, 180);
     cyanFill.position.set(440, 120, 80);
     root.add(cyanFill);
 

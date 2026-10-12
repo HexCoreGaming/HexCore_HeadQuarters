@@ -1,0 +1,15 @@
+HEXCORE CITY // PERFORMANCE REPAIR FROM USER UPLOAD
+
+Found in code:
+- All 16 public interiors were built automatically every 18 frames, regardless of player location. Fixed: only build on entering a site.
+- Per-room lighting spawned 20 additional point lights for corporate floors. Fixed: replaced with one low-cost hemisphere light per floor.
+- Public interior geometry allocated fresh box and cylinder geometry for each object. Fixed: share geometry and use scale.
+- Tower decorative geometry also allocated a new BoxGeometry per object. Fixed: use shared geometry.
+- Expensive physically based glass transmission and unnecessarily dense sky geometry. Reduced while retaining transparent glass look.
+- High default pixel ratio reduced to 1.0 for smoother baseline rendering.
+- Lightweight runtime performance/error diagnostics exposed as window.hexcorePerformance in browser console.
+
+Startup behavior preserved:
+Headquarters and its NPCs initialize before player. Five-second delay before outer world construction.
+
+Note: Browser GPU profiling and live smoke testing are still needed on the target machine. No guarantee of zero stalls on all hardware.

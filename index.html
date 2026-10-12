@@ -392,9 +392,20 @@
             }catch(error){console.error('HEXCORE STARTUP // '+name,error);bootState.ready++;}
             nextJobAt=performance.now()+bootGap;
         }
+        // Runtime diagnostics: report failed stages once, without repeated freezes.
+        window.hexcorePerformance = {boot:bootState,frameMs:0,lastError:null};
+        window.addEventListener('error', (event) => {
+            window.hexcorePerformance.lastError = String(event.message || event.error || 'unknown error');
+        });
+        window.addEventListener('unhandledrejection', (event) => {
+            window.hexcorePerformance.lastError = String(event.reason || 'unhandled rejection');
+        });
+        let frameTime = performance.now();
         // Hub plus its NPCs are constructed before player spawn; world waits five seconds.
         renderer.setAnimationLoop(()=>{
             const now=performance.now();
+            window.hexcorePerformance.frameMs = Math.round(now - frameTime);
+            frameTime = now;
             updatePlayer();
             animateHeadquarters();
             updateHeadquartersNPCs();

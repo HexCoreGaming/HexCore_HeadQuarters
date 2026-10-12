@@ -12,7 +12,8 @@ export function createTowerArtDirection(scene) {
   const gold=new THREE.MeshBasicMaterial({color:0xfcd69b});
   const accents=[cyan,violet,gold];
   const anim=[];
-  const B=(g,w,h,d,x,y,z,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);g.add(o);return o;};
+  const unitBox=new THREE.BoxGeometry(1,1,1);
+  const B=(g,w,h,d,x,y,z,m)=>{const o=new THREE.Mesh(unitBox,m);o.position.set(x,y,z);o.scale.set(w,h,d);g.add(o);return o;};
   const C=(g,r1,r2,h,x,y,z,m,n=12)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,n),m);o.position.set(x,y,z);g.add(o);return o;};
   const R=(g,r,t,x,y,z,m,rx=0)=>{const o=new THREE.Mesh(new THREE.TorusGeometry(r,t,7,44),m);o.position.set(x,y,z);o.rotation.x=rx;g.add(o);return o;};
   function glyph(g,txt,w,h,x,y,z,clr='#a4eaff',ry=0){
@@ -53,7 +54,8 @@ export function createTowerArtDirection(scene) {
     for(let x of [-21,21]){B(G,13,1.1,4,x,.55,19,dark);B(G,12,.1,4,x,1.17,19,accent);B(G,10,2.9,.2,x,3.2,17,glass);}
     for(let x of [-30,30])for(let z of [-9,9]){B(G,6,.7,3,x,.65,z,metal);B(G,5.7,.08,2.9,x,1.06,z,pearl);B(G,2.9,2,.2,x,2.15,z-.7,glass);}
     for(let x of [-32,32])for(let z=-26;z<=26;z+=13){C(G,.55,.62,4.5,x,2.3,z,dark,8);C(G,.28,.3,.1,x,4.6,z,accent,8);}
-    for(let x of [-26,26])for(let z of [-25,25]){const l=new THREE.PointLight(index%2?0x9763d9:0x5ac6e6,1.8,17);l.position.set(x,8,z);G.add(l);}
+    // Shared hemispheric lighting replaces 20 per-room dynamic point lights.
+    G.add(new THREE.HemisphereLight(0xb1c4ff,0x181027,0.38));
     const subjects=['SUPPORT // YOUR QUESTIONS MATTER','COMMUNITY // THE CITY IS ALIVE','BUSINESS // BUILD WITH HEXCORE','DEVELOPMENT // NEW WORLDS AWAIT','HARDWARE // THE NEXT FRONTIER'];
     glyph(G,subjects[index],46,3,0,14,-41.65,index%2?'#b68bff':'#81e9ff');
   }

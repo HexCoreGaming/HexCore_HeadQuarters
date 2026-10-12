@@ -29,12 +29,13 @@ export const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 1.35)
+    Math.min(window.devicePixelRatio, 1.0)
 );
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.08;
 renderer.sortObjects = true;
+// Performance baseline; full resolution can be restored through graphics settings later.
 
 document.body.appendChild(renderer.domElement);
 

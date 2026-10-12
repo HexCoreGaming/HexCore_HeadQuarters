@@ -29,8 +29,10 @@ export function createPublicCity(scene) {
   const floorMat=new THREE.MeshStandardMaterial({color:0x151a34,roughness:.36,metalness:.65});
   const glass=new THREE.MeshStandardMaterial({color:0x28385a,roughness:.14,metalness:.56,transparent:true,opacity:.72});
   const getGlow=(color,strength=.7)=>new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:strength,metalness:.55,roughness:.23});
-  function cube(parent,x,y,z,w,h,d,mat){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);o.position.set(x,y,z);parent.add(o);return o;}
-  function cyl(parent,x,y,z,r,h,mat,sides=8){const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.1,h,sides),mat);o.position.set(x,y,z);parent.add(o);return o;}
+  const sharedBoxGeometry=new THREE.BoxGeometry(1,1,1);
+  function cube(parent,x,y,z,w,h,d,mat){const o=new THREE.Mesh(sharedBoxGeometry,mat);o.position.set(x,y,z);o.scale.set(w,h,d);parent.add(o);return o;}
+  const sharedCylinderGeometry=new THREE.CylinderGeometry(1,1.1,1,8);
+  function cyl(parent,x,y,z,r,h,mat,sides=8){const o=new THREE.Mesh(sharedCylinderGeometry,mat);o.position.set(x,y,z);o.scale.set(r,h,r);parent.add(o);return o;}
   const labelCache=new Map();
   function sign(parent,words,x,y,z,w=26,h=3.5,accent='#ad95ff',rotation=0){
     let key=words+'|'+accent;let texture=labelCache.get(key);
@@ -131,9 +133,10 @@ export function createPublicCity(scene) {
   window.addEventListener('keydown',ev=>{if(ev.code==='KeyE'&&!ev.repeat)interact();if(ev.code==='Escape'&&state.open)close();});
   window.addEventListener('hexcore-player-position',ev=>{if(ev.detail)state.pos=ev.detail;});
   // Optimized decorative animation: only centerpiece and limited exterior details.
-  let frames=0;let nextInterior=0;
+  let frames=0;
   function update(){
-    if(frames%18===0 && nextInterior<sites.length){const site=sites[nextInterior++];if(!site.room)makeInterior(site,nextInterior-1);}const {x,z}=state.pos;frames++;
+    // Interiors are created ONLY on entry, not continuously while exploring.
+    const {x,z}=state.pos;frames++;
     centerpiece.rotation.y+=.003;centerpiece.position.y=10+Math.sin(frames*.02)*.5;
     for(const walker of walkers){if(!walker.moving)continue;walker.person.position.z=walker.baseZ+Math.sin(frames*.006+walker.phase)*8;walker.person.rotation.y=Math.cos(frames*.006+walker.phase)>0?0:Math.PI;}
     if(state.open){prompt.style.display='none';return;}

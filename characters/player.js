@@ -309,6 +309,51 @@ export function createPlayer(camera, renderer) {
     }
 
     // =====================================================
+    // SECTION 04F // ADMINISTRATION INTERIOR TRAVEL
+    // =====================================================
+
+    window.hexcoreInteriorActive = false;
+
+    window.hexcoreTeleportPlayer = function(x, z, yaw = 0) {
+
+        player.position.x = x;
+        player.position.z = z;
+
+        player.yaw = yaw;
+        player.pitch = 0;
+
+        for (const key in keys) {
+            keys[key] = false;
+        }
+
+        if (window.hexcoreMobileInput) {
+            window.hexcoreMobileInput.x = 0;
+            window.hexcoreMobileInput.z = 0;
+        }
+
+        camera.position.set(
+            player.position.x,
+            player.height,
+            player.position.z
+        );
+
+        camera.rotation.set(
+            player.pitch,
+            player.yaw,
+            0
+        );
+
+        window.dispatchEvent(
+            new CustomEvent("hexcore-player-position", {
+                detail: {
+                    x: player.position.x,
+                    z: player.position.z
+                }
+            })
+        );
+    };
+
+    // =====================================================
     // SECTION 05 // MOVEMENT AND CAMERA UPDATE
     // =====================================================
 
@@ -445,14 +490,19 @@ export function createPlayer(camera, renderer) {
 
             const nextX = player.position.x + stepX;
 
+           
             if (
-                !collidesWithPillar(nextX, player.position.z) &&
-                !collidesWithPlatform(nextX, player.position.z) &&
-                !collidesWithReception(nextX, player.position.z) &&
-                !collidesWithCityBuilding(nextX, player.position.z)
+                window.hexcoreInteriorActive === true ||
+                (
+                    !collidesWithPillar(nextX, player.position.z) &&
+                    !collidesWithPlatform(nextX, player.position.z) &&
+                    !collidesWithReception(nextX, player.position.z) &&
+                    !collidesWithCityBuilding(nextX, player.position.z)
+                )
             ) {
                 player.position.x = nextX;
             }
+
 
             // =====================================================
             // SECTION 05C-2 // Z-AXIS MOVEMENT
@@ -484,68 +534,78 @@ export function createPlayer(camera, renderer) {
                 crossingFrontWall &&
                 (!insideDoorway || !cityDoorReady);
 
+           
             if (
-                !collidesWithPillar(player.position.x, nextZ) &&
-                !collidesWithPlatform(player.position.x, nextZ) &&
-                !collidesWithReception(player.position.x, nextZ) &&
-                !blockedByFrontExit &&
-                !collidesWithCityBuilding(player.position.x, nextZ)
+                window.hexcoreInteriorActive === true ||
+                (
+                    !collidesWithPillar(player.position.x, nextZ) &&
+                    !collidesWithPlatform(player.position.x, nextZ) &&
+                    !collidesWithReception(player.position.x, nextZ) &&
+                    !blockedByFrontExit &&
+                    !collidesWithCityBuilding(player.position.x, nextZ)
+                )
             ) {
                 player.position.z = nextZ;
             }
+
         }
 
 
        
+       
         // =====================================================
-        // SECTION 05D // HEADQUARTERS AND CITY BOUNDARIES
+        // SECTION 05D // HEADQUARTERS, CITY, AND INTERIOR BOUNDS
         // =====================================================
 
-        const cityAccessEnabled =
-            window.hexcoreDoorUnlocked === true &&
-            (window.hexcoreExitOpenProgress || 0) > 0.95;
+        if (window.hexcoreInteriorActive === true) {
 
-        // Inside headquarters, preserve the original limits.
-        // Outside headquarters, allow city exploration.
-
-        if (player.position.z < 30.3) {
+            // Large Administration & Legal interior.
 
             player.position.x = THREE.MathUtils.clamp(
                 player.position.x,
-                -28,
-                28
+                500 - 37.3,
+                500 + 37.3
+            );
+
+            player.position.z = THREE.MathUtils.clamp(
+                player.position.z,
+                500 - 34.3,
+                500 + 34.3
             );
 
         } else {
 
-            player.position.x = THREE.MathUtils.clamp(
-                player.position.x,
-                -98,
-                98
+            // Original headquarters and city boundaries.
+
+            const cityAccessEnabled =
+                window.hexcoreDoorUnlocked === true &&
+                (window.hexcoreExitOpenProgress || 0) > 0.95;
+
+            if (player.position.z < 30.3) {
+
+                player.position.x = THREE.MathUtils.clamp(
+                    player.position.x,
+                    -28,
+                    28
+                );
+
+            } else {
+
+                player.position.x = THREE.MathUtils.clamp(
+                    player.position.x,
+                    -98,
+                    98
+                );
+            }
+
+            player.position.z = THREE.MathUtils.clamp(
+                player.position.z,
+                -28,
+                cityAccessEnabled ? 245 : 28
             );
         }
 
-        player.position.z = THREE.MathUtils.clamp(
-            player.position.z,
-            -28,
-            cityAccessEnabled ? 245 : 28
-        );
 
-        // =====================================================
-        // SECTION 05E // CAMERA UPDATE
-        // =====================================================
-
-        camera.position.set(
-            player.position.x,
-            player.height,
-            player.position.z
-        );
-
-        camera.rotation.set(
-            player.pitch,
-            player.yaw,
-            0
-        );
 
         // =====================================================
         // SECTION 05F // PLAYER POSITION NOTIFICATION

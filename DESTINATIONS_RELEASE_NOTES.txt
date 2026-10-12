@@ -1,0 +1,9 @@
+HEXCORE CITY — DESTINATION INTERIOR & ENTERTAINMENT PASS
+
+Each public destination now receives a themed scene on its first visit.
+Cyber_Arena: luminous arena rings; Where Light Dies: bioluminescent interior forest; Untamed Horizon: motorsport orbital track; Forgotten Ashes: gothic spires; Hardware: engineering displays; Arcade: game cabinets; Museum: world exhibits.
+Other rooms include a shared art installation.
+
+To reduce unnecessary rendering cost, galleries are constructed only when a visitor enters. Animation also runs only for the occupied room. Current coordinates, menus, NPCs, main exterior, and welcome loading messages are unchanged.
+
+The scene is procedural artwork rather than photorealistic 3D assets. Full browser / device performance remains to be tested.

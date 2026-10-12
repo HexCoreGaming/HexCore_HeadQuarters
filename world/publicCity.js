@@ -1,5 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 import { HEXCORE_WORLD } from './worldLayout.js';
+import { installDestinationGallery } from './destinationGalleries.js';
 
 // HEXCORE // PUBLIC WEBSITE CITY. All copy is informational; no fictitious live services.
 // Reusable independent buildings, visitor navigation, featured games, support and hardware.
@@ -82,6 +83,7 @@ export function createPublicCity(scene) {
     sign(g,'VISITOR INFORMATION',0,3,-10,19,2.3,hex);
     // Existing world illumination reaches these rooms; no additional shadow-casting point lights per room.
     const light=new THREE.AmbientLight(0xadbfff,.34);g.add(light);
+    site.updateGallery=installDestinationGallery(site,g);
   }
   // PUBLIC DISTRICT // physically connected to the existing city, NOT inside HexCore Tower.
   // Westward boulevard reaches the eastern shore of the original tower island.

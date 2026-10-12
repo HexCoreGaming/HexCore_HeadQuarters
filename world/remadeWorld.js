@@ -3,6 +3,7 @@ import { HEXCORE_WORLD } from './worldLayout.js';
 import { createVisualAtmosphere } from './visualAtmosphere.js';
 import { createDigitalLandmarks } from './digitalLandmarks.js';
 import { createShowcaseIdentity } from './showcaseIdentity.js';
+import { createLivingWorld } from './livingWorld.js';
 
 // HEXCORE CITY / ORIGINAL DIGITAL WORLD (not the old city-grid geometry).
 // Single coordinate contract: tower (0,300), headquarters (0,0), site doors site.z+29.
@@ -163,6 +164,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
    torus(far,x,h+3,z,5.5,.12,i%2?glows[0]:glows[1],Math.PI/2);
  }
  yield;
+ yield* createLivingWorld(scene);
  yield* createVisualAtmosphere(scene);
  const updateLandmarks = yield* createDigitalLandmarks(scene);
  const updateShowcases = yield* createShowcaseIdentity(scene);

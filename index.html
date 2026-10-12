@@ -327,6 +327,12 @@
         import { createRemadeWorldProgressive } from "./world/remadeWorld.js";
         import { createInteriorFinishes } from "./world/interiorFinishes.js";
 
+        import { installVisitorDirectory } from './ui/visitorDirectory.js';
+
+        import { installGraphicsControls } from './ui/graphicsControls.js';
+
+        import { installVisitorHelp } from './ui/visitorHelp.js';
+
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -366,6 +372,9 @@
             console.error('HEXCORE PRE-SPAWN NPC INITIALIZATION', error);
         }
 
+        const visitorTools = installVisitorDirectory();
+        installGraphicsControls(renderer, scene, camera, visitorTools);
+        installVisitorHelp(visitorTools);
         const updatePlayer = createPlayer(camera, renderer);
         installInteractionFocus(renderer);
         installTowerDirectory();

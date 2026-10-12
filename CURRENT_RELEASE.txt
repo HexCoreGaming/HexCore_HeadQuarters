@@ -1,0 +1,5 @@
+HEXCORE CITY // Living World Environment Pass
+Cumulative full project derived from the latest website completion build.
+Elven-world bioluminescent vegetation added in frustum-cullable instanced geographic batches, loaded through existing welcome screen.
+Existing public game buildings, hub, tower, NPCs, interactions, visitor directory and loading messages preserved.
+This remains a procedural prototype, not a production AAA-quality world.

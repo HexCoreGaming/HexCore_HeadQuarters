@@ -1,0 +1,5 @@
+HEXCORE ONE-ZIP ARCHITECTURE ASSET PACKAGE
+
+Contains 11 locally hosted GLB model assets for the tower and 10 public destinations; five locally hosted 1024px texture maps. All model files are actively loaded by world/assetWorld.js. No authentication or server backend added.
+
+THIS IS NOT A CLAIM OF UNREAL ENGINE QUALITY. Replaces the previously duplicated game shells and adds new 3D models. Some legacy world geometry and interactions remain and still require visual validation. Live browser and GPU testing have not been performed.

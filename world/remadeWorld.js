@@ -1,6 +1,6 @@
-import { createPublicLandmarks } from './publicLandmarks.js';
-import { createSculptedShells } from './sculptedShells.js';
-import { createGameLandmarks } from './gameLandmarks.js';
+import { createAssetWorld } from './assetWorld.js';
+
+
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 import { createVisualAtmosphere } from './visualAtmosphere.js';
@@ -133,6 +133,8 @@ export function* createRemadeWorldProgressive(scene,camera) {
  arch(T,0,-33,13,19,glows[1]);
  box(T,0,6,-33,15,12,1.4,body);
  sign(T,'ENTER THE TOWER',0,13.5,-34,24,3,'#82edff');
+ // Modelled tower from assetWorld replaces this legacy procedural shell.
+ T.visible=false;
  yield;
  // Create site forecourts and paths in user-facing order. All 16 site coordinates are authoritative.
  const labels=['CYBER_ARENA HEX//BREAK','WHERE LIGHT DIES','UNTAMED HORIZON','THE FORGOTTEN ASHES','THE ACADEMY','FUTURE WORLDS','ADMINISTRATION & LEGAL','CUSTOMER SUPPORT','COMMUNITY & EVENTS','BUSINESS & PARTNERSHIPS','GAME DEVELOPMENT','HEXCORE HARDWARE','HEXCORE MERCHANDISE','FUTURE WORLDS MUSEUM','HEXCORE ARCADE','GAMER RESIDENCES'];
@@ -169,9 +171,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
  const updateCyber = yield* createHumanCyberLayer(scene);
  const updateSculpted = null; // old extra scaffold retired
  const updateSanctuaries = yield* createBioluminescentSanctuaries(scene);
- const updateShells = yield* createSculptedShells(scene);
- const updateGames = yield* createGameLandmarks(scene);
- const updatePublicLandmarks = yield* createPublicLandmarks(scene);
+ const updateAssets = yield* createAssetWorld(scene);
  // Static scene plus a limited number of gentle animated monumental rings.
  return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}if(typeof updateArchitecture==='function')updateArchitecture();if(typeof updateLandmarks==='function')updateLandmarks();if(typeof updateShowcases==='function')updateShowcases();if(typeof updateCyber==='function')updateCyber();if(typeof updateSculpted==='function')updateSculpted();if(typeof updateSanctuaries==='function')updateSanctuaries();if(typeof updateShells==='function')updateShells();};
 }

@@ -1,10 +1,7 @@
-HEXCORE NEXT ZIP — EXTERIOR GEOMETRY REPLACEMENT
+HEXCORE CITY // GAME LANDMARK EXTERIOR REPLACEMENT
 
-Changed existing render path, not another additive ornament layer:
-- Tower replaces stacked primitive cylinder tiers with one lofted continuous faceted/fluted surface.
-- Removes duplicate geometric public pavilions from remadeWorld; retains usable pathways, forecourts, signs, and existing interactive doorway coordinates.
-- Existing sculptedShells module owns building exterior shells.
-- Stops instantiating old overlapping decorative geometry passes: elvenArchitecture, digitalLandmarks, showcaseIdentity and sculptedArchitecture.
-- Keeps human cyber layer, living world, bioluminescent sanctuaries, and interaction systems.
+Based on Exterior Geometry Replacement.
 
-Caveats: These are custom procedural meshes, not professionally modeled asset packs. Browser visuals, navigation, load time, and frame rate still require live testing.
+The four core game buildings no longer inherit the generic five-variant sculpted shell. Each now has a distinct original silhouette: fractured orbital arena, living bioluminescent cathedral, streamlined wing pavilion, and gothic-elven sanctuary. Original entrances and interaction coordinates are preserved.
+
+This is source-code geometry; it is not a professionally modeled AAA asset pack. No browser visual/performance test was performed.

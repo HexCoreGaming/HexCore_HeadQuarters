@@ -1,4 +1,5 @@
 import { createSculptedShells } from './sculptedShells.js';
+import { createGameLandmarks } from './gameLandmarks.js';
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 import { createVisualAtmosphere } from './visualAtmosphere.js';
@@ -168,6 +169,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
  const updateSculpted = null; // old extra scaffold retired
  const updateSanctuaries = yield* createBioluminescentSanctuaries(scene);
  const updateShells = yield* createSculptedShells(scene);
+ const updateGames = yield* createGameLandmarks(scene);
  // Static scene plus a limited number of gentle animated monumental rings.
  return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}if(typeof updateArchitecture==='function')updateArchitecture();if(typeof updateLandmarks==='function')updateLandmarks();if(typeof updateShowcases==='function')updateShowcases();if(typeof updateCyber==='function')updateCyber();if(typeof updateSculpted==='function')updateSculpted();if(typeof updateSanctuaries==='function')updateSanctuaries();if(typeof updateShells==='function')updateShells();};
 }

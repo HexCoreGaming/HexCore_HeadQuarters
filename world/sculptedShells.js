@@ -74,7 +74,7 @@ export function* createSculptedShells(scene) {
   }
   // Single landmark per destination, distinct lofted structure instead of box facades.
   for(const i of HEXCORE_EXTERIOR_SITES){
-    if (i < 4) continue; // game landmark exteriors now use distinct original geometry
+    if (i < 4 || [4,5,12,13,14,15].includes(i)) continue; // all public buildings now have distinct dedicated exteriors
     const point=HEXCORE_WORLD.sites[i],g=new THREE.Group();g.position.set(point.x,0,point.z);
     g.name='SCULPTED_SITE_'+String(i+1).padStart(2,'0');root.add(g);
     const light=lights[i%lights.length];

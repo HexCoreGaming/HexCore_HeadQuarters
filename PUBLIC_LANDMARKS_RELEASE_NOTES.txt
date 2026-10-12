@@ -1,0 +1,5 @@
+NEXT RELEASE // SIX DISTINCT PUBLIC DESTINATION EXTERIORS
+
+Replaces shared procedural shell geometry for Academy, Future Worlds, Merchandise, Museum, Arcade, and Residences with six individually designed 3D structures. Four existing game landmarks remain unchanged. Corporate departments remain in HexCore Tower. Exterior doors and directory coordinates unchanged. This is architectural geometry, not a verified production-quality asset pass.
+
+No live-browser visual or performance test was performed.

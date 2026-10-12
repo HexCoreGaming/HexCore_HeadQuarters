@@ -1,0 +1,5 @@
+HEXCORE CITY / NEXT ZIP / LANDMARK SCULPTURE PASS
+
+Adds four distinctive digital architectural forms around the public districts: elven cathedral beacons, suspended luminous ceremonial rings, pointed energy arches, and petal-finned sanctuaries. Adds a far-distance void monument rim. The tower remains at (0,300), hub (0,0), and all 16 official visitor entry points and operating systems are unchanged. This is still procedural art, not a final professionally modeled environment.
+
+Performance: shared primitive geometry and materials where appropriate; landmarks constructed progressively, not all in one frame. Existing welcome loader, NPC startup and visitor logic untouched.

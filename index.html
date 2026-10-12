@@ -304,6 +304,7 @@
         // SECTION 02G // HEXCORE TOWER SYSTEM
         import { createHexcoreTower } from "./world/hexcoreTower.js";
         import { createTowerDepartments } from "./world/towerDepartments.js";
+        import { installTowerDirectory } from "./world/towerDirectory.js";
         import { installInteractionFocus } from "./core/interactionFocus.js";
         import { createTowerArtDirection } from "./world/towerArtDirection.js";
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
@@ -347,6 +348,7 @@
         const updatePlayer =
             createPlayer(camera, renderer);
         installInteractionFocus(renderer);
+        installTowerDirectory();
         // ==========================================
         // SECTION 04A // CREATE HEADQUARTERS NPCS
         // ==========================================

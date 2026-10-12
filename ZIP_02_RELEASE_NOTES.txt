@@ -1,0 +1,22 @@
+HEXCORE CITY // ZIP 02 // COMPLETE TOWER & PUBLIC DEPARTMENTS
+
+WHAT IS NEW
+- Distinct five department interiors with office furnishings, accent lighting, prototypes, information displays, lounges and a visible representative.
+- More extensive, accurate visitor-facing topic information for Customer Support, Community & Events, Business & Partnerships, Game Development and Hardware.
+- Fixed department topic-menu focus counter: browsing back through topics should not accumulate pointer-lock sessions.
+- New Tower Directory button (appears near the tower and its floors), listing all publicly available elevator destinations.
+- Existing city, 16-building district, elevator, Administration & Legal NPC conversations, arcade and website controls retained.
+
+ACCESS
+1. Headquarters -> Cyber Key -> City -> tower island via bridge.
+2. Enter tower lobby; E at elevator, select floors 02-06.
+3. Near the department reception desk, E or mobile Interact to see representative info.
+4. Close and walk to exit to return to tower lobby.
+5. The TOWER DIRECTORY button opens a floor reference when near tower spaces.
+
+NOT LIVE: Support drafts do not send, payment links not connected, employee authentication not configured, MMORPG not built.
+
+INSTALL
+Extract the ZIP outside your repository. Copy contents into your existing GitHub Desktop repository folder, merging folders and replacing matching files. Review for unexpected deletions before commit.
+
+NOTE: Browser integration and visual performance require live testing; syntax and local-import checks alone cannot guarantee runtime success.

@@ -373,6 +373,10 @@ export function createAdminInterior(scene, renderer) {
 
         inside = true;
         window.hexcoreInteriorActive = true;
+        window.hexcoreInteriorBounds = {
+            minX: CENTER_X - 37.3, maxX: CENTER_X + 37.3,
+            minZ: CENTER_Z - 34.3, maxZ: CENTER_Z + 34.3
+        };
 
         // Facing into the hall, toward negative Z.
         window.hexcoreTeleportPlayer(
@@ -385,25 +389,26 @@ export function createAdminInterior(scene, renderer) {
     }
 
     function goOutside() {
-
         if (typeof window.hexcoreTeleportPlayer !== "function") return;
-
         inside = false;
-        window.hexcoreInteriorActive = false;
-
-        const outward = front + 4.5;
-
-        const x = building.x + Math.sin(angle) * outward;
-        const z = building.z + Math.cos(angle) * outward;
-
-        window.hexcoreTeleportPlayer(
-            x,
-            z,
-            angle + Math.PI
-        );
-
+        window.hexcoreInteriorActive = true;
+        // Tower sets the return destination when this room is entered.
+        const back = window.hexcoreAdminReturn || {
+            x: 900, z: 908, yaw: Math.PI
+        };
+        window.hexcoreInteriorBounds = {
+            minX: 875, maxX: 925, minZ: 875, maxZ: 925
+        };
+        window.hexcoreTeleportPlayer(back.x, back.z, back.yaw);
+        window.dispatchEvent(new CustomEvent("hexcore-admin-exited"));
         transitionCooldown = 1;
     }
+
+    // SECTION 09A // ADMIN INTERIOR PUBLIC ENTRY API
+    window.hexcoreEnterAdminRoom = function() {
+        if (inside || typeof window.hexcoreTeleportPlayer !== "function") return;
+        goInside();
+    };
 
     // =====================================================
     // SECTION 10 // DIALOGUE USER INTERFACE
@@ -652,43 +657,8 @@ export function createAdminInterior(scene, renderer) {
             transitionCooldown - delta
         );
 
-        // Enter the existing Administration building.
-
-        if (
-            !inside &&
-            transitionCooldown <= 0 &&
-            window.hexcoreDoorUnlocked === true &&
-            window.hexcoreDialogueOpen !== true
-        ) {
-
-            const dx = playerX - building.x;
-            const dz = playerZ - building.z;
-
-            const localX =
-                dx * Math.cos(angle) -
-                dz * Math.sin(angle);
-
-            const localZ =
-                dx * Math.sin(angle) +
-                dz * Math.cos(angle);
-
-            const directory =
-                window.hexcoreCityBuildingDirectory || [];
-
-            const entry = directory.find(
-                item => item.id === "administration"
-            );
-
-            if (
-                entry &&
-                entry.doorOpen > 0.83 &&
-                Math.abs(localX) < 2.5 &&
-                localZ > front - 4.5 &&
-                localZ < front - 1.5
-            ) {
-                goInside();
-            }
-        }
+        // SECTION 12A // DOORWAY ENTRY IS CONTROLLED BY HEXCORE TOWER
+        // Existing city building stays intact for future repurposing.
 
         if (!inside) {
             prompt.style.display = "none";

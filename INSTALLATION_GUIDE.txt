@@ -1,0 +1,30 @@
+HEXCORE CITY // TOWER UPDATE
+
+1. Extract this ZIP. Open the HexCore_HeadQuarters-main folder inside.
+2. Copy ALL contents of that folder (not the outer folder) into the local HexCore_HeadQuarters repository folder opened by GitHub Desktop.
+3. Choose Replace files when asked. Do NOT delete any extra files already in your repository.
+4. In GitHub Desktop, review the changed file list. Ensure no unexpected deletions.
+5. Commit: "HexCore Tower foundation"; Push origin.
+6. Refresh GitHub Pages after publishing.
+
+CHANGED:
+NEW world/hexcoreTower.js
+NEW core/interiorNavigation.js (preserves Stage 1 file if already installed)
+UPDATED index.html
+UPDATED characters/player.js
+UPDATED world/adminInterior.js
+UNCHANGED all other existing files.
+
+TEST IN ORDER:
+- Verify HQ movement + camera + receptionist.
+- Exit to city and walk toward east-side bridge at approx X=100 Z=110.
+- Cross bridge to exterior island at X=224 Z=110.
+- Enter tower through west-facing doorway around X=197 Z=110.
+- In tower lobby, walk toward elevator (world position X=800 Z=772); press E or TAP.
+- Choose 01 Administration & Legal; walk through glowing doorway in its floor.
+- Use Admin NPC dialogue and walk back through its exit.
+- Return to lobby via elevator and exit tower.
+
+NOT YET ACTIVE: other floors, ticket backend, real employee authentication, MMORPG, browser arcade games. These must not be presented as functional.
+
+Safety: All data is static client-side. Never put real employee credentials into these files.

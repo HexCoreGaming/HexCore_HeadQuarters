@@ -293,6 +293,9 @@
             createAdminInterior
         } from "./world/adminInterior.js";
 
+        // SECTION 02G // HEXCORE TOWER SYSTEM
+        import { createHexcoreTower } from "./world/hexcoreTower.js";
+
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -362,6 +365,14 @@
             );
         }
 
+        // SECTION 04A-2 // SAFE TOWER INITIALIZATION
+        let animateHexcoreTower = () => {};
+        try {
+            animateHexcoreTower = createHexcoreTower(scene, renderer);
+        } catch(error) {
+            console.error("HEXCORE TOWER INITIALIZATION ERROR",error);
+        }
+
         const updateNPCs = createNPCs(scene);
 
         // SECTION 04B // CREATE CITYWIDE NPCS
@@ -397,6 +408,12 @@
             // SECTION 05F // UPDATE ADMINISTRATION INTERIOR
 
             animateAdminInterior();
+
+            // SECTION 05G // UPDATE HEXCORE TOWER
+            try { animateHexcoreTower(); } catch(error) {
+                console.error("HEXCORE TOWER UPDATE ERROR",error);
+                animateHexcoreTower = () => {};
+            }
 
             updateNPCs();
 

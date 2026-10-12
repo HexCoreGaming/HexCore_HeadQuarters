@@ -559,18 +559,17 @@ export function createPlayer(camera, renderer) {
 
         if (window.hexcoreInteriorActive === true) {
 
-            // Large Administration & Legal interior.
-
+            // SECTION 05D-1 // CONFIGURABLE ROOM BOUNDARIES
+            // Each interior supplies its own world-space rectangle.
+            const room = window.hexcoreInteriorBounds || {
+                minX: 500 - 37.3, maxX: 500 + 37.3,
+                minZ: 500 - 34.3, maxZ: 500 + 34.3
+            };
             player.position.x = THREE.MathUtils.clamp(
-                player.position.x,
-                500 - 37.3,
-                500 + 37.3
+                player.position.x, room.minX, room.maxX
             );
-
             player.position.z = THREE.MathUtils.clamp(
-                player.position.z,
-                500 - 34.3,
-                500 + 34.3
+                player.position.z, room.minZ, room.maxZ
             );
 
         } else {
@@ -590,17 +589,16 @@ export function createPlayer(camera, renderer) {
                 );
 
             } else {
-
+                // SECTION 05D-2 // OUTER ISLAND + BRIDGE ACCESS
+                // Preserve the current city limits to the west.
+                // The east bridge leads to HexCore Tower Island.
                 player.position.x = THREE.MathUtils.clamp(
-                    player.position.x,
-                    -98,
-                    98
+                    player.position.x, -98, cityAccessEnabled ? 285 : 98
                 );
             }
 
             player.position.z = THREE.MathUtils.clamp(
-                player.position.z,
-                -28,
+                player.position.z, -28,
                 cityAccessEnabled ? 245 : 28
             );
         }

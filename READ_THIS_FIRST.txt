@@ -1,0 +1,14 @@
+HEXCORE TOWER - SAFE PATCH ONLY
+
+This ZIP contains ONLY the 5 added/modified code files. It does NOT delete or rename any existing files.
+
+INSTRUCTIONS:
+1. In GitHub Desktop, you currently have 2 uncommitted additions: INSTALLATION_GUIDE.txt and world/hexcoreTower.js. KEEP THEM.
+2. Extract this ZIP to a new temporary folder, NOT directly inside your GitHub repository.
+3. Open the extracted folder. You should see index.html and folders named characters, core, world.
+4. Select ONLY index.html, characters, core, world (do not need to copy this guide). Copy them.
+5. In GitHub Desktop click Repository > Show in Explorer and paste into the ROOT HexCore_HeadQuarters folder, next to index.html. Choose REPLACE for matching files and MERGE for matching folders; DO NOT delete any folders.
+6. GitHub Desktop should show modifications of index.html, characters/player.js, world/adminInterior.js, core/interiorNavigation.js (if changed), plus the new tower and existing guide. NO YELLOW D deletions.
+7. Screenshot the changes list before commit.
+
+This is based on the October 12 project snapshot provided, not on newer repository changes. If you updated any of these files after that, do not overwrite without checking.

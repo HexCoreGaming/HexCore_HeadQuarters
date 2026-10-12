@@ -13,7 +13,7 @@ export function* createAssetWorld(scene){
   loader.load('./assets/models/'+job.file, gltf=>{outcome=gltf;},undefined,e=>{error=e;});
   const timeout=performance.now()+25000;
   while(!outcome&&!error&&performance.now()<timeout)yield;
-  if(!outcome){console.error('Failed to load HexCore GLB',job.file,error||'timeout');throw Error('3D model could not load: '+job.file);}
+  if(!outcome){console.error('Failed to load HexCore GLB',job.file,error||'timeout');if(job.kind==='tower'){const old=scene.getObjectByName('02_HEXCORE_TOWER_CENTER_OF_WORLD');if(old)old.visible=true;}continue;}
   const object=outcome.scene;object.name='MODEL_'+job.file;object.position.set(job.x,0,job.z);
   object.traverse(node=>{if(node.isMesh){node.frustumCulled=true;node.castShadow=false;node.receiveShadow=false;}});
   root.add(object);

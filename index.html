@@ -378,6 +378,7 @@
         import { createRemadeWorldProgressive } from "./world/remadeWorld.js";
         import { createModeledForest } from "./world/modeledForest.js";
         import { createSanctuaryModels } from "./world/sanctuaryModels.js";
+        import { createLivingTerrainModels } from "./world/livingTerrainModels.js";
         import { createInteriorFinishes } from "./world/interiorFinishes.js";
 
         import { installVisitorDirectory } from './ui/visitorDirectory.js';
@@ -443,13 +444,14 @@
         // Exactly five seconds after the first drawn frame, begin nearby world
         // construction. Each world stage advances only once per animation frame.
         const systems = new Map();
-        const bootState = {ready:0,total:11,phase:'HEADQUARTERS + NPCS READY',startedAt:0};
+        const bootState = {ready:0,total:12,phase:'HEADQUARTERS + NPCS READY',startedAt:0};
         window.hexcoreBootState = bootState;
         const bootJobs = [
             ['Original digital-world foundation', () => () => {}],
             ['Rebuilt digital world and landmarks', () => createRemadeWorldProgressive(scene, camera)],
             ['Bioluminescent 3D forest models', () => createModeledForest(scene)],
             ['Sculpted elven sanctuary models', () => createSanctuaryModels(scene)],
+            ['Elven bioluminescent terrain models', () => createLivingTerrainModels(scene)],
             ['Tower exterior and lobby', () => createHexcoreTower(scene, renderer)],
             ['Public city and exhibits', () => createPublicCity(scene)],
             ['Tower departments', () => createTowerDepartments(scene)],

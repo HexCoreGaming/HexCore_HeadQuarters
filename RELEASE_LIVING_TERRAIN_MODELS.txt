@@ -1,0 +1,10 @@
+HEXCORE CITY / MODELED LIVING TERRAIN
+Based on the cumulative Sculpted Sanctuaries & Model Load Fix build.
+- Eight new GLB landscape ecosystems with sculpted alien terrain, elven canopies,
+  bioluminescent flowers, mushrooms and layered cliff faces.
+- Models are arranged away from corridor and destination entrances.
+- Loading happens during the current welcome-screen initialization.
+- Fixed a reference to a retired undefined world-update function.
+- If a tower GLB fails, restore the procedural fallback tower rather than hiding it.
+- No new website destinations or company policy claims were added.
+Validation: JS syntax, imports, package and GLB parse. Runtime browser rendering is not verified.

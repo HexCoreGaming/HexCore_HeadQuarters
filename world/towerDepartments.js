@@ -97,7 +97,8 @@ export function createTowerDepartments(scene) {
     for(const a of [-1,1]){box(staff,.48,2.5,.55,a*.48,1.1,0,silver);box(staff,.45,2.7,.65,a*1.32,3.1,0,skin);}
     const head=new THREE.Mesh(new THREE.SphereGeometry(.85,12,10),skin);head.position.y=5.4;staff.add(head);
     board(g,'E / INTERACT WITH REPRESENTATIVE',0,9,-15,35,2.4);
-    g.add(new THREE.HemisphereLight(0xb9c8ff,0x18152a,1.6));let light=new THREE.PointLight(d.color,18,95);light.position.set(0,13,0);g.add(light);
+    // No expensive local point lights in an offscreen department.
+    g.add(new THREE.AmbientLight(0xb9c8ff,.34));
   }
   let active=null,player={x:0,z:0},open=false,near=false;
   const overlay=document.createElement('div');overlay.id='hexcore-department-panel';Object.assign(overlay.style,{display:'none',position:'fixed',inset:'0',zIndex:410,background:'rgba(4,7,17,.88)',alignItems:'center',justifyContent:'center',padding:'18px',fontFamily:'Consolas,monospace',color:'#e8eaff'});

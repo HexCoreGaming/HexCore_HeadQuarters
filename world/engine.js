@@ -24,12 +24,13 @@ camera.position.set(0, 2, 8);
 // SECTION 03 // CREATE RENDERER
 
 export const renderer = new THREE.WebGLRenderer({
-    antialias: true
+    antialias: true,
+    powerPreference: "high-performance"
 });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
+    Math.min(window.devicePixelRatio, 1.4)
 );
 
 document.body.appendChild(renderer.domElement);

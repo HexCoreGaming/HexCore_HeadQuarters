@@ -40,6 +40,9 @@ export function createPublicCity(scene) {
   // ZIP 1 REMAKE: former procedural building facades removed completely.
   // Standalone remadeWorld renders the new pedestrian city and all sixteen external buildings.
   // Information, instanced interiors and dialogue systems below remain unchanged.
+  // Same four-column street map as remadeWorld: doors must match visible buildings.
+  const anchorX=[-111,-37,37,111], anchorZ=[-114,-38,38,114];
+  const colMats=Object.fromEntries(Object.entries(themes).map(([key,color])=>[key,getGlow(color,.48)]));
   for(const [i,site] of sites.entries()){
     site.x=HUB.x+anchorX[i%4]; site.z=HUB.z+anchorZ[Math.floor(i/4)];
     site.interior={x:3500+i*145,z:3500};
@@ -74,7 +77,8 @@ export function createPublicCity(scene) {
     else for(let k=-2;k<=2;k++){cube(g,k*13,6,-34,9,8,.7,glass);cube(g,k*13,6,-33.55,6,.5,.1,glow);}
     for(let x of [-22,22]){cube(g,x,1.3,-4,12,2,5,dark);cube(g,x,3,-3,10,.15,.4,glow);}
     sign(g,'VISITOR INFORMATION',0,3,-10,19,2.3,hex);
-    g.add(new THREE.HemisphereLight(0xa4bfff,0x151123,1));let l=new THREE.PointLight(cc,13,78);l.position.set(0,15,-7);g.add(l);
+    // Existing world illumination reaches these rooms; no additional shadow-casting point lights per room.
+    const light=new THREE.AmbientLight(0xadbfff,.34);g.add(light);
   }
   // PUBLIC DISTRICT // physically connected to the existing city, NOT inside HexCore Tower.
   // Westward boulevard reaches the eastern shore of the original tower island.

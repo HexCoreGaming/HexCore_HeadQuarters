@@ -298,6 +298,7 @@
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
         import { createPublicCity } from "./world/publicCity.js";
         import { createRemadeWorld } from "./world/remadeWorld.js";
+        import { createInteriorFinishes } from "./world/interiorFinishes.js";
 
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
@@ -361,68 +362,62 @@
             );
         }
 
-        // SECTION 04A-2 // SAFE TOWER INITIALIZATION
-        let animateHexcoreTower = () => {};
-        try {
-            animateHexcoreTower = createHexcoreTower(scene, renderer);
-        } catch(error) {
-            console.error("HEXCORE TOWER INITIALIZATION ERROR",error);
+        // ZIP 02 // Nonblocking entry. The original implementation created every
+        // building and all the offscreen interiors before the first rendered frame.
+        // Stagger the one-time construction and let the browser draw between jobs.
+        const systems = new Map();
+        const bootJobs = [
+            ["Tower", () => createHexcoreTower(scene, renderer)],
+            ["World", () => createRemadeWorld(scene, camera)],
+            ["City exhibits", () => createPublicCity(scene)],
+            ["Interior finishes", () => createInteriorFinishes(scene)],
+            ["Tower departments", () => createTowerDepartments(scene)],
+            ["Visitor experiences", () => createVisitorExperiences(scene)],
+            ["Tower art", () => createTowerArtDirection(scene)],
+            ["City visitors", () => createCityNPCs(scene)],
+        ];
+        // Start AFTER the first visible frame. No forced loading overlay.
+        let nextJobTime = 0;
+        let bootStarted = false;
+        let lastFrame = performance.now();
+        const bootState = { ready: 0, total: bootJobs.length };
+        window.hexcoreBootState = bootState;
+        function runBootJob(now) {
+            if (!bootStarted || !bootJobs.length || now < nextJobTime) return;
+            const [name, build] = bootJobs.shift();
+            try {
+                const update = build();
+                if (typeof update === "function") systems.set(name, update);
+                bootState.ready++;
+            } catch (error) {
+                console.error("HEXCORE STARTUP // " + name, error);
+                // Crucial: one optional system cannot prevent all other systems from loading.
+            }
+            nextJobTime = performance.now() + 140;
         }
-
-        const animateTowerDepartments = createTowerDepartments(scene);
-        const animateVisitorExperiences = createVisitorExperiences(scene);
-        const animateTowerArtDirection = createTowerArtDirection(scene);
-        const animatePublicCity = createPublicCity(scene);
-        const animateRemadeWorld = createRemadeWorld(scene, camera);
         const updateNPCs = createNPCs(scene);
-
-        // SECTION 04B // CREATE CITYWIDE NPCS
-
-        const updateCityNPCs =
-            createCityNPCs(scene);
 
         // ==========================================
         // SECTION 05 // START GAME LOOP
         // ==========================================
 
         renderer.setAnimationLoop(() => {
-
+            const now = performance.now();
             updatePlayer();
-
             animateHeadquarters();
-
-            // Animate floating city systems
             animateCityFoundation();
-
-            // SECTION 05B // ANIMATE CITY BUILDINGS
-
-            // SECTION 05C // ANIMATE SOCIAL PLAZA
-
-            // SECTION 05D // ANIMATE PLAZA ENTERTAINMENT
-
-            // SECTION 05F // UPDATE ADMINISTRATION INTERIOR
-
             animateAdminInterior();
-
-            // SECTION 05G // UPDATE HEXCORE TOWER
-            try { animateHexcoreTower(); } catch(error) {
-                console.error("HEXCORE TOWER UPDATE ERROR",error);
-                animateHexcoreTower = () => {};
-            }
-
-            animateTowerDepartments();
-            animateVisitorExperiences();
-            animateTowerArtDirection();
-            animatePublicCity();
-            animateRemadeWorld();
             updateNPCs();
-
-            // SECTION 05E // ANIMATE CITYWIDE NPCS
-
-            updateCityNPCs();
-
+            for (const [name, update] of systems) {
+                try { update(); }
+                catch (error) { console.error("HEXCORE UPDATE // " + name, error); systems.delete(name); }
+            }
             renderer.render(scene, camera);
-
+            if (!bootStarted) {
+                bootStarted = true;
+                nextJobTime = now + 180;
+            } else runBootJob(now);
+            lastFrame = now;
         });
 
     </script>

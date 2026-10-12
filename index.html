@@ -376,8 +376,8 @@
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
         import { createPublicCity } from "./world/publicCity.js";
         import { createRemadeWorldProgressive } from "./world/remadeWorld.js";
-        import { createAssetWorld } from "./world/assetWorld.js";
         import { createModeledForest } from "./world/modeledForest.js";
+        import { createSanctuaryModels } from "./world/sanctuaryModels.js";
         import { createInteriorFinishes } from "./world/interiorFinishes.js";
 
         import { installVisitorDirectory } from './ui/visitorDirectory.js';
@@ -448,8 +448,8 @@
         const bootJobs = [
             ['Original digital-world foundation', () => () => {}],
             ['Rebuilt digital world and landmarks', () => createRemadeWorldProgressive(scene, camera)],
-            ['3D landmark model assets', () => createAssetWorld(scene)],
             ['Bioluminescent 3D forest models', () => createModeledForest(scene)],
+            ['Sculpted elven sanctuary models', () => createSanctuaryModels(scene)],
             ['Tower exterior and lobby', () => createHexcoreTower(scene, renderer)],
             ['Public city and exhibits', () => createPublicCity(scene)],
             ['Tower departments', () => createTowerDepartments(scene)],

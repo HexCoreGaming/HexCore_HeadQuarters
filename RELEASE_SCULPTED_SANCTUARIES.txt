@@ -1,0 +1,7 @@
+HEXCORE / CUMULATIVE MODEL PASS 3
+
+Fixed duplicate GLB landmark loading (prior version loaded models twice).
+Added eight standalone GLB elven sanctuary sculptures with curved material surfaces and luminous tracery.
+Model positions avoid destination doorway coordinates.
+World files remain cumulative; existing loading, NPCs and UI remain in place.
+Static syntax/import/ZIP checks performed; browser visual quality and FPS not yet verified.

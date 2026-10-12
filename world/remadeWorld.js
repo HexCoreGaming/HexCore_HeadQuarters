@@ -133,7 +133,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
  arch(T,0,-33,13,19,glows[1]);
  box(T,0,6,-33,15,12,1.4,body);
  sign(T,'ENTER THE TOWER',0,13.5,-34,24,3,'#82edff');
- // Modelled tower from assetWorld replaces this legacy procedural shell.
+ // Modelled tower from the single world asset loader replaces this legacy shell.
  T.visible=false;
  yield;
  // Create site forecourts and paths in user-facing order. All 16 site coordinates are authoritative.

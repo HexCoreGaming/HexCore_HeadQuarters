@@ -1,0 +1,7 @@
+CHARACTER SELECTION UPDATE
+
+Welcome -> Thank you for visiting HexCore Gaming -> visually choose female/male elven cyber avatar and input display name -> Hope u have a good time -> Enter HexCore City button.
+
+World construction continues while the visitor is selecting a character. Enter button appears only after world initialization and valid selection. The selection is used as a session visitor profile via window.hexcoreVisitorProfile; it is not a saved online account and the game remains first-person.
+
+This package does not claim a full in-world third-person player model: character artwork is for selection and visitor identity only.

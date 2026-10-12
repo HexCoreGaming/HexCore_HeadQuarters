@@ -231,6 +231,24 @@
 #hexcore-welcome-loading .step{color:#b2a9d7;margin-top:16px;min-height:20px;font-size:12px}
 #hexcore-welcome-loading .errors{display:none;margin-top:16px;color:#ffbdcd;font-size:12px;line-height:1.6}
 #hexcore-welcome-loading .continue{display:none;margin:20px auto 0;min-height:44px;padding:10px 20px;background:#271849;border:1px solid #a978ff;color:#e5f5ff;font:inherit;cursor:pointer}
+
+/* CHARACTER GATE: remains on-screen while background 3D initialization proceeds. */
+#hexcore-character-gate{display:none;margin:18px auto 0;max-width:570px}
+#hexcore-welcome-loading .inner{width:min(650px,94vw)}
+#hexcore-character-gate .avatar-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+#hexcore-character-gate .avatar-choice{display:block;border:1px solid #65518b;background:linear-gradient(145deg,#141326,#090f20);border-radius:12px;padding:9px 8px;color:#edf2ff;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s;touch-action:manipulation}
+#hexcore-character-gate .avatar-choice[aria-pressed="true"]{border-color:#8ce6ff;box-shadow:0 0 0 2px #5edfff55,0 0 23px #9b58ff55;transform:translateY(-2px)}
+#hexcore-character-gate .avatar-choice:focus-visible,#hexcore-welcome-continue:focus-visible{outline:3px solid #8ce6ff;outline-offset:3px}
+#hexcore-character-gate svg{display:block;width:100%;height:clamp(160px,28vh,245px);border-radius:8px;background:radial-gradient(ellipse at 50% 28%,#33214e,#080d1b 75%)}
+#hexcore-character-gate .choice-label{display:block;margin:8px 0 2px;font-weight:700;font-size:14px;letter-spacing:2px}
+#hexcore-character-gate .choice-detail{display:block;color:#a3ddea;font-size:10px;line-height:1.6}
+#hexcore-character-gate label{display:block;color:#a9def9;letter-spacing:1px;text-align:left;margin-top:16px;font-size:12px}
+#hexcore-display-name{display:block;width:100%;margin-top:8px;min-height:44px;border:1px solid #8468bc;border-radius:8px;background:#090d1d;color:white;padding:12px 14px;font:15px Consolas,monospace;touch-action:auto}
+#hexcore-display-name:focus{outline:2px solid #80ddff}
+#hexcore-character-help{min-height:18px;font-size:12px;color:#c5baf1;margin:9px 0 0}
+#hexcore-welcome-continue:disabled{opacity:.46;cursor:not-allowed}
+#hexcore-welcome-loading .continue{display:none;border-radius:8px;font-weight:bold;letter-spacing:1px}
+@media(max-height:690px){#hexcore-character-gate svg{height:160px}#hexcore-welcome-loading .inner{max-height:96dvh;overflow:auto;padding:10px 0}}
 </style>
 </head>
 <body>
@@ -240,6 +258,37 @@
   <div class="sub">HEXCORE CITY // PREPARING YOUR WORLD</div>
   <div class="track"><div class="bar" id="hexcore-welcome-progress"></div></div>
   <div class="step" id="hexcore-welcome-step">Initializing headquarters...</div>
+  <div id="hexcore-character-gate" aria-label="Choose your character">
+   <div class="avatar-options" role="group" aria-label="Character gender selection">
+    <button type="button" class="avatar-choice" data-gender="female" aria-pressed="false">
+     <svg viewBox="0 0 180 225" role="img" aria-label="Female elven cyber explorer with pointed ears, glowing violet armor and flowing dark hair" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="farmor" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#26274d"/><stop offset="1" stop-color="#090d22"/></linearGradient><linearGradient id="fskin" x1="0" x2="1"><stop stop-color="#edbaae"/><stop offset="1" stop-color="#b97a8f"/></linearGradient></defs>
+      <path d="M0 186Q50 170 90 190T180 176V225H0Z" fill="#162841"/><path d="M20 225Q25 164 66 155L91 163 113 153Q160 167 164 225" fill="url(#farmor)" stroke="#a86bff" stroke-width="2"/>
+      <path d="M52 153Q32 111 48 56Q58 18 90 22Q133 16 139 70L137 167 119 159 112 65 70 67 66 159Z" fill="#121224" stroke="#ab68ff" stroke-width="1.5"/>
+      <path d="M72 124L72 159 90 182 110 157 109 124" fill="url(#fskin)"/><path d="M65 70Q57 90 63 121Q76 145 90 148Q109 142 120 120L120 73Q99 61 91 42Q83 65 65 70Z" fill="url(#fskin)"/>
+      <path d="M64 91L42 78 49 105 65 108M119 91L140 77 134 106 117 109" fill="url(#fskin)" stroke="#e1a9cf" stroke-width="2"/>
+      <path d="M72 95L84 96M98 96L111 94" stroke="#71efff" stroke-width="3" stroke-linecap="round"/><path d="M90 99V119" stroke="#b47f99" stroke-width="2"/><path d="M83 130Q90 134 99 129" stroke="#8b456f" stroke-width="2" fill="none"/>
+      <path d="M65 62Q82 35 93 39Q108 58 121 60L128 44Q109 17 84 25Q54 30 52 70" fill="#141123"/>
+      <path d="M64 162L90 188 113 160 121 169 91 203 57 172Z" fill="#3e285e" stroke="#8ef1ff" stroke-width="2"/><path d="M32 204L68 186M147 202L111 184" stroke="#a56fff" stroke-width="3"/><path d="M90 184L90 224" stroke="#69e9ff" stroke-width="2"/><circle cx="90" cy="194" r="4" fill="#c77dff"/>
+     </svg><span class="choice-label">FEMALE</span><span class="choice-detail">Elven cyber explorer</span>
+    </button>
+    <button type="button" class="avatar-choice" data-gender="male" aria-pressed="false">
+     <svg viewBox="0 0 180 225" role="img" aria-label="Male elven cyber explorer with pointed ears, cyan armor and glowing circuit markings" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="marmor" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#1b4152"/><stop offset="1" stop-color="#0b1323"/></linearGradient><linearGradient id="mskin" x1="0" x2="1"><stop stop-color="#bb9e88"/><stop offset="1" stop-color="#755a65"/></linearGradient></defs>
+      <path d="M0 190Q50 173 90 186T180 179V225H0Z" fill="#193044"/><path d="M10 225Q15 166 64 155L90 171 120 155Q165 165 173 225" fill="url(#marmor)" stroke="#6eefff" stroke-width="2"/>
+      <path d="M69 124L68 156 90 180 112 156 110 122" fill="url(#mskin)"/><path d="M57 72Q60 41 90 39Q123 40 126 78L121 117 108 142 90 148 72 141 60 116Z" fill="url(#mskin)"/>
+      <path d="M60 90L37 77 46 109 61 110M120 90L144 77 134 109 120 111" fill="url(#mskin)" stroke="#d7b6aa" stroke-width="2"/>
+      <path d="M55 81L54 59 63 35 84 24 109 28 129 48 128 74 117 61 98 57 90 45 83 57 61 66Z" fill="#101a29" stroke="#66deff" stroke-width="1.5"/>
+      <path d="M71 97L83 96M99 96L111 96" stroke="#8dffff" stroke-width="3" stroke-linecap="round"/><path d="M89 97L87 117M81 128Q90 134 101 128" stroke="#573d43" stroke-width="2" fill="none"/>
+      <path d="M112 80L119 90 115 107 124 112" stroke="#79ecff" stroke-width="2.5" fill="none"/><path d="M59 165L90 194 124 163 130 175 90 213 49 176Z" fill="#123649" stroke="#7eefff" stroke-width="2"/><path d="M24 201L66 182M159 199L117 183" stroke="#72e6ff" stroke-width="3"/><path d="M90 194V225" stroke="#a275ff" stroke-width="2"/><circle cx="90" cy="200" r="4" fill="#7ceaff"/>
+     </svg><span class="choice-label">MALE</span><span class="choice-detail">Elven cyber explorer</span>
+    </button>
+   </div>
+   <label for="hexcore-display-name">DISPLAY NAME
+    <input id="hexcore-display-name" type="text" maxlength="24" autocomplete="nickname" placeholder="Choose a name (2–24 characters)" spellcheck="false" />
+   </label>
+   <div id="hexcore-character-help" aria-live="polite">Choose a character and enter your display name.</div>
+  </div>
   <div class="errors" id="hexcore-welcome-errors"></div>
   <button type="button" class="continue" id="hexcore-welcome-continue">ENTER HEXCORE CITY</button>
  </div>
@@ -461,20 +510,47 @@
         const loadingStep=document.getElementById('hexcore-welcome-step');
         const loadingErrors=document.getElementById('hexcore-welcome-errors');
         const loadingContinue=document.getElementById('hexcore-welcome-continue');
+        const characterGate=document.getElementById('hexcore-character-gate');
+        const displayNameInput=document.getElementById('hexcore-display-name');
+        const characterHelp=document.getElementById('hexcore-character-help');
+        const characterChoices=[...document.querySelectorAll('.avatar-choice')];
+        let selectedGender=null;
         let loadingDismissed=false;
-        let loadedAt=0;
-        let loadingMessagePhase=0;
-        // Show both visitor messages AFTER all world build stages, giving the
-        // browser additional rendering frames before gameplay unlocks.
-        const visitorMessages=[
-            'Thank you for visiting HexCore Gaming',
-            'Hope u have a good time'
-        ];
-        const visitorMessageDuration=2300;
-        let lastMessagePhase=-1;
+        let loadingBeganAt=performance.now();
+        let phase='welcome';
+        let phaseBeganAt=loadingBeganAt;
+        let savedProfile=null;
         const failedJobs=[];
+        function validName(){
+            return displayNameInput.value.trim().length>=2 && displayNameInput.value.trim().length<=24;
+        }
+        function characterReady(){return Boolean(selectedGender && validName());}
+        function changePhase(value,now){
+            phase=value;phaseBeganAt=now;
+            if(value==='thanks')loadingHeading.textContent='Thank you for visiting HexCore Gaming';
+            if(value==='select'){
+                loadingHeading.textContent='Choose your character';
+                characterGate.style.display='block';
+            }
+            if(value==='goodtime'){
+                characterGate.style.display='none';
+                loadingHeading.textContent='Hope u have a good time';
+            }
+            if(value==='enter'){
+                loadingContinue.style.display='block';
+                loadingContinue.disabled=false;
+                loadingHeading.textContent='Your adventure awaits';
+                loadingStep.textContent='World ready  //  100%';
+            }
+        }
+        characterChoices.forEach(choice=>choice.addEventListener('click',()=>{
+            selectedGender=choice.dataset.gender;
+            characterChoices.forEach(item=>item.setAttribute('aria-pressed',String(item===choice)));
+        }));
         function dismissWelcome(){
-            if(loadingDismissed)return;
+            if(loadingDismissed || phase!=='enter' || bootState.ready<bootState.total || !characterReady())return;
+            savedProfile={gender:selectedGender,displayName:displayNameInput.value.trim()};
+            window.hexcoreVisitorProfile=Object.freeze({...savedProfile});
             loadingDismissed=true;
             loadingScreen.classList.add('done');
             loadingScreen.setAttribute('aria-hidden','true');
@@ -485,32 +561,23 @@
             if(loadingDismissed)return;
             const value=Math.round(100*Math.min(1,bootState.ready/bootState.total));
             loadingBar.style.width=value+'%';
-            loadingStep.textContent=bootState.ready<bootState.total
-                ? 'Preparing '+bootState.phase+'  //  '+value+'%'
-                : 'World ready  //  100%';
-            if(bootState.ready>=bootState.total){
-                if(!loadedAt)loadedAt=now;
-                if(failedJobs.length){
-                    loadingErrors.style.display='block';
-                    loadingErrors.textContent=failedJobs.length+' system(s) failed to initialize: '+failedJobs.join(', ')+'. Open developer console for details.';
-                    loadingContinue.style.display='block';
-                    return;
-                }
-                // Message 1 appears immediately after loading, message 2 follows.
-                // Keep the player stationary while these messages are presented.
-                loadingMessagePhase=Math.min(2,Math.floor((now-loadedAt)/visitorMessageDuration));
-                if(loadingMessagePhase<2){
-                    if(loadingMessagePhase!==lastMessagePhase){
-                        lastMessagePhase=loadingMessagePhase;
-                        loadingHeading.classList.add('changing');
-                        loadingHeading.textContent=visitorMessages[loadingMessagePhase];
-                        requestAnimationFrame(()=>loadingHeading.classList.remove('changing'));
-                    }
-                    loadingStep.textContent='World ready  //  100%';
-                }else{
-                    dismissWelcome();
-                }
+            const worldReady=bootState.ready>=bootState.total;
+            const progressText=worldReady?'World ready  //  100%':'Preparing '+bootState.phase+'  //  '+value+'%';
+            if(phase!=='enter')loadingStep.textContent=progressText;
+            if(failedJobs.length){
+                loadingErrors.style.display='block';
+                loadingErrors.textContent=failedJobs.length+' system(s) failed to initialize: '+failedJobs.join(', ')+'. See console for details.';
             }
+            // Introduce selection EARLY: construction continues while visitor decides.
+            if(phase==='welcome' && now-phaseBeganAt>=1300)changePhase('thanks',now);
+            else if(phase==='thanks' && now-phaseBeganAt>=1700)changePhase('select',now);
+            else if(phase==='select'){
+                if(!selectedGender)characterHelp.textContent='Choose a female or male character.';
+                else if(!validName())characterHelp.textContent='Enter a display name with 2–24 characters.';
+                else if(!worldReady)characterHelp.textContent='Character ready. Finishing your world in the background…';
+                else characterHelp.textContent='Your character and world are ready.';
+                if(characterReady() && worldReady && !failedJobs.length)changePhase('goodtime',now);
+            }else if(phase==='goodtime' && now-phaseBeganAt>=1900)changePhase('enter',now);
         }
         // Hub plus its NPCs are constructed before player spawn; world waits five seconds.
         // Avoid running the entire 3D simulation in an inactive browser tab.

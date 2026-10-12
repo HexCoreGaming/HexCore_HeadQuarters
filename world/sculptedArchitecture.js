@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // STRUCTURAL ART PASS: original elven architecture with a later electric retrofit.
 // Shared geometry / instanced assemblies; no external downloads or per-object lights.
@@ -90,7 +90,7 @@ export function* createSculptedArchitecture(scene) {
     }
   }
   yield;
-  for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+  for(const i of HEXCORE_EXTERIOR_SITES){
     pavilion(HEXCORE_WORLD.sites[i],i);
     yield;
   }

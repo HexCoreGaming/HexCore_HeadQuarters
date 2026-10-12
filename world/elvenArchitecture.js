@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // Architectural pass: the elven-built shell and living landscape precede the
 // smaller human-installed electric details. Keeps door approaches at z + 29 open.
@@ -76,7 +76,7 @@ export function* createElvenArchitecture(scene) {
 
   // Individual sanctuaries express a grown elven structure with humans adding
   // energy rails and holograms later. Preserve canonical doorways.
-  for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+  for(const i of HEXCORE_EXTERIOR_SITES){
     const {x,z}=HEXCORE_WORLD.sites[i];
     const g=new THREE.Group();g.name=`ELVEN_DESTINATION_${String(i+1).padStart(2,'0')}`;
     g.position.set(x,0,z);root.add(g);

@@ -1,6 +1,6 @@
 import { createSculptedShells } from './sculptedShells.js';
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 import { createVisualAtmosphere } from './visualAtmosphere.js';
 import { createDigitalLandmarks } from './digitalLandmarks.js';
 import { createShowcaseIdentity } from './showcaseIdentity.js';
@@ -158,7 +158,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
   else if(index===13){for(let j=0;j<4;j++)arch(g,x+(j-1.5)*9,z-7,4,18,glows[1]);}
   // Entrance sign is visually close; all original site interaction/room teleports still map exactly.
  }
- for(let i=0;i<labels.length;i++){buildSanctuary(i);yield;}
+ for(const i of HEXCORE_EXTERIOR_SITES){buildSanctuary(i);yield;}
  // Outer rim is a collection of elegant digital monoliths and raised waveforms,
  // not boxy, office-style skyscrapers. Kept beyond visitor attractions.
  const far=new THREE.Group();far.name='OUTER_DIGITAL_HORIZON';root.add(far);

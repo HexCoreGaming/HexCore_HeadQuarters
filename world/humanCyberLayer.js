@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // Human cultural/technical installations. The older elven architecture and
 // living environment remain structurally independent of these additions.
@@ -48,7 +48,7 @@ export function* createHumanCyberLayer(scene) {
  // The installations are smaller than the natural architectural monuments.
  // They deliberately stand beside forecourts, not across doors at z+29.
  const labels=['ARENA LIVE','EXPEDITION','OPEN ROAD','STORY WORLDS','DISCOVER','NEW WORLDS','ADMIN','SUPPORT','COMMUNITY','PARTNERS','DEVELOPMENT','HARDWARE','MERCH','MUSEUM','ARCADE','RESIDENTIAL'];
- for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+ for(const i of HEXCORE_EXTERIOR_SITES){
   const {x,z}=HEXCORE_WORLD.sites[i];const g=new THREE.Group();g.name='HUMAN_SITE_INSTALLATION_'+i;g.position.set(x,0,z);root.add(g);
   const side=i%2?1:-1;
   mesh(g,geom.box,frame,side*38,7,2,9,12,.75);

@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // Original architectural identities for the major visitor destinations.
 // Relative sculpture coordinates leave (site.x, site.z + 29) unobstructed.
@@ -29,7 +29,7 @@ export function* createShowcaseIdentity(scene) {
   function arc(g,points,mat,r=.25){const crv=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));return add(g,new THREE.TubeGeometry(crv,32,r,6,false),mat,0,0,0);}
   function platform(g,x,z,accent){column(g,x,.42,z,10,.9,materials.shell);hoop(g,x,.94,z,9.4,accent,Math.PI/2);}
   const destinations = HEXCORE_WORLD.sites;
-  for(let i=0;i<destinations.length;i++) {
+  for(const i of HEXCORE_EXTERIOR_SITES) {
     const {x,z}=destinations[i];
     const g = new THREE.Group();g.name=`SITE_${String(i+1).padStart(2,'0')}_ART_IDENTITY`;g.position.set(x,0,z);root.add(g);
     const a=[materials.violet,materials.jade,materials.amber,materials.rose,materials.cyan][i%5];

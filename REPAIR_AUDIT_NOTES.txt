@@ -1,0 +1,20 @@
+HEXCORE CITY / UPLOADED SOURCE REPAIR 01
+
+This package is based on the ZIP the user supplied, not an earlier release.
+
+Audited findings:
+- The world consisted of layered procedural geometry (boxes, cylinders, cones, arches) rather than production 3D environmental assets.
+- Six corporate functions were wrongly given exterior showcase shells in addition to their tower-floor functions.
+- The player collision routine only inspected the legacy directory; it did not inspect the new showcase world layouts.
+- Startup visual progress is based on script stage completion, not GPU memory readiness.
+
+Corrections in this ZIP:
+- Corporate sites indexes 6–11 no longer generate exterior buildings / scenery installations. Departments remain in HexCore Tower.
+- Public directory describes corporate departments as located inside the tower.
+- Walkable showcase shells now use collision footprints, with open front-door interaction areas.
+- Kept the current world's existing materials, positions, interactions, character screen, and loading logic.
+
+Limitations:
+- This is a functional repair, NOT a claimed graphical remake. The existing visual art remains procedural and below target.
+- Collision approximates the extents of curved exteriors and needs actual browser playtesting.
+- No live in-browser performance or rendering verification performed.

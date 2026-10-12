@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // DIGITAL CIVILIZATION // landmark sculpture and terrain pass.
 // All geometry lives outside the doors, and uses shared geometry/materials.
@@ -45,7 +45,7 @@ export function* createDigitalLandmarks(scene) {
    }
  }
  // Faceted sanctuaries sit in the outer approaches, not across a visitor building's door.
- for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+ for(const i of HEXCORE_EXTERIOR_SITES){
    const site=HEXCORE_WORLD.sites[i],group=new THREE.Group();group.name='CIVIC_SCULPTURES_'+i;root.add(group);
    const dx=site.x, dz=site.z;
    // The public interaction position is (site.x,site.z+29); sculptures remain to each side.

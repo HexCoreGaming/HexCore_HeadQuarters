@@ -305,6 +305,19 @@ export function createPlayer(camera, renderer) {
             return true;
         }
 
+        // Public showrooms are physical exteriors with entrances on their +Z sides.
+        // Only the designated public locations are standalone buildings; the
+        // company departments are inside the tower and have no exterior shells.
+        const publicSites = window.hexcorePublicExteriorSites || [];
+        for (const site of publicSites) {
+            const dx = x - site.x;
+            const dz = z - site.z;
+            // Broad collision envelope follows the actual visible shell footprint.
+            const withinShell = (dx * dx) / (23 * 23) + (dz * dz) / (23 * 23) < 1;
+            // Visitor interaction is outside the front wall at local Z +29.
+            const doorway = Math.abs(dx) < 7.5 && dz > 18 && dz < 34;
+            if (withinShell && !doorway) return true;
+        }
         return false;
     }
 

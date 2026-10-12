@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // Visual pass for the original digital civilization. No replacement coordinates,
 // no interactive meshes, no per-frame texture creation, no shadow-casting lights.
@@ -75,7 +75,7 @@ export function* createVisualAtmosphere(scene) {
   yield;
   // Four distinct game destinations gain their own identifying architectural
   // silhouettes; public interaction zones at z+29 remain unobstructed.
-  for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+  for(const i of HEXCORE_EXTERIOR_SITES){
     const loc=HEXCORE_WORLD.sites[i],g=new THREE.Group();g.name=`DESTINATION_VISUAL_${i}`;root.add(g);
     const {x,z}=loc,c=palette[i%3];
     floorSeal(g,x,z,28,c);

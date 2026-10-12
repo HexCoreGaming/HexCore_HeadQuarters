@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 
 // HEXCORE // Original architectural shells. Geometry is generated once per silhouette
 // family and reused, then placed around the existing interaction anchors.
@@ -73,7 +73,7 @@ export function* createSculptedShells(scene) {
     }
   }
   // Single landmark per destination, distinct lofted structure instead of box facades.
-  for(let i=0;i<HEXCORE_WORLD.sites.length;i++){
+  for(const i of HEXCORE_EXTERIOR_SITES){
     const point=HEXCORE_WORLD.sites[i],g=new THREE.Group();g.position.set(point.x,0,point.z);
     g.name='SCULPTED_SITE_'+String(i+1).padStart(2,'0');root.add(g);
     const light=lights[i%lights.length];

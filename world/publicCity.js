@@ -1,5 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { HEXCORE_WORLD } from './worldLayout.js';
+import { HEXCORE_WORLD, HEXCORE_EXTERIOR_SITES } from './worldLayout.js';
 import { installDestinationGallery } from './destinationGalleries.js';
 
 // HEXCORE // PUBLIC WEBSITE CITY. All copy is informational; no fictitious live services.
@@ -109,11 +109,12 @@ export function createPublicCity(scene) {
   }
   function goLobby(){state.zone='other';state.site=null;if(typeof window.hexcoreTowerReturnToLobby==='function'){close();window.hexcoreTowerReturnToLobby();}else teleport(800,800+24,{minX:800-36,maxX:800+36,minZ:800-33,maxZ:800+33});}
   function goSite(site){if(!site.room)makeInterior(site,sites.indexOf(site));state.zone='site';state.site=site;let p=site.interior;teleport(p.x,p.z+26,{minX:p.x-39,maxX:p.x+39,minZ:p.z-34,maxZ:p.z+34});}
-  function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','The public game, commerce, and cultural destinations encircle HexCore Tower. Follow the luminous promenades and enter each attraction through its physical doorway. This directory provides information only.');
+  function showDirectory(){header('HEXCORE CITY // VISITOR DIRECTORY','Public attractions surround HexCore Tower. Corporate departments are inside the central tower, accessible by its elevator. This directory provides information only.');
     for(let s of sites){button(`${s.title}  //  ${s.tag}`,()=>showSiteInfo(s,true));}button('CLOSE DIRECTORY',close);
   }
   function showSiteInfo(site,fromDirectory=false){header(site.title,site.desc);element('p',site.subject+'  //  '+site.tag,'color:#a5ddfb');for(let f of site.facts)element('p','◆  '+f,'margin:9px 0;color:#e3dcff');
-    if(!fromDirectory && state.near && state.near.type==='building' && state.near.site===site)button('ENTER '+site.title,()=>goSite(site));
+    if(!fromDirectory && state.near && state.near.type==='building' && state.near.site===site && HEXCORE_EXTERIOR_SITES.includes(sites.indexOf(site)))button('ENTER '+site.title,()=>goSite(site));
+    if(!HEXCORE_EXTERIOR_SITES.includes(sites.indexOf(site)))element('p','This department is located inside HexCore Tower. Visit the central tower elevator for its floor.','color:#9de9ff');
     if(site.legacy)button('EXISTING ADMINISTRATION & LEGAL OFFICE',()=>{close();if(typeof window.hexcoreEnterAdminInterior==='function')window.hexcoreEnterAdminInterior();else{header('ADMINISTRATION','The original Administration entrance remains available in the city. This new district is an informational annex.');button('BACK',()=>showSiteInfo(site,fromDirectory));}});
     if(site.support)button('DRAFT A SUPPORT REQUEST',supportComposer);
     if(site.arcade)element('p','The arcade is its own destination in this city district.','color:#a5ddfb');
@@ -148,7 +149,7 @@ export function createPublicCity(scene) {
     if(inDistrict && state.zone!=='site')state.zone='district';
     if(!inDistrict && state.zone==='district')state.zone='other';
     if(state.zone==='district'){
-      for(let site of sites){const d=Math.hypot(x-site.x,z-(site.z+29));if(d<13){nearest={type:'building',site};label=`E / TAP // ENTER ${site.title}`;break;}}
+      for(const i of HEXCORE_EXTERIOR_SITES){const site=sites[i];const d=Math.hypot(x-site.x,z-(site.z+29));if(d<13){nearest={type:'building',site};label=`E / TAP // ENTER ${site.title}`;break;}}
     }else if(state.zone==='site'&&state.site){const s=state.site,p=s.interior;
       if(Math.hypot(x-p.x,z-(p.z-16))<14){nearest={type:'desk',site:s};label=`E / TAP // SPEAK TO ${s.staff.toUpperCase()}`;}
       else if(z>p.z+29&&Math.abs(x-p.x)<13){nearest='roomExit';label='E / TAP // EXIT BUILDING';}

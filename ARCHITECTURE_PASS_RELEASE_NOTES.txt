@@ -1,0 +1,2 @@
+NEXT BUILD: Elven architecture and integrated nature.
+Adds sculptural central tower supports, flowing destination sanctuary canopies, living floor flora, and organic exterior monuments. Preserves canonical layout and interaction coordinates. Does not include a server backend.

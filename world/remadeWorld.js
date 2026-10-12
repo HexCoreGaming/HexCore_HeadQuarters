@@ -4,6 +4,7 @@ import { createVisualAtmosphere } from './visualAtmosphere.js';
 import { createDigitalLandmarks } from './digitalLandmarks.js';
 import { createShowcaseIdentity } from './showcaseIdentity.js';
 import { createLivingWorld } from './livingWorld.js';
+import { createElvenArchitecture } from './elvenArchitecture.js';
 
 // HEXCORE CITY / ORIGINAL DIGITAL WORLD (not the old city-grid geometry).
 // Single coordinate contract: tower (0,300), headquarters (0,0), site doors site.z+29.
@@ -165,9 +166,10 @@ export function* createRemadeWorldProgressive(scene,camera) {
  }
  yield;
  yield* createLivingWorld(scene);
+ const updateArchitecture = yield* createElvenArchitecture(scene);
  yield* createVisualAtmosphere(scene);
  const updateLandmarks = yield* createDigitalLandmarks(scene);
  const updateShowcases = yield* createShowcaseIdentity(scene);
  // Static scene plus a limited number of gentle animated monumental rings.
- return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}if(typeof updateLandmarks==='function')updateLandmarks();if(typeof updateShowcases==='function')updateShowcases();};
+ return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}if(typeof updateArchitecture==='function')updateArchitecture();if(typeof updateLandmarks==='function')updateLandmarks();if(typeof updateShowcases==='function')updateShowcases();};
 }

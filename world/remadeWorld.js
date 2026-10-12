@@ -99,14 +99,23 @@ export function* createRemadeWorldProgressive(scene,camera) {
  // Tower is THE center. One coherent building, not layered conventional skyscrapers.
  const T=new THREE.Group();T.name='02_HEXCORE_TOWER_CENTER_OF_WORLD';T.position.set(0,0,300);root.add(T);
  circularPlate(T,0,0,48);
- const profile=[[0,40],[18,39],[50,32],[96,25],[160,18],[220,12],[277,6]];
- for(let i=0;i<profile.length-1;i++){
-   const [y,r]=profile[i],[topY,topR]=profile[i+1];
-   const shell=new THREE.Mesh(new THREE.CylinderGeometry(topR,r,topY-y,8,1,false),i%2?outer:body);
-   shell.position.y=(y+topY)/2;shell.rotation.y=Math.PI/8;T.add(shell);
-   const halo=torus(T,0,topY+.25,0,topR*1.04,.22,i%2?glows[0]:glows[1],-Math.PI/2);
-   animated.push([halo,.00032*(i%2?1:-1)]);
+ // A single continuous elven-built shell replaces the former stacked cylinder tower.
+ // Curvature and fluting are part of its physical profile, not decorative add-ons.
+ const levels=64, facets=48, vertices=[],uvs=[],faces=[];
+ const section=[[0,38],[12,42],[34,39],[62,32],[96,29],[136,23],[180,19],[221,13],[263,7],[291,2]];
+ function radiusAt(y){for(let k=0;k<section.length-1;k++){const a=section[k],b=section[k+1];if(y<=b[0]){const t=(y-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*(t*t*(3-2*t));}}return 2;}
+ for(let j=0;j<=levels;j++){const y=j/levels*291,r=radiusAt(y);
+  for(let k=0;k<=facets;k++){const a=k/facets*Math.PI*2;
+   const floral=1+.055*Math.cos(a*8)+.018*Math.sin(a*16+y*.029);
+   vertices.push(Math.sin(a)*r*floral,y,Math.cos(a)*r*floral);
+   uvs.push(k/facets,j/levels);
+  }
  }
+ for(let j=0;j<levels;j++)for(let k=0;k<facets;k++){let i=j*(facets+1)+k;faces.push(i,i+1,i+facets+1,i+1,i+facets+2,i+facets+1);}
+ const hullGeo=new THREE.BufferGeometry();hullGeo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));hullGeo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));hullGeo.setIndex(faces);hullGeo.computeVertexNormals();
+ const towerSkin=new THREE.Mesh(hullGeo,new THREE.MeshPhysicalMaterial({color:0x101b2b,metalness:.66,roughness:.24,clearcoat:.58,side:THREE.DoubleSide}));T.add(towerSkin);
+ // Sparse integrated light contours: no ring stack hiding the silhouette.
+ for(const y of [24,85,146,207,259]){const r=radiusAt(y);torus(T,0,y,0,r*1.035,.13,glows[y%2?0:1],-Math.PI/2);}
  // Eight tapering cathedral fins, a digital crown and curving luminous tracery.
  for(let i=0;i<8;i++){
    const a=i*Math.PI/4,r=33,x=Math.sin(a)*r,z=Math.cos(a)*r;
@@ -133,29 +142,10 @@ export function* createRemadeWorldProgressive(scene,camera) {
   const mid={x:x*.7,z:300+(z-300)*.7};
   ribbon(g,[[dirx*startR,300+dirz*startR],[mid.x,mid.z],[x,z+45],[x,z+29]],13);
   circularPlate(g,x,z,33);
-  // High-detail family of digital shrines, each visibly different from the others:
-  // chamfered/circular masses, floating annuli, tapered spires, translucent canopies.
-  const h=17+(index%4)*4;
-  const plinth=new THREE.Mesh(new THREE.CylinderGeometry(25,29,2,10),outer);plinth.position.set(x,1,z);g.add(plinth);
-  const core=new THREE.Mesh(new THREE.CylinderGeometry(17+(index%2)*2,23,h,6+index%3),index%2?body:glass);
-  core.position.set(x,h/2+2,z);core.rotation.y=index*.2;g.add(core);
-  for(let k=0;k<6;k++){
-    const a=k*Math.PI/3+index*.1,dx=Math.sin(a),dz=Math.cos(a);
-    petal(g,x+dx*21,z+dz*20,2.8,h+10,k%2?mat:accentMetal,a);
-  }
-  // Open-air arched entrance centered on existing interaction location z+29.
-  arch(g,x,z+24,9,16,mat);
-  box(g,x,5,z+21,14,10,1.1,body);
-  sign(g,labels[index],x,h+16,z+23,Math.max(29,labels[index].length*.9),4.3,'#9feaff');
-  const floating=torus(g,x,h+9,z,23,.22,mat,Math.PI/2,.16);animated.push([floating,.00028*(index%2?1:-1)]);
-  torus(g,x,h+3,z,20,.17,glows[(index+1)%6],-Math.PI/2);
-  // Landmark-specific sculptures, not repeating office towers.
-  if(index===0){for(let j=0;j<3;j++)torus(g,x,h+19+j*3,z,9+j*4,.2,glows[j%3],.4+j*.3);}
-  else if(index===1){for(let j=0;j<9;j++){let a=j*2*Math.PI/9;petal(g,x+Math.sin(a)*26,z+Math.cos(a)*26,2.7,14,glows[4],a);}}
-  else if(index===2){for(let j=0;j<4;j++)torus(g,x+(j-1.5)*8,5,z+27,3,.25,glows[1],0);}
-  else if(index===3){for(let j=-1;j<=1;j++)petal(g,x+j*11,z-14,5,36,outer,j*.3);}
-  else if(index===14){for(let j=0;j<5;j++)torus(g,x,h+20+j*3,z,5+j*2,.13,glows[(j+1)%6],.3+j*.2);}
-  else if(index===13){for(let j=0;j<4;j++)arch(g,x+(j-1.5)*9,z-7,4,18,glows[1]);}
+  // The building facade is authored by sculptedShells, not a second
+  // intersecting collection of blocky landmark geometry.
+  // Keep forecourt and readable destination sign as independent navigation elements.
+  sign(g,labels[index],x,34,z+23,Math.max(27,labels[index].length*.9),3.5,'#9feaff');
   // Entrance sign is visually close; all original site interaction/room teleports still map exactly.
  }
  for(const i of HEXCORE_EXTERIOR_SITES){buildSanctuary(i);yield;}
@@ -170,12 +160,12 @@ export function* createRemadeWorldProgressive(scene,camera) {
  }
  yield;
  yield* createLivingWorld(scene);
- const updateArchitecture = yield* createElvenArchitecture(scene);
+ const updateArchitecture = null; // retired overlapping old ornamental arches
  yield* createVisualAtmosphere(scene);
- const updateLandmarks = yield* createDigitalLandmarks(scene);
- const updateShowcases = yield* createShowcaseIdentity(scene);
+ const updateLandmarks = null; // old duplicate landmark outlines retired
+ const updateShowcases = null; // old duplicate facade sculptures retired
  const updateCyber = yield* createHumanCyberLayer(scene);
- const updateSculpted = yield* createSculptedArchitecture(scene);
+ const updateSculpted = null; // old extra scaffold retired
  const updateSanctuaries = yield* createBioluminescentSanctuaries(scene);
  const updateShells = yield* createSculptedShells(scene);
  // Static scene plus a limited number of gentle animated monumental rings.

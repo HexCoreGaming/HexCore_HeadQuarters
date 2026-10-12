@@ -1,9 +1,10 @@
-HexCore City - Destination Identity Graphics Pass
+HEXCORE NEXT ZIP — EXTERIOR GEOMETRY REPLACEMENT
 
-Complete cumulative website package.
+Changed existing render path, not another additive ornament layer:
+- Tower replaces stacked primitive cylinder tiers with one lofted continuous faceted/fluted surface.
+- Removes duplicate geometric public pavilions from remadeWorld; retains usable pathways, forecourts, signs, and existing interactive doorway coordinates.
+- Existing sculptedShells module owns building exterior shells.
+- Stops instantiating old overlapping decorative geometry passes: elvenArchitecture, digitalLandmarks, showcaseIdentity and sculptedArchitecture.
+- Keeps human cyber layer, living world, bioluminescent sanctuaries, and interaction systems.
 
-Added showcaseIdentity.js: individually staged, original architectural sculptures themed for Cyber_Arena, Where Light Dies, Untamed Horizon, The Forgotten Ashes, the Academy, museum, arcade, hardware, and other public destinations.
-
-Central tower, lobby, all 16 destination coordinates and visitor interactions remain unchanged.
-
-This is procedural browser graphics, not imported production-grade AAA models. Live browser playthrough and frame timings have not been verified.
+Caveats: These are custom procedural meshes, not professionally modeled asset packs. Browser visuals, navigation, load time, and frame rate still require live testing.

@@ -287,6 +287,12 @@
             createPlazaExtras
         } from "./world/plazaExtras.js";
 
+        // SECTION 02F // ADMINISTRATION INTERIOR IMPORT
+
+        import {
+            createAdminInterior
+        } from "./world/adminInterior.js";
+
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
         // ==========================================
@@ -313,6 +319,12 @@
 
         const animatePlazaExtras =
             createPlazaExtras(scene);
+        
+        // SECTION 03E // CREATE ADMINISTRATION INTERIOR
+
+        const animateAdminInterior =
+            createAdminInterior(scene, renderer);
+
 // ==========================================
         // SECTION 04 // CREATE PLAYER
         // ==========================================
@@ -354,6 +366,10 @@
             // SECTION 05D // ANIMATE PLAZA ENTERTAINMENT
 
             animatePlazaExtras();
+
+            // SECTION 05F // UPDATE ADMINISTRATION INTERIOR
+
+            animateAdminInterior();
 
             updateNPCs();
 

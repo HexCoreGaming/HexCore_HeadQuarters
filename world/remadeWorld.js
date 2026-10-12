@@ -2,6 +2,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 import { HEXCORE_WORLD } from './worldLayout.js';
 import { createVisualAtmosphere } from './visualAtmosphere.js';
 import { createDigitalLandmarks } from './digitalLandmarks.js';
+import { createShowcaseIdentity } from './showcaseIdentity.js';
 
 // HEXCORE CITY / ORIGINAL DIGITAL WORLD (not the old city-grid geometry).
 // Single coordinate contract: tower (0,300), headquarters (0,0), site doors site.z+29.
@@ -164,6 +165,7 @@ export function* createRemadeWorldProgressive(scene,camera) {
  yield;
  yield* createVisualAtmosphere(scene);
  const updateLandmarks = yield* createDigitalLandmarks(scene);
+ const updateShowcases = yield* createShowcaseIdentity(scene);
  // Static scene plus a limited number of gentle animated monumental rings.
- return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}if(typeof updateLandmarks==='function')updateLandmarks();};
+ return ()=>{for(const [mesh,speed] of animated){mesh.rotation.y+=speed;}if(typeof updateLandmarks==='function')updateLandmarks();if(typeof updateShowcases==='function')updateShowcases();};
 }

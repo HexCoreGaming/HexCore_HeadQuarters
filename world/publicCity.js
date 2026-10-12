@@ -12,10 +12,15 @@ export function createPublicCity(scene) {
     {id:'thief',title:'THE FORGOTTEN ASHES',tag:'FEATURED GAME',theme:'pink',subject:'Immersive stealth story',desc:'A stealth-focused single-player world inspired by dark Victorian streets, theft and meaningful choices. Actions and failures can permanently reshape quests and the world.',facts:['Immersive first-person stealth','Consequential quests and endings','Atmospheric connected districts','Working title also explored: City of Thieves'],staff:'Story Curator'},
     {id:'academy',title:'THE ACADEMY',tag:'FUTURE WORLD',theme:'cyan',subject:'Learning and exploration',desc:'A planned cyberpunk, fantasy and Victorian-inspired interactive academy, with educational experiences, NPC instructors and a vast social city.',facts:['Financial literacy is the first planned subject','Interactive teaching and activities','Future creator spaces','Coming Soon — not a playable game'],staff:'Academy Registrar'},
     {id:'future',title:'FUTURE GAME WORLDS',tag:'COMING SOON',theme:'violet',subject:'Future projects',desc:'Reserved exhibition for future HexCore Gaming games. Projects without established names remain labeled Coming Soon until they are officially announced.',facts:['New worlds will receive dedicated galleries','No unannounced release dates','Playable demos added when ready'],staff:'Exhibition Curator'},
-    {id:'hardwareStore',title:'HEXCORE HARDWARE SHOWROOM',tag:'SHOWROOM',theme:'cyan',subject:'Hardware and controller concepts',desc:'Visit the public hardware showroom for HexCore System and controller concepts. Hardware engineering and corporate operations remain in HexCore Tower.',facts:['Gaming system development concepts','PC / Steam controller concept','High-speed solid-state physical game editions','No hardware is available to order yet'],staff:'Showroom Specialist'},
+    {id:'administration',title:'ADMINISTRATION & LEGAL',tag:'COMPANY DEPARTMENT',theme:'gold',subject:'Corporate information',desc:'Learn about HexCore Gaming and navigate to the existing Administration & Legal office for its established representatives and detailed dialogues.',facts:['Company Representative','Legal Counsel','Privacy Officer','Intellectual Property Counsel'],staff:'Company Receptionist',legacy:true},
+    {id:'support',title:'CUSTOMER SUPPORT',tag:'COMPANY DEPARTMENT',theme:'cyan',subject:'Help and technical questions',desc:'Information for gamers and visitors. The request composer can prepare and copy a support message, but cannot submit a real ticket until a secure ticket provider is connected.',facts:['Technical assistance information','Help for HexCore games','Support request draft composer','No live server-side ticket service yet'],staff:'Support Representative',support:true},
+    {id:'community',title:'COMMUNITY & EVENTS',tag:'COMPANY DEPARTMENT',theme:'pink',subject:'Gatherings and updates',desc:'Discover HexCore City community plans: launch-night queues, creator showcases, LAN parties, open-world festivities and future event announcements.',facts:['Community gatherings','Midnight release celebrations','Creator showcases','Official dates will appear when confirmed'],staff:'Community Director'},
+    {id:'business',title:'BUSINESS & PARTNERSHIPS',tag:'COMPANY DEPARTMENT',theme:'gold',subject:'Business inquiries',desc:'Learn about future partnership, collaboration and supporter pathways. No unverified funding terms or payment options are presented as active.',facts:['Business introductions','Partnership inquiries','Responsible supporter communication','Contact and payments pending provider integration'],staff:'Partnership Coordinator'},
+    {id:'development',title:'GAME DEVELOPMENT',tag:'COMPANY DEPARTMENT',theme:'violet',subject:'Behind the simulations',desc:'An overview of the HexCore development approach: early prototypes, playable proof of concept, ongoing development updates and worlds built over time.',facts:['Cyber_Arena development','Proof-of-concept showcases','World design and technology','Upcoming project announcements'],staff:'Development Producer'},
+    {id:'hardware',title:'HEXCORE HARDWARE LAB',tag:'COMPANY DEPARTMENT',theme:'green',subject:'Gaming hardware concepts',desc:'Explore the intended HexCore System, special PC controller and high-speed physical games on preloaded USB/SSD storage. These are not currently offered for sale.',facts:['Hybrid console / PC vision','Steam and PC compatibility goals','Extra controller buttons and triggers','Physical solid-state game editions at full release'],staff:'Hardware Engineer'},
     {id:'merch',title:'HEXCORE MERCHANDISE',tag:'SHOWROOM',theme:'pink',subject:'Merch and collector concepts',desc:'A preview of future HexCore merchandise and physical editions. The showroom is informational until products, stock and payment checkout are actually configured.',facts:['Branded merchandise concepts','Limited collector-edition plans','No purchase processing in this version'],staff:'Showroom Host'},
     {id:'gallery',title:'FUTURE WORLDS MUSEUM',tag:'CULTURAL DISTRICT',theme:'violet',subject:'Game concept exhibits',desc:'A museum celebrating the worlds in development, featuring their distinct settings, themes and current vision. No fictional screenshots are represented as finished gameplay.',facts:['Cyberpunk arena exhibit','Bioluminescent rainforest exhibit','Vast wilderness / racing exhibit','Dark Victorian stealth exhibit'],staff:'Museum Curator'},
-    {id:'arcade',title:'HEXCORE ARCADE',tag:'INTERACTIVE',theme:'cyan',subject:'Browser arcade',desc:'A home for small playable website attractions and future mini versions of the games. Neon Reflex and Memory Matrix are small experimental arcade attractions; additional playable experiences are planned.',facts:['Neon Reflex microgame planned for this venue','Memory Matrix microgame planned for this venue','Additional arcade games coming later'],staff:'Arcade Attendant',arcade:true},
+    {id:'arcade',title:'HEXCORE ARCADE',tag:'INTERACTIVE',theme:'cyan',subject:'Browser arcade',desc:'A home for small playable website attractions and future mini versions of the games. The existing lobby arcade contains Neon Reflex and Memory Matrix.',facts:['Neon Reflex microgame','Memory Matrix microgame','Additional arcade games coming later'],staff:'Arcade Attendant',arcade:true},
     {id:'residential',title:'GAMER RESIDENCES',tag:'CITY DISTRICT',theme:'green',subject:'In-world apartments',desc:'Explore the residential district and imagine future apartments, gaming rooms, LAN parties and in-world social events. No accounts or residential rentals are required.',facts:['Decorated city apartments','Gaming lounge scenes','NPC residents and conversations','Future neighborhood expansions'],staff:'Resident Concierge'}
   ];
   const dark=new THREE.MeshStandardMaterial({color:0x0e1225,roughness:.4,metalness:.48});
@@ -32,119 +37,16 @@ export function createPublicCity(scene) {
     let o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));o.position.set(x,y,z);o.rotation.y=rotation;parent.add(o);return o;
   }
   const district=new THREE.Group();district.position.set(HUB.x,0,HUB.z);scene.add(district);
-  // Connected public plaza grid: raised neon walkways and decorated courts.
-  cube(district,0,-.7,0,322,1.3,340,stone);
-  cube(district,0,-.01,0,310,.09,328,floorMat);
-  const anchorX=[-112,-56,0,56,112],anchorZ=[-108,-8,96];
-  const colMats=Object.fromEntries(Object.entries(themes).map(([k,v])=>[k,getGlow(v,.5)]));
-  for(let z=-158;z<=158;z+=14) cube(district,0,.075,z,305,.05,.12,z%28===0?colMats.cyan:colMats.violet);
-  for(let x=-149;x<=149;x+=14) cube(district,x,.077,0,.12,.05,317,x%28===0?colMats.violet:colMats.cyan);
-  for(let x of [-74,0,74]){cube(district,x,.1,0,11,.1,326,stone);cube(district,x-5,.15,0,.17,.14,326,colMats.cyan);cube(district,x+5,.15,0,.17,.14,326,colMats.violet);}
-  for(let z of [-76,0,76]){cube(district,0,.1,z,310,.1,11,stone);cube(district,0,.16,z-5,310,.09,.16,colMats.pink);}
-  // Sixteen separate exterior buildings. Only doorway transitions use instanced interiors.
+  // ZIP 1 REMAKE: former procedural building facades removed completely.
+  // Standalone remadeWorld renders the new pedestrian city and all sixteen external buildings.
+  // Information, instanced interiors and dialogue systems below remain unchanged.
   for(const [i,site] of sites.entries()){
-    const gx=anchorX[i%5],gz=anchorZ[Math.floor(i/5)];site.x=HUB.x+gx;site.z=HUB.z+gz;
-    let group=new THREE.Group();group.position.set(gx,0,gz);district.add(group);
-    const glow=colMats[site.theme],cc=themes[site.theme],hex='#'+cc.toString(16).padStart(6,'0');
-    cube(group,0,.2,0,54,.4,59,dark);
-    // Three-dimensional architectural massing: distinct silhouette for each destination.
-    const genre={cyber:0,survival:1,racing:2,thief:3,academy:4,future:5,hardwareStore:6,merch:7,gallery:8,arcade:9,residential:10}[site.id]??0;
-    const height=[45,26,24,38,37,32,30,25,35,30,37][genre];
-    cube(group,0,height/2,-4,49,height,42,genre===1?stone:dark);
-    // Layered facades, roof setbacks, glass bays, mullions and contrasting fins.
-    for (let level=0; level<Math.floor(height/4);level++) {
-      const y=3.5+level*3.8;
-      for (let bay=-3;bay<=3;bay++) {
-        if (Math.abs(bay)<2 && y<12) continue; // readable walk-in doorway
-        cube(group,bay*6.6,y,17.2,4.7,2.4,.22,glass);
-        cube(group,bay*6.6,y-1.45,17.5,5.1,.10,.22,glow);
-      }
-      cube(group,-24.7,y,-4,.2,.11,39,glow);
-      cube(group,24.7,y,-4,.2,.11,39,glow);
-    }
-    for(let bay=-3;bay<=3;bay++) {
-      cube(group,bay*6.7,height+1,-4,5.5,1,36,stone);
-      cube(group,bay*6.7,height+1.7,17.6,5.8,.15,.22,glow);
-    }
-    cube(group,-21,height/2,18,1,height+2,1,glow);
-    cube(group,21,height/2,18,1,height+2,1,glow);
-    if(genre===0){ // Hexagonal combat-arena signage and elevated rings
-      for(let n=0;n<3;n++){let ring=new THREE.Mesh(new THREE.TorusGeometry(8+n*2,.4,7,6),glow);ring.position.set(0,height+5+n*3,-4);ring.rotation.x=.55;group.add(ring);}
-    } else if(genre===1){ // Layered living canopy and glowing bioluminescent crowns
-      for(let n=0;n<11;n++){const x=(n%4-1.5)*12,z=-24+Math.floor(n/4)*18;
-        cyl(group,x,height+4,z,.6,8,dark);cyl(group,x,height+9,z,4.8,7,getGlow(n%2?0x4fdcc6:0x72b9ff,.3),9);}
-    } else if(genre===2){ // Motorsport pavilion: long aerodynamic roof arches
-      for(let n=-2;n<=2;n++){let arc=new THREE.Mesh(new THREE.TorusGeometry(16,.55,7,26,Math.PI),glow);arc.position.set(n*9,height+2,-2);arc.rotation.set(0,Math.PI/2,0);group.add(arc);}
-    } else if(genre===3){ // Victorian dark-gothic spires
-      for(let x of [-19,-9,9,19]){cyl(group,x,height+6,-9,2.6,12,stone,6);
-        let roof=new THREE.Mesh(new THREE.ConeGeometry(3.8,9,6),dark);roof.position.set(x,height+16,-9);group.add(roof);}
-    } else if(genre===4){ // Academy towers and observatory
-      for(let x of [-17,17]){cyl(group,x,height+4,-14,5,10,stone,10);let dome=new THREE.Mesh(new THREE.SphereGeometry(5,12,8),glass);dome.position.set(x,height+10,-14);group.add(dome);}
-    } else if(genre===5){ // Coming soon hologram screens, visibly not playable
-      for(let x of [-15,0,15])cube(group,x,height+7,-4,10,11,1,glass);
-      sign(group,'COMING SOON',0,height+8,18,26,3,hex);
-    } else if(genre===6){ // Hardware showroom vertical glowing circuit paths
-      for(let x=-18;x<=18;x+=9)cube(group,x,height/2,18,1,height*.75,.25,glow);
-      cyl(group,0,height+5,-4,9,4,glass,8);
-    } else if(genre===7){ // Shopfront with awnings
-      for(let x of [-14,0,14])cube(group,x,9,22,12,1.3,7,glow);
-    } else if(genre===8){ // Museum skylights and sculptures
-      for(let x of [-15,0,15]){cyl(group,x,height+3,-4,6,5,glass,10);cyl(group,x,height+6,-4,3,.4,glow,10);}
-    } else if(genre===9){ // Arcade rooftop neon light gates
-      for(let x of [-17,0,17]){cube(group,x,height+4,-4,1.3,9,9,glow);cube(group,x,height+8,-4,8,.8,9,glow);}
-    } else { // Apartments with balconies
-      for(let lvl=1;lvl<height/4;lvl++)for(let x of [-14,0,14]){
-        cube(group,x,lvl*4+1,19,12,.3,5,stone);cube(group,x,lvl*4+2,21.5,12,.8,.2,glass);}
-    }
-    cube(group,0,height+1,-4,52,.9,45,stone);
-    // Separate actual doorway: front at positive local Z
-    cube(group,-12,7,19,1,14,1,glow);cube(group,12,7,19,1,14,1,glow);
-    cube(group,0,14,19,25,1,1,glow);
-    // Roof and silhouette are defined by the individual building architecture above.
-    for(let side of [-23.4,23.4]){cube(group,side,14,18,4,29,3,dark);cube(group,side,14,19.6,.35,26,.35,glow);}
-    cube(group,0,17,18.5,19,19,3,dark);cube(group,0,9,20,13,17,.25,glass);
-    for(let yy of [10,17,24,31]){cube(group,0,yy,-26,51,.25,.25,glow);cube(group,0,yy,20.2,40,.22,.19,glow);}
-    for(let xx of [-18,-10,10,18]){cube(group,xx,14,20.1,6,13,.15,glass);cube(group,xx,14,20.4,.18,14,.25,glow);}
-    for(let zz of [-17,-5,7]){cube(group,-25.6,12,zz,.2,14,7,glass);cube(group,25.6,12,zz,.2,14,7,glass);}
-    for(let p of [-24,24]){cyl(group,p,5,23,1.05,10,glow);cyl(group,p,10.5,23,1.7,1,glass);}
-    sign(group,site.title,0,Math.max(20,height-4),20.5,43,4.2,hex);
-    sign(group,site.tag,0,16.5,20.5,23,2.4,hex);
-    cube(group,0,0.34,24,17,.12,15,dark);
-    for(let step=0;step<5;step++)cube(group,0,.41,24+step*2,16-step*1.4,.05,.13,glow);
+    site.x=HUB.x+anchorX[i%4]; site.z=HUB.z+anchorZ[Math.floor(i/4)];
     site.interior={x:3500+i*145,z:3500};
     makeInterior(site,i);
   }
-  // Landmark center, fountains, trees and hologram pylons.
-  cyl(district,0,1,0,8,2,dark,16);cyl(district,0,2.2,0,6,.25,colMats.cyan,16);
-  const centerpiece=new THREE.Mesh(new THREE.IcosahedronGeometry(4,1),colMats.violet);centerpiece.position.set(0,10,0);district.add(centerpiece);
-  for(let [x,z] of [[-150,-151],[150,-151],[-150,151],[150,151]]){
-    cyl(district,x,3,z,2,6,dark);cyl(district,x,8,z,.7,5,colMats.cyan);
-    let halo=new THREE.Mesh(new THREE.TorusGeometry(3,.22,7,24),colMats.violet);halo.position.set(x,12,z);halo.rotation.x=Math.PI/2;district.add(halo);
-  }
-  // Inhabited public realm: trees, benches, lamp posts, strolling citizens and meeting clusters.
+  const centerpiece={rotation:{y:0},position:{y:10}};
   const walkers=[];
-  for(let n=0;n<28;n++){
-    const lane=n%4,side=Math.floor(n/4)%2?1:-1;
-    const x=lane===0?-74:lane===1?74:side*(18+n%3*8);
-    const z=lane<2?-146+(n*17)%290:(lane===2?-76:76);
-    const person=new THREE.Group();person.position.set(x,0,z);district.add(person);
-    const jacket=getGlow(Object.values(themes)[n%5],.1);
-    cube(person,0,2,0,1.1,2.3,.7,jacket);
-    cyl(person,0,3.65,0,.48,.9,new THREE.MeshStandardMaterial({color:0xbec0e4,roughness:.77}));
-    for(let i of [-1,1]){cube(person,i*.29,.65,0,.32,1.3,.4,dark);cube(person,i*.75,2.1,0,.25,1.7,.36,jacket);}
-    walkers.push({person,baseX:x,baseZ:z,phase:n*.76,moving:n%3!==0});
-  }
-  for(let n=0;n<18;n++){
-    let x=(n%2?1:-1)*(92+(n%3)*13),z=-140+Math.floor(n/2)*32;
-    cyl(district,x,2,z,.75,4,stone);cyl(district,x,5.2,z,3,3.9,getGlow(n%2?0x69e8c9:0x657cff,.24));
-    cube(district,x+5,.7,z,7,1.3,1.6,dark);cube(district,x+5,1.45,z,7,.12,1.6,colMats.violet);
-  }
-  for(let n=-3;n<=3;n++){
-    const zz=n*42;
-    for(let xx of [-156,156]){
-      cyl(district,xx,5,zz,.55,10,dark);cyl(district,xx,10.5,zz,1.2,1.3,colMats.cyan);
-    }
-  }
   // Indoor spaces: actual rooms with furniture, NPC reception stands, screens, themed installations.
   function makeInterior(site,index){
     const p=site.interior,g=new THREE.Group();g.position.set(p.x,0,p.z);scene.add(g);site.room=g;
@@ -180,7 +82,7 @@ export function createPublicCity(scene) {
   cube(approach,279,-.32,110,57,.55,15,dark);
   for(let zz of [102.6,117.4])cube(approach,279,.05,zz,57,.22,.24,colMats.cyan);
   for(let xx=254;xx<=303;xx+=6)cube(approach,xx,.08,110,.2,.09,14,colMats.violet);
-  sign(approach,'GAME DISTRICT // WALK EAST',299,8,110,48,3.5,'#97ebff',-Math.PI/2);
+  sign(approach,'HEXCORE CITY // GAME & COMMERCE DISTRICT',299,8,110,48,3.5,'#97ebff');
   // No tower portal: all public buildings are approached through their physical city entrances.
   const display=document.createElement('div');display.id='hexcore-fullcity-panel';display.style.cssText='display:none;position:fixed;inset:0;background:rgba(3,6,17,.94);z-index:490;align-items:center;justify-content:center;padding:14px;box-sizing:border-box;color:#eaf0ff;font:14px Consolas,monospace';document.body.appendChild(display);
   const panel=document.createElement('section');panel.style.cssText='background:linear-gradient(140deg,#101a32,#1a1036);border:1px solid #8558d8;box-shadow:0 0 50px #37165a;width:min(850px,98vw);max-height:90dvh;overflow:auto;padding:22px;box-sizing:border-box';display.appendChild(panel);

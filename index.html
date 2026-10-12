@@ -279,21 +279,9 @@
 
         // SECTION 02C // CITY DEPARTMENT BUILDINGS IMPORT
 
-        import {
-            createCityBuildings
-        } from "./world/cityBuildings.js";
-
         // SECTION 02D // SOCIAL PLAZA IMPORT
 
-        import {
-            createCityPlaza
-        } from "./world/cityPlaza.js";
-
         // SECTION 02E // PLAZA ENTERTAINMENT IMPORT
-
-        import {
-            createPlazaExtras
-        } from "./world/plazaExtras.js";
 
         // SECTION 02F // ADMINISTRATION INTERIOR IMPORT
 
@@ -309,7 +297,7 @@
         import { createTowerArtDirection } from "./world/towerArtDirection.js";
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
         import { createPublicCity } from "./world/publicCity.js";
-        import { createCivicLife } from "./world/civicLife.js";
+        import { createRemadeWorld } from "./world/remadeWorld.js";
 
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
@@ -325,18 +313,9 @@
 
         // SECTION 03B // CREATE CITY DEPARTMENT BUILDINGS
 
-        const animateCityBuildings =
-            createCityBuildings(scene);
-
         // SECTION 03C // CREATE SOCIAL PLAZA
 
-        const animateCityPlaza =
-            createCityPlaza(scene);
-
         // SECTION 03D // CREATE PLAZA ENTERTAINMENT
-
-        const animatePlazaExtras =
-            createPlazaExtras(scene);
         
         // SECTION 03E // CREATE ADMINISTRATION INTERIOR
 
@@ -394,7 +373,7 @@
         const animateVisitorExperiences = createVisitorExperiences(scene);
         const animateTowerArtDirection = createTowerArtDirection(scene);
         const animatePublicCity = createPublicCity(scene);
-        const animateCivicLife = createCivicLife(scene);
+        const animateRemadeWorld = createRemadeWorld(scene, camera);
         const updateNPCs = createNPCs(scene);
 
         // SECTION 04B // CREATE CITYWIDE NPCS
@@ -417,15 +396,9 @@
 
             // SECTION 05B // ANIMATE CITY BUILDINGS
 
-            animateCityBuildings();
-
             // SECTION 05C // ANIMATE SOCIAL PLAZA
 
-            animateCityPlaza();
-
             // SECTION 05D // ANIMATE PLAZA ENTERTAINMENT
-
-            animatePlazaExtras();
 
             // SECTION 05F // UPDATE ADMINISTRATION INTERIOR
 
@@ -441,7 +414,7 @@
             animateVisitorExperiences();
             animateTowerArtDirection();
             animatePublicCity();
-            animateCivicLife();
+            animateRemadeWorld();
             updateNPCs();
 
             // SECTION 05E // ANIMATE CITYWIDE NPCS

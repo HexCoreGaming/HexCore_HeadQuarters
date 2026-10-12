@@ -608,6 +608,23 @@ export function createPlayer(camera, renderer) {
 
 
         // =====================================================
+        // SECTION 05E // CAMERA UPDATE
+        // =====================================================
+
+        camera.position.set(
+            player.position.x,
+            player.height,
+            player.position.z
+        );
+
+        camera.rotation.set(
+            player.pitch,
+            player.yaw,
+            0
+        );
+
+
+        // =====================================================
         // SECTION 05F // PLAYER POSITION NOTIFICATION
         // =====================================================
 

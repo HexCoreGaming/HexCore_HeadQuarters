@@ -307,6 +307,7 @@
         import { installInteractionFocus } from "./core/interactionFocus.js";
         import { createTowerArtDirection } from "./world/towerArtDirection.js";
         import { createVisitorExperiences } from "./world/visitorExperiences.js";
+        import { createPublicCity } from "./world/publicCity.js";
 
         // ==========================================
         // SECTION 03 // BUILD HEADQUARTERS
@@ -389,6 +390,7 @@
         const animateTowerDepartments = createTowerDepartments(scene);
         const animateVisitorExperiences = createVisitorExperiences(scene);
         const animateTowerArtDirection = createTowerArtDirection(scene);
+        const animatePublicCity = createPublicCity(scene);
         const updateNPCs = createNPCs(scene);
 
         // SECTION 04B // CREATE CITYWIDE NPCS
@@ -434,6 +436,7 @@
             animateTowerDepartments();
             animateVisitorExperiences();
             animateTowerArtDirection();
+            animatePublicCity();
             updateNPCs();
 
             // SECTION 05E // ANIMATE CITYWIDE NPCS

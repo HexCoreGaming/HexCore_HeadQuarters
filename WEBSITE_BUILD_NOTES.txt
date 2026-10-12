@@ -1,0 +1,15 @@
+HEXCORE // WEBSITE-FIRST EXPANSION
+
+This release keeps the working headquarters, city, tower, Administration NPCs, arcade, elevator and movement controls. It introduces the complete public city district with sixteen purpose-built, accessible buildings and furnished interiors.
+
+START: From the original HexCore Tower lobby, approach the EXPLORE HEXCORE CITY portal near lobby local coordinate (0,+20); press E or mobile INTERACT to open the travel menu. Choose ENTER THE CITY DISTRICT. The district has sixteen building entrances; E on each entrance reveals the showcase information and offers entry. Inside a building, approach the information representative to read details. Go to the rear exit to return. The CITY DIRECTORY button allows direct building navigation.
+
+FEATURED GAME EXHIBITIONS: Cyber_Arena HEX//BREAK; Where Light Dies; Untamed Horizon; The Forgotten Ashes (City of Thieves was an alternate working title). The Academy and remaining unannounced worlds are shown as future / Coming Soon, not announced playable games.
+
+OTHER PUBLIC BUILDINGS: Administration & Legal annex, Customer Support, Community & Events, Business & Partnerships, Game Development, Hardware Lab, Merchandise showroom, Future Worlds Museum, HexCore Arcade, Gamer Residences.
+
+SECURITY AND SERVICE HONESTY: Support composer only copies draft text locally; NO real ticket is sent. No online purchases, employee authentication, real event schedule, multiplayer, or MMORPG. These need external service/backend and further development.
+
+This update does not claim finished AAA graphical quality. Procedural Three.js graphics are optimized for broad browser use; bespoke production meshes, textures, audio and animation are separate work.
+
+VALIDATION: Run local static development server or GitHub Pages and check entrance interactions, room exits, menu mouse release, city limits, old Headquarters and Admin, and all original interactions.

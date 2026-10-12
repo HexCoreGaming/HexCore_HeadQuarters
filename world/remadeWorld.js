@@ -29,9 +29,13 @@ export function* createRemadeWorldProgressive(scene,camera){
    for(const item of inst.values()){
      if(!item.items.length)continue;
      const mesh=new THREE.InstancedMesh(item.geometry,item.material,item.items.length);
-     mesh.frustumCulled=false;
+     // Bounds are computed after all instance transforms are assigned, allowing
+     // the renderer to skip off-screen batches. Previously every distant batch
+     // was drawn even while the player was inside headquarters.
+     mesh.frustumCulled=true;
      item.items.forEach((a,i)=>{const [x,y,z,w,h,d,rot]=a;temp.position.set(x,y,z);temp.rotation.set(0,rot,0);temp.scale.set(w,h,d);temp.updateMatrix();mesh.setMatrixAt(i,temp.matrix);});
      mesh.instanceMatrix.needsUpdate=true;
+     mesh.computeBoundingSphere();
      mesh.name='CITY_STAGE_'+batchCount++;root.add(mesh);
      item.items.length=0;
    }

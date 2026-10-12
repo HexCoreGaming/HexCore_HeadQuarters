@@ -1,0 +1,22 @@
+HEXCORE CITY // ZIP 04 — NPC SPAWN & FINAL WEBSITE PASS
+
+This is a FULL cumulative project, based on ZIP 03. Copy all contents to your GitHub Desktop repository; merge folders; do not delete other files.
+
+FIXED:
+- Headquarters NPCs are constructed BEFORE createPlayer runs. Reception representative and other headquarters NPCs exist on first player frame.
+- City pedestrian/social NPC system is also constructed BEFORE createPlayer runs, rather than being created in the final delayed world job.
+- NPC update loops run from the first animation frame, independently of city construction.
+- The five-second delay now applies only to the outside environment and destination systems, not to the NPCs.
+- The progressive world InstancedMesh batches now compute bounding spheres and permit view-frustum culling; previously all offscreen batches were rendered.
+- Remaining environment stages retain nearby-to-farther construction.
+
+IMPORTANT LIMITATION:
+- Corporate department NPCs and their interiors are part of the progressively initialized destination systems. They are NOT all loaded before the player; doing so would reintroduce the startup freezes. Only the initial headquarters and citywide visitor population are pre-spawned.
+- This release DOES NOT deliver finished cinematic AAA assets or a complete production backend.
+- These changes have been statically checked, not performance-tested in a browser.
+
+TEST:
+1. Reload the website. Receptionist and HQ visitors should already be present when the player appears.
+2. Play for five seconds; city geometry should start to appear later in stages.
+3. Walk out to city and look for pedestrians and social NPCs.
+4. Check if FPS is improved when looking away from the dense skyline.

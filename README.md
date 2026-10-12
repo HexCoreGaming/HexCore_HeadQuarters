@@ -1,3 +1,3 @@
-# HexCore Gaming — City Website
+# HexCore City — ZIP 04
 
-ZIP 03 cumulative release: staged 5-second city startup, progressive geometry and interior creation, preserved company visitor systems.
+Full cumulative GitHub Pages project. See `ZIP_04_RELEASE_NOTES.txt` for implemented NPC-loading and rendering fixes.

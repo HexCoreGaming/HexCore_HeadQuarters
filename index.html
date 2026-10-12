@@ -325,8 +325,21 @@
         // SECTION 04 // CREATE PLAYER
         // ==========================================
 
-        const updatePlayer =
-            createPlayer(camera, renderer);
+        // ZIP 04 // Populate the headquarters and city BEFORE player creation.
+        // The receptionist and hub visitors must already exist on the player's
+        // first frame, rather than joining the five-second delayed world queue.
+        let updateHeadquartersNPCs = () => {};
+        let updateInitialCityNPCs = () => {};
+        try {
+            updateHeadquartersNPCs = createNPCs(scene);
+            updateInitialCityNPCs = createCityNPCs(scene);
+            window.hexcoreNPCsReady = true;
+        } catch (error) {
+            window.hexcoreNPCsReady = false;
+            console.error('HEXCORE PRE-SPAWN NPC INITIALIZATION', error);
+        }
+
+        const updatePlayer = createPlayer(camera, renderer);
         installInteractionFocus(renderer);
         installTowerDirectory();
         // ==========================================
@@ -341,22 +354,18 @@
         // Exactly five seconds after the first drawn frame, begin nearby world
         // construction. Each world stage advances only once per animation frame.
         const systems = new Map();
-        const bootState = {ready:0,total:10,phase:'HEADQUARTERS',startedAt:0};
+        const bootState = {ready:0,total:9,phase:'HEADQUARTERS + NPCS READY',startedAt:0};
         window.hexcoreBootState = bootState;
         const bootJobs = [
             ['Nearby city foundation', () => createCityFoundation(scene)],
             ['New city geometry', () => createRemadeWorldProgressive(scene, camera)],
             ['Tower exterior and lobby', () => createHexcoreTower(scene, renderer)],
-            ['Headquarters NPCs', () => createNPCs(scene)],
             ['Public city and exhibits', () => createPublicCity(scene)],
             ['Tower departments', () => createTowerDepartments(scene)],
             ['Administration office', () => createAdminInterior(scene, renderer)],
             ['Visitor experiences', () => createVisitorExperiences(scene)],
             ['Interior finishes', () => createInteriorFinishes(scene)],
-            ['Tower art and city visitors', () => {
-                const art=createTowerArtDirection(scene),visitors=createCityNPCs(scene);
-                return ()=>{if(typeof art==='function')art();if(typeof visitors==='function')visitors();};
-            }]
+            ['Tower architectural effects', () => createTowerArtDirection(scene)]
         ];
         let bootStart=0, nextJobAt=0, activeGenerator=null, activeName='';
         const bootDelay=5000;
@@ -383,11 +392,13 @@
             }catch(error){console.error('HEXCORE STARTUP // '+name,error);bootState.ready++;}
             nextJobAt=performance.now()+bootGap;
         }
-        // The only synchronous 3D scene constructed on initial load is the hub.
+        // Hub plus its NPCs are constructed before player spawn; world waits five seconds.
         renderer.setAnimationLoop(()=>{
             const now=performance.now();
             updatePlayer();
             animateHeadquarters();
+            updateHeadquartersNPCs();
+            updateInitialCityNPCs();
             for(const [name,update] of systems){
                 try{update();}catch(error){console.error('HEXCORE UPDATE // '+name,error);systems.delete(name);}
             }

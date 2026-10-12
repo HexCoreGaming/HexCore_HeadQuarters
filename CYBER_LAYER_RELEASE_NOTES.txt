@@ -1,0 +1,2 @@
+HexCore City — Human Cyberpunk Layer
+Adds electronic street installations, holographic information boards, AI performance garden, and small destination displays. Elven world, nature, and building interactions remain intact. Browser visual/performance testing still required.
